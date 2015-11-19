@@ -163,20 +163,29 @@ const char *OBJ_NAME_get(const char *name, int type)
     on.name = name;
     on.type = type;
 
-    for (;;) {
+    for (;;)
+	{
         ret = lh_OBJ_NAME_retrieve(names_lh, &on);
         if (ret == NULL)
             return (NULL);
-        if ((ret->alias) && !alias) {
+        if ((ret->alias) && !alias) 
+		{
             if (++num > 10)
                 return (NULL);
             on.name = ret->data;
-        } else {
+        } 
+		else 
+		{
             return (ret->data);
         }
     }
 }
 
+/*
+若哈希表names_lh未初始化，则初始化
+分配哈希节点，拥data初始化
+将该节点插入到names_lh中
+*/
 int OBJ_NAME_add(const char *name, int type, const char *data)
 {
     OBJ_NAME *onp, *ret;
@@ -189,7 +198,8 @@ int OBJ_NAME_add(const char *name, int type, const char *data)
     type &= ~OBJ_NAME_ALIAS;
 
     onp = (OBJ_NAME *)OPENSSL_malloc(sizeof(OBJ_NAME));
-    if (onp == NULL) {
+    if (onp == NULL)
+	{
         /* ERROR */
         return (0);
     }
@@ -200,21 +210,23 @@ int OBJ_NAME_add(const char *name, int type, const char *data)
     onp->data = data;
 
     ret = lh_OBJ_NAME_insert(names_lh, onp);
-    if (ret != NULL) {
+    if (ret != NULL)
+	{
         /* free things */
-        if ((name_funcs_stack != NULL)
-            && (sk_NAME_FUNCS_num(name_funcs_stack) > ret->type)) {
+        if ((name_funcs_stack != NULL) && (sk_NAME_FUNCS_num(name_funcs_stack) > ret->type)) 
+		{
             /*
              * XXX: I'm not sure I understand why the free function should
              * get three arguments... -- Richard Levitte
              */
-            sk_NAME_FUNCS_value(name_funcs_stack,
-                                ret->type)->free_func(ret->name, ret->type,
-                                                      ret->data);
+            sk_NAME_FUNCS_value(name_funcs_stack, ret->type)->free_func(ret->name, ret->type, ret->data);
         }
         OPENSSL_free(ret);
-    } else {
-        if (lh_OBJ_NAME_error(names_lh)) {
+    } 
+	else 
+	{
+        if (lh_OBJ_NAME_error(names_lh)) 
+		{
             /* ERROR */
             return (0);
         }

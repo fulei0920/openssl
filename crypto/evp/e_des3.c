@@ -194,10 +194,10 @@ static int des_ede3_cfb1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
     return 1;
 }
 
-static int des_ede3_cfb8_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-                                const unsigned char *in, size_t inl)
+static int des_ede3_cfb8_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, size_t inl)
 {
-    while (inl >= EVP_MAXCHUNK) {
+    while (inl >= EVP_MAXCHUNK) 
+	{
         DES_ede3_cfb_encrypt(in, out, 8, (long)EVP_MAXCHUNK,
                              &data(ctx)->ks1, &data(ctx)->ks2,
                              &data(ctx)->ks3, (DES_cblock *)ctx->iv,

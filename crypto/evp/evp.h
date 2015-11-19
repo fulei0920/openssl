@@ -156,7 +156,8 @@ struct evp_pkey_st {
 # define EVP_PKEY_MO_DECRYPT     0x0008
 
 # ifndef EVP_MD
-struct env_md_st {
+struct env_md_st 
+{
     int type;
     int pkey_type;
     int md_size;
@@ -167,16 +168,12 @@ struct env_md_st {
     int (*copy) (EVP_MD_CTX *to, const EVP_MD_CTX *from);
     int (*cleanup) (EVP_MD_CTX *ctx);
     /* FIXME: prototype these some day */
-    int (*sign) (int type, const unsigned char *m, unsigned int m_length,
-                 unsigned char *sigret, unsigned int *siglen, void *key);
-    int (*verify) (int type, const unsigned char *m, unsigned int m_length,
-                   const unsigned char *sigbuf, unsigned int siglen,
-                   void *key);
+    int (*sign) (int type, const unsigned char *m, unsigned int m_length, unsigned char *sigret, unsigned int *siglen, void *key);
+    int (*verify) (int type, const unsigned char *m, unsigned int m_length, const unsigned char *sigbuf, unsigned int siglen, void *key);
     int required_pkey_type[5];  /* EVP_PKEY_xxx */
     int block_size;
     int ctx_size;               /* how big does the ctx->md_data need to be */
-    /* control function */
-    int (*md_ctrl) (EVP_MD_CTX *ctx, int cmd, int p1, void *p2);
+    int (*md_ctrl) (EVP_MD_CTX *ctx, int cmd, int p1, void *p2);		/* control function */
 } /* EVP_MD */ ;
 
 typedef int evp_sign_method(int type, const unsigned char *m,
@@ -304,32 +301,21 @@ struct env_md_ctx_st {
 
 # define EVP_MD_CTX_FLAG_NO_INIT         0x0100/* Don't initialize md_data */
 
-struct evp_cipher_st {
+struct evp_cipher_st
+{
     int nid;
     int block_size;
-    /* Default value for variable length ciphers */
-    int key_len;
+    int key_len;			/* Default value for variable length ciphers */
     int iv_len;
-    /* Various flags */
-    unsigned long flags;
-    /* init key */
-    int (*init) (EVP_CIPHER_CTX *ctx, const unsigned char *key,
-                 const unsigned char *iv, int enc);
-    /* encrypt/decrypt data */
-    int (*do_cipher) (EVP_CIPHER_CTX *ctx, unsigned char *out,
-                      const unsigned char *in, size_t inl);
-    /* cleanup ctx */
-    int (*cleanup) (EVP_CIPHER_CTX *);
-    /* how big ctx->cipher_data needs to be */
-    int ctx_size;
-    /* Populate a ASN1_TYPE with parameters */
-    int (*set_asn1_parameters) (EVP_CIPHER_CTX *, ASN1_TYPE *);
-    /* Get parameters from a ASN1_TYPE */
-    int (*get_asn1_parameters) (EVP_CIPHER_CTX *, ASN1_TYPE *);
-    /* Miscellaneous operations */
-    int (*ctrl) (EVP_CIPHER_CTX *, int type, int arg, void *ptr);
-    /* Application data */
-    void *app_data;
+    unsigned long flags;  	/* Various flags */
+    int (*init) (EVP_CIPHER_CTX *ctx, const unsigned char *key, const unsigned char *iv, int enc); 	/* init key */
+    int (*do_cipher) (EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, size_t inl); /* encrypt/decrypt data */
+    int (*cleanup) (EVP_CIPHER_CTX *);	/* cleanup ctx */
+    int ctx_size;	 /* how big ctx->cipher_data needs to be */
+    int (*set_asn1_parameters) (EVP_CIPHER_CTX *, ASN1_TYPE *);	/* Populate a ASN1_TYPE with parameters */
+    int (*get_asn1_parameters) (EVP_CIPHER_CTX *, ASN1_TYPE *);	/* Get parameters from a ASN1_TYPE */
+    int (*ctrl) (EVP_CIPHER_CTX *, int type, int arg, void *ptr);	/* Miscellaneous operations */
+    void *app_data;	/* Application data */
 } /* EVP_CIPHER */ ;
 
 /* Values for cipher flags */

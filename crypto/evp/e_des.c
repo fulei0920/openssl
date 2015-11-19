@@ -166,31 +166,24 @@ static int des_cfb1_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 static int des_cfb8_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
                            const unsigned char *in, size_t inl)
 {
-    while (inl >= EVP_MAXCHUNK) {
-        DES_cfb_encrypt(in, out, 8, (long)EVP_MAXCHUNK, ctx->cipher_data,
-                        (DES_cblock *)ctx->iv, ctx->encrypt);
+    while (inl >= EVP_MAXCHUNK)
+	{
+        DES_cfb_encrypt(in, out, 8, (long)EVP_MAXCHUNK, ctx->cipher_data, (DES_cblock *)ctx->iv, ctx->encrypt);
         inl -= EVP_MAXCHUNK;
         in += EVP_MAXCHUNK;
         out += EVP_MAXCHUNK;
     }
     if (inl)
-        DES_cfb_encrypt(in, out, 8, (long)inl, ctx->cipher_data,
-                        (DES_cblock *)ctx->iv, ctx->encrypt);
+        DES_cfb_encrypt(in, out, 8, (long)inl, ctx->cipher_data, (DES_cblock *)ctx->iv, ctx->encrypt);
     return 1;
 }
 
-BLOCK_CIPHER_defs(des, DES_key_schedule, NID_des, 8, 8, 8, 64,
-                  EVP_CIPH_RAND_KEY, des_init_key, NULL,
-                  EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, des_ctrl)
+BLOCK_CIPHER_defs(des, DES_key_schedule, NID_des, 8, 8, 8, 64, EVP_CIPH_RAND_KEY, des_init_key, NULL, EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, des_ctrl)
 
 
-BLOCK_CIPHER_def_cfb(des, DES_key_schedule, NID_des, 8, 8, 1,
-                 EVP_CIPH_RAND_KEY, des_init_key, NULL,
-                 EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, des_ctrl)
+BLOCK_CIPHER_def_cfb(des, DES_key_schedule, NID_des, 8, 8, 1, EVP_CIPH_RAND_KEY, des_init_key, NULL, EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, des_ctrl)
 
-BLOCK_CIPHER_def_cfb(des, DES_key_schedule, NID_des, 8, 8, 8,
-                     EVP_CIPH_RAND_KEY, des_init_key, NULL,
-                     EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, des_ctrl)
+BLOCK_CIPHER_def_cfb(des, DES_key_schedule, NID_des, 8, 8, 8, EVP_CIPH_RAND_KEY, des_init_key, NULL, EVP_CIPHER_set_asn1_iv, EVP_CIPHER_get_asn1_iv, des_ctrl)
 
 static int des_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
                         const unsigned char *iv, int enc)

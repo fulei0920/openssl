@@ -207,8 +207,10 @@ typedef struct asn1_const_ctx_st {
 # define ASN1_OBJECT_FLAG_CRITICAL        0x02/* critical x509v3 object id */
 # define ASN1_OBJECT_FLAG_DYNAMIC_STRINGS 0x04/* internal use */
 # define ASN1_OBJECT_FLAG_DYNAMIC_DATA    0x08/* internal use */
-typedef struct asn1_object_st {
-    const char *sn, *ln;
+typedef struct asn1_object_st
+{
+    const char *sn;		/* ¼òÐ´Ãû×Ö */	 
+	const char *ln;		/* È«³ÆÃû×Ö*/
     int nid;
     int length;
     const unsigned char *data;  /* data remains const after init */

@@ -83,7 +83,8 @@ static int idea_ecb_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 
 /* Can't use IMPLEMENT_BLOCK_CIPHER because idea_ecb_encrypt is different */
 
-typedef struct {
+typedef struct 
+{
     IDEA_KEY_SCHEDULE ks;
 } EVP_IDEA_KEY;
 

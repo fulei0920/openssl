@@ -981,11 +981,12 @@
 extern "C" {
 #endif
 
-typedef struct obj_name_st {
+typedef struct obj_name_st 
+{
     int type;
-    int alias;
-    const char *name;
-    const char *data;
+    int alias;			/* 是否是别名 */
+    const char *name;  	/* 名字 */
+    const char *data;	
 } OBJ_NAME;
 
 # define         OBJ_create_and_add_object(a,b,c) OBJ_create(a,b,c)

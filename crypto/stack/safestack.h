@@ -85,13 +85,13 @@ extern "C" {
     ((int (*)(const void *, const void *)) \
         ((1 ? p : (int (*)(const type * const *, const type * const *))0)))
 
+
 # define STACK_OF(type) struct stack_st_##type
 # define PREDECLARE_STACK_OF(type) STACK_OF(type);
-
 # define DECLARE_STACK_OF(type) \
-STACK_OF(type) \
+	STACK_OF(type) \
     { \
-    _STACK stack; \
+    	_STACK stack; \
     };
 # define DECLARE_SPECIAL_STACK_OF(type, type2) \
 STACK_OF(type) \

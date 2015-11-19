@@ -61,14 +61,14 @@
 
 #ifndef OPENSSL_FIPS
 
-# ifndef OPENSSL_NO_SHA
+#ifndef OPENSSL_NO_SHA
 
-#  include <openssl/evp.h>
-#  include <openssl/objects.h>
-#  include <openssl/sha.h>
-#  ifndef OPENSSL_NO_RSA
-#   include <openssl/rsa.h>
-#  endif
+#include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/sha.h>
+#  	ifndef OPENSSL_NO_RSA
+# 		include <openssl/rsa.h>
+#  	endif
 
 static int init(EVP_MD_CTX *ctx)
 {
@@ -85,7 +85,8 @@ static int final(EVP_MD_CTX *ctx, unsigned char *md)
     return SHA1_Final(md, ctx->md_data);
 }
 
-static const EVP_MD sha1_md = {
+static const EVP_MD sha1_md =
+{
     NID_sha1,
     NID_sha1WithRSAEncryption,
     SHA_DIGEST_LENGTH,
@@ -132,7 +133,8 @@ static int final256(EVP_MD_CTX *ctx, unsigned char *md)
     return SHA256_Final(md, ctx->md_data);
 }
 
-static const EVP_MD sha224_md = {
+static const EVP_MD sha224_md = 
+{
     NID_sha224,
     NID_sha224WithRSAEncryption,
     SHA224_DIGEST_LENGTH,

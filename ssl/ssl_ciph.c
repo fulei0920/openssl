@@ -166,9 +166,9 @@
 #define SSL_ENC_AES256GCM_IDX   13
 #define SSL_ENC_NUM_IDX         14
 
-static const EVP_CIPHER *ssl_cipher_methods[SSL_ENC_NUM_IDX] = {
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL
+static const EVP_CIPHER *ssl_cipher_methods[SSL_ENC_NUM_IDX] = 
+{
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
 #define SSL_COMP_NULL_IDX       0
@@ -383,8 +383,7 @@ static int get_optional_pkey_id(const char *pkey_name)
 void ssl_load_ciphers(void)
 {
     ssl_cipher_methods[SSL_ENC_DES_IDX] = EVP_get_cipherbyname(SN_des_cbc);
-    ssl_cipher_methods[SSL_ENC_3DES_IDX] =
-        EVP_get_cipherbyname(SN_des_ede3_cbc);
+    ssl_cipher_methods[SSL_ENC_3DES_IDX] = EVP_get_cipherbyname(SN_des_ede3_cbc);
     ssl_cipher_methods[SSL_ENC_RC4_IDX] = EVP_get_cipherbyname(SN_rc4);
     ssl_cipher_methods[SSL_ENC_RC2_IDX] = EVP_get_cipherbyname(SN_rc2_cbc);
 #ifndef OPENSSL_NO_IDEA
@@ -392,26 +391,17 @@ void ssl_load_ciphers(void)
 #else
     ssl_cipher_methods[SSL_ENC_IDEA_IDX] = NULL;
 #endif
-    ssl_cipher_methods[SSL_ENC_AES128_IDX] =
-        EVP_get_cipherbyname(SN_aes_128_cbc);
-    ssl_cipher_methods[SSL_ENC_AES256_IDX] =
-        EVP_get_cipherbyname(SN_aes_256_cbc);
-    ssl_cipher_methods[SSL_ENC_CAMELLIA128_IDX] =
-        EVP_get_cipherbyname(SN_camellia_128_cbc);
-    ssl_cipher_methods[SSL_ENC_CAMELLIA256_IDX] =
-        EVP_get_cipherbyname(SN_camellia_256_cbc);
-    ssl_cipher_methods[SSL_ENC_GOST89_IDX] =
-        EVP_get_cipherbyname(SN_gost89_cnt);
+    ssl_cipher_methods[SSL_ENC_AES128_IDX] = EVP_get_cipherbyname(SN_aes_128_cbc);
+    ssl_cipher_methods[SSL_ENC_AES256_IDX] = EVP_get_cipherbyname(SN_aes_256_cbc);
+    ssl_cipher_methods[SSL_ENC_CAMELLIA128_IDX] = EVP_get_cipherbyname(SN_camellia_128_cbc);
+    ssl_cipher_methods[SSL_ENC_CAMELLIA256_IDX] = EVP_get_cipherbyname(SN_camellia_256_cbc);
+    ssl_cipher_methods[SSL_ENC_GOST89_IDX] = EVP_get_cipherbyname(SN_gost89_cnt);
     ssl_cipher_methods[SSL_ENC_SEED_IDX] = EVP_get_cipherbyname(SN_seed_cbc);
-
-    ssl_cipher_methods[SSL_ENC_AES128GCM_IDX] =
-        EVP_get_cipherbyname(SN_aes_128_gcm);
-    ssl_cipher_methods[SSL_ENC_AES256GCM_IDX] =
-        EVP_get_cipherbyname(SN_aes_256_gcm);
+    ssl_cipher_methods[SSL_ENC_AES128GCM_IDX] = EVP_get_cipherbyname(SN_aes_128_gcm);
+    ssl_cipher_methods[SSL_ENC_AES256GCM_IDX] = EVP_get_cipherbyname(SN_aes_256_gcm);
 
     ssl_digest_methods[SSL_MD_MD5_IDX] = EVP_get_digestbyname(SN_md5);
-    ssl_mac_secret_size[SSL_MD_MD5_IDX] =
-        EVP_MD_size(ssl_digest_methods[SSL_MD_MD5_IDX]);
+    ssl_mac_secret_size[SSL_MD_MD5_IDX] = EVP_MD_size(ssl_digest_methods[SSL_MD_MD5_IDX]);
     OPENSSL_assert(ssl_mac_secret_size[SSL_MD_MD5_IDX] >= 0);
     ssl_digest_methods[SSL_MD_SHA1_IDX] = EVP_get_digestbyname(SN_sha1);
     ssl_mac_secret_size[SSL_MD_SHA1_IDX] =
@@ -451,19 +441,23 @@ static void load_builtin_compressions(void)
     int got_write_lock = 0;
 
     CRYPTO_r_lock(CRYPTO_LOCK_SSL);
-    if (ssl_comp_methods == NULL) {
+    if (ssl_comp_methods == NULL) 
+	{
         CRYPTO_r_unlock(CRYPTO_LOCK_SSL);
         CRYPTO_w_lock(CRYPTO_LOCK_SSL);
         got_write_lock = 1;
 
-        if (ssl_comp_methods == NULL) {
+        if (ssl_comp_methods == NULL) 
+		{
             SSL_COMP *comp = NULL;
 
             MemCheck_off();
             ssl_comp_methods = sk_SSL_COMP_new(sk_comp_cmp);
-            if (ssl_comp_methods != NULL) {
+            if (ssl_comp_methods != NULL) 
+			{
                 comp = (SSL_COMP *)OPENSSL_malloc(sizeof(SSL_COMP));
-                if (comp != NULL) {
+                if (comp != NULL) 
+				{
                     comp->method = COMP_zlib();
                     if (comp->method && comp->method->type == NID_undef)
                         OPENSSL_free(comp);

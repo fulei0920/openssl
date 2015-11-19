@@ -85,7 +85,8 @@ static int final(EVP_MD_CTX *ctx, unsigned char *md)
     return MD5_Final(md, ctx->md_data);
 }
 
-static const EVP_MD md5_md = {
+static const EVP_MD md5_md = 
+{
     NID_md5,
     NID_md5WithRSAEncryption,
     MD5_DIGEST_LENGTH,

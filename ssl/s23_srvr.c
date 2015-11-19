@@ -258,7 +258,8 @@ int ssl23_get_client_hello(SSL *s)
     int type = 0;
     int v[2];
 
-    if (s->state == SSL23_ST_SR_CLNT_HELLO_A) {
+    if (s->state == SSL23_ST_SR_CLNT_HELLO_A)
+	{
         /* read the initial header */
         v[0] = v[1] = 0;
 

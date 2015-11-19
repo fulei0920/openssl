@@ -63,7 +63,8 @@
 extern "C" {
 #endif
 
-typedef struct stack_st {
+typedef struct stack_st 
+{
     int num;
     char **data;
     int sorted;

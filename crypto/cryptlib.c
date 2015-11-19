@@ -184,11 +184,8 @@ static STACK_OF(OPENSSL_STRING) *app_locks = NULL;
  */
 static STACK_OF(CRYPTO_dynlock) *dyn_locks = NULL;
 
-static void (MS_FAR *locking_callback) (int mode, int type,
-                                        const char *file, int line) = 0;
-static int (MS_FAR *add_lock_callback) (int *pointer, int amount,
-                                        int type, const char *file,
-                                        int line) = 0;
+static void (MS_FAR *locking_callback) (int mode, int type, const char *file, int line) = 0;
+static int (MS_FAR *add_lock_callback) (int *pointer, int amount, int type, const char *file, int line) = 0;
 #ifndef OPENSSL_NO_DEPRECATED
 static unsigned long (MS_FAR *id_callback) (void) = 0;
 #endif
@@ -581,8 +578,10 @@ void CRYPTO_lock(int mode, int type, const char *file, int line)
                 CRYPTO_get_lock_name(type), file, line);
     }
 #endif
-    if (type < 0) {
-        if (dynlock_lock_callback != NULL) {
+    if (type < 0)
+	{
+        if (dynlock_lock_callback != NULL) 
+		{
             struct CRYPTO_dynlock_value *pointer
                 = CRYPTO_get_dynlock_value(type);
 
@@ -592,8 +591,11 @@ void CRYPTO_lock(int mode, int type, const char *file, int line)
 
             CRYPTO_destroy_dynlockid(type);
         }
-    } else if (locking_callback != NULL)
-        locking_callback(mode, type, file, line);
+    }
+	else if (locking_callback != NULL)
+	{
+		locking_callback(mode, type, file, line);
+	}
 }
 
 int CRYPTO_add_lock(int *pointer, int amount, int type, const char *file,

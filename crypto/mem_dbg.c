@@ -210,7 +210,8 @@ int CRYPTO_mem_ctrl(int mode)
     int ret = mh_mode;
 
     CRYPTO_w_lock(CRYPTO_LOCK_MALLOC);
-    switch (mode) {
+    switch (mode) 
+	{
         /*
          * for applications (not to be called while multiple threads use the
          * library):
@@ -227,12 +228,13 @@ int CRYPTO_mem_ctrl(int mode)
 
         /* switch off temporarily (for library-internal use): */
     case CRYPTO_MEM_CHECK_DISABLE: /* aka MemCheck_off() */
-        if (mh_mode & CRYPTO_MEM_CHECK_ON) {
+        if (mh_mode & CRYPTO_MEM_CHECK_ON) 
+		{
             CRYPTO_THREADID cur;
             CRYPTO_THREADID_current(&cur);
             /* see if we don't have the MALLOC2 lock already */
-            if (!num_disable
-                || CRYPTO_THREADID_cmp(&disabling_threadid, &cur)) {
+            if (!num_disable || CRYPTO_THREADID_cmp(&disabling_threadid, &cur))
+			{
                 /*
                  * Long-time lock CRYPTO_LOCK_MALLOC2 must not be claimed
                  * while we're holding CRYPTO_LOCK_MALLOC, or we'll deadlock

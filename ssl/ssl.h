@@ -1244,7 +1244,8 @@ const char *SSL_get_psk_identity(const SSL *s);
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
-struct ssl_st {
+struct ssl_st 
+{
     /*
      * protocol version (one of SSL2_VERSION, SSL3_VERSION, TLS1_VERSION,
      * DTLS1_VERSION)
@@ -2176,9 +2177,7 @@ void SSL_set_tmp_rsa_callback(SSL *ssl,
                                           int keylength));
 # endif
 # ifndef OPENSSL_NO_DH
-void SSL_CTX_set_tmp_dh_callback(SSL_CTX *ctx,
-                                 DH *(*dh) (SSL *ssl, int is_export,
-                                            int keylength));
+void SSL_CTX_set_tmp_dh_callback(SSL_CTX *ctx, DH *(*dh) (SSL *ssl, int is_export, int keylength));
 void SSL_set_tmp_dh_callback(SSL *ssl,
                              DH *(*dh) (SSL *ssl, int is_export,
                                         int keylength));
