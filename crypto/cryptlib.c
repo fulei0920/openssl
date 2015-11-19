@@ -582,8 +582,7 @@ void CRYPTO_lock(int mode, int type, const char *file, int line)
 	{
         if (dynlock_lock_callback != NULL) 
 		{
-            struct CRYPTO_dynlock_value *pointer
-                = CRYPTO_get_dynlock_value(type);
+            struct CRYPTO_dynlock_value *pointer = CRYPTO_get_dynlock_value(type);
 
             OPENSSL_assert(pointer != NULL);
 

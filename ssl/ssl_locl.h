@@ -500,14 +500,15 @@
 #  define NAMED_CURVE_TYPE           3
 # endif                         /* OPENSSL_NO_EC */
 
-typedef struct cert_pkey_st {
+typedef struct cert_pkey_st 
+{
     X509 *x509;
     EVP_PKEY *privatekey;
-    /* Digest to use when signing */
-    const EVP_MD *digest;
+    const EVP_MD *digest;	/* Digest to use when signing */
 } CERT_PKEY;
 
-typedef struct cert_st {
+typedef struct cert_st 
+{
     /* Current active set */
     /*
      * ALWAYS points to an element of the pkeys array
@@ -641,7 +642,8 @@ typedef struct ssl3_buf_freelist_st {
     struct ssl3_buf_freelist_entry_st *head;
 } SSL3_BUF_FREELIST;
 
-typedef struct ssl3_buf_freelist_entry_st {
+typedef struct ssl3_buf_freelist_entry_st 
+{
     struct ssl3_buf_freelist_entry_st *next;
 } SSL3_BUF_FREELIST_ENTRY;
 # endif
@@ -658,116 +660,117 @@ extern SSL3_ENC_METHOD DTLSv1_enc_data;
 
 # define SSL_IS_DTLS(s) (s->method->version == DTLS1_VERSION)
 
-# define IMPLEMENT_tls_meth_func(version, func_name, s_accept, s_connect, \
-                                s_get_meth) \
-const SSL_METHOD *func_name(void)  \
+# define IMPLEMENT_tls_meth_func(version, func_name, s_accept, s_connect, s_get_meth) \
+		const SSL_METHOD *func_name(void)  \
         { \
-        static const SSL_METHOD func_name##_data= { \
-                version, \
-                tls1_new, \
-                tls1_clear, \
-                tls1_free, \
-                s_accept, \
-                s_connect, \
-                ssl3_read, \
-                ssl3_peek, \
-                ssl3_write, \
-                ssl3_shutdown, \
-                ssl3_renegotiate, \
-                ssl3_renegotiate_check, \
-                ssl3_get_message, \
-                ssl3_read_bytes, \
-                ssl3_write_bytes, \
-                ssl3_dispatch_alert, \
-                ssl3_ctrl, \
-                ssl3_ctx_ctrl, \
-                ssl3_get_cipher_by_char, \
-                ssl3_put_cipher_by_char, \
-                ssl3_pending, \
-                ssl3_num_ciphers, \
-                ssl3_get_cipher, \
-                s_get_meth, \
-                tls1_default_timeout, \
-                &TLSv1_enc_data, \
-                ssl_undefined_void_function, \
-                ssl3_callback_ctrl, \
-                ssl3_ctx_callback_ctrl, \
-        }; \
-        return &func_name##_data; \
+	        static const SSL_METHOD func_name##_data= \
+	        { \
+	                version, \
+	                tls1_new, \
+	                tls1_clear, \
+	                tls1_free, \
+	                s_accept, \
+	                s_connect, \
+	                ssl3_read, \
+	                ssl3_peek, \
+	                ssl3_write, \
+	                ssl3_shutdown, \
+	                ssl3_renegotiate, \
+	                ssl3_renegotiate_check, \
+	                ssl3_get_message, \
+	                ssl3_read_bytes, \
+	                ssl3_write_bytes, \
+	                ssl3_dispatch_alert, \
+	                ssl3_ctrl, \
+	                ssl3_ctx_ctrl, \
+	                ssl3_get_cipher_by_char, \
+	                ssl3_put_cipher_by_char, \
+	                ssl3_pending, \
+	                ssl3_num_ciphers, \
+	                ssl3_get_cipher, \
+	                s_get_meth, \
+	                tls1_default_timeout, \
+	                &TLSv1_enc_data, \
+	                ssl_undefined_void_function, \
+	                ssl3_callback_ctrl, \
+	                ssl3_ctx_callback_ctrl, \
+	        }; \
+	        return &func_name##_data; \
         }
 
 # define IMPLEMENT_ssl3_meth_func(func_name, s_accept, s_connect, s_get_meth) \
-const SSL_METHOD *func_name(void)  \
+		const SSL_METHOD *func_name(void)  \
         { \
-        static const SSL_METHOD func_name##_data= { \
-                SSL3_VERSION, \
-                ssl3_new, \
-                ssl3_clear, \
-                ssl3_free, \
-                s_accept, \
-                s_connect, \
-                ssl3_read, \
-                ssl3_peek, \
-                ssl3_write, \
-                ssl3_shutdown, \
-                ssl3_renegotiate, \
-                ssl3_renegotiate_check, \
-                ssl3_get_message, \
-                ssl3_read_bytes, \
-                ssl3_write_bytes, \
-                ssl3_dispatch_alert, \
-                ssl3_ctrl, \
-                ssl3_ctx_ctrl, \
-                ssl3_get_cipher_by_char, \
-                ssl3_put_cipher_by_char, \
-                ssl3_pending, \
-                ssl3_num_ciphers, \
-                ssl3_get_cipher, \
-                s_get_meth, \
-                ssl3_default_timeout, \
-                &SSLv3_enc_data, \
-                ssl_undefined_void_function, \
-                ssl3_callback_ctrl, \
-                ssl3_ctx_callback_ctrl, \
-        }; \
-        return &func_name##_data; \
+	        static const SSL_METHOD func_name##_data= \
+	       	{ \
+	                SSL3_VERSION, \
+	                ssl3_new, \
+	                ssl3_clear, \
+	                ssl3_free, \
+	                s_accept, \
+	                s_connect, \
+	                ssl3_read, \
+	                ssl3_peek, \
+	                ssl3_write, \
+	                ssl3_shutdown, \
+	                ssl3_renegotiate, \
+	                ssl3_renegotiate_check, \
+	                ssl3_get_message, \
+	                ssl3_read_bytes, \
+	                ssl3_write_bytes, \
+	                ssl3_dispatch_alert, \
+	                ssl3_ctrl, \
+	                ssl3_ctx_ctrl, \
+	                ssl3_get_cipher_by_char, \
+	                ssl3_put_cipher_by_char, \
+	                ssl3_pending, \
+	                ssl3_num_ciphers, \
+	                ssl3_get_cipher, \
+	                s_get_meth, \
+	                ssl3_default_timeout, \
+	                &SSLv3_enc_data, \
+	                ssl_undefined_void_function, \
+	                ssl3_callback_ctrl, \
+	                ssl3_ctx_callback_ctrl, \
+	        }; \
+	        return &func_name##_data; \
         }
 
 # define IMPLEMENT_ssl23_meth_func(func_name, s_accept, s_connect, s_get_meth) \
-const SSL_METHOD *func_name(void)  \
+		const SSL_METHOD *func_name(void)  \
         { \
-        static const SSL_METHOD func_name##_data= { \
-        TLS1_2_VERSION, \
-        tls1_new, \
-        tls1_clear, \
-        tls1_free, \
-        s_accept, \
-        s_connect, \
-        ssl23_read, \
-        ssl23_peek, \
-        ssl23_write, \
-        ssl_undefined_function, \
-        ssl_undefined_function, \
-        ssl_ok, \
-        ssl3_get_message, \
-        ssl3_read_bytes, \
-        ssl3_write_bytes, \
-        ssl3_dispatch_alert, \
-        ssl3_ctrl, \
-        ssl3_ctx_ctrl, \
-        ssl23_get_cipher_by_char, \
-        ssl23_put_cipher_by_char, \
-        ssl_undefined_const_function, \
-        ssl23_num_ciphers, \
-        ssl23_get_cipher, \
-        s_get_meth, \
-        ssl23_default_timeout, \
-        &ssl3_undef_enc_method, \
-        ssl_undefined_void_function, \
-        ssl3_callback_ctrl, \
-        ssl3_ctx_callback_ctrl, \
-        }; \
-        return &func_name##_data; \
+	        static const SSL_METHOD func_name##_data= { \
+	        TLS1_2_VERSION, \
+	        tls1_new, \
+	        tls1_clear, \
+	        tls1_free, \
+	        s_accept, \
+	        s_connect, \
+	        ssl23_read, \
+	        ssl23_peek, \
+	        ssl23_write, \
+	        ssl_undefined_function, \
+	        ssl_undefined_function, \
+	        ssl_ok, \
+	        ssl3_get_message, \
+	        ssl3_read_bytes, \
+	        ssl3_write_bytes, \
+	        ssl3_dispatch_alert, \
+	        ssl3_ctrl, \
+	        ssl3_ctx_ctrl, \
+	        ssl23_get_cipher_by_char, \
+	        ssl23_put_cipher_by_char, \
+	        ssl_undefined_const_function, \
+	        ssl23_num_ciphers, \
+	        ssl23_get_cipher, \
+	        s_get_meth, \
+	        ssl23_default_timeout, \
+	        &ssl3_undef_enc_method, \
+	        ssl_undefined_void_function, \
+	        ssl3_callback_ctrl, \
+	        ssl3_ctx_callback_ctrl, \
+	        }; \
+	        return &func_name##_data; \
         }
 
 # define IMPLEMENT_ssl2_meth_func(func_name, s_accept, s_connect, s_get_meth) \
@@ -877,10 +880,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
                              unsigned char *p,
                              int (*put_cb) (const SSL_CIPHER *,
                                             unsigned char *));
-STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth,
-                                             STACK_OF(SSL_CIPHER) **pref,
-                                             STACK_OF(SSL_CIPHER) **sorted,
-                                             const char *rule_str);
+STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *meth, STACK_OF(SSL_CIPHER) **pref, STACK_OF(SSL_CIPHER) **sorted, const char *rule_str);
 void ssl_update_cache(SSL *s, int mode);
 int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
                        const EVP_MD **md, int *mac_pkey_type,

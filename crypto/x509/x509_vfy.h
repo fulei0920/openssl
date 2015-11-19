@@ -120,10 +120,11 @@ certificate chain.
 # define X509_LU_CRL             2
 # define X509_LU_PKEY            3
 
-typedef struct x509_object_st {
-    /* one of the above types */
-    int type;
-    union {
+typedef struct x509_object_st 
+{
+    int type;	 /* one of the above types */
+    union 
+	{
         char *ptr;
         X509 *x509;
         X509_CRL *crl;
@@ -162,7 +163,8 @@ typedef struct x509_lookup_method_st {
  * parameters used can be customized
  */
 
-typedef struct X509_VERIFY_PARAM_st {
+typedef struct X509_VERIFY_PARAM_st 
+{
     char *name;
     time_t check_time;          /* Time to use */
     unsigned long inh_flags;    /* Inheritance flags */
@@ -180,12 +182,12 @@ DECLARE_STACK_OF(X509_VERIFY_PARAM)
  * validation.  Once we have a certificate chain, the 'verify' function is
  * then called to actually check the cert chain.
  */
-struct x509_store_st {
+struct x509_store_st 
+{
     /* The following is a cache of trusted certs */
-    int cache;                  /* if true, stash any hits */
-    STACK_OF(X509_OBJECT) *objs; /* Cache of all objects */
-    /* These are external lookup methods */
-    STACK_OF(X509_LOOKUP) *get_cert_methods;
+    int cache;                  				/* if true, stash any hits */
+    STACK_OF(X509_OBJECT) *objs; 				/* Cache of all objects */
+    STACK_OF(X509_LOOKUP) *get_cert_methods;	/* These are external lookup methods */
     X509_VERIFY_PARAM *param;
     /* Callbacks for various operations */
     /* called to verify a certificate */

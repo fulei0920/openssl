@@ -289,7 +289,8 @@ typedef struct {
 /* predec of the BIO type */
 typedef struct bio_st BIO_dummy;
 
-struct crypto_ex_data_st {
+struct crypto_ex_data_st 
+{
     STACK_OF(void) *sk;
     /* gcc is screwing up this data structure :-( */
     int dummy;
@@ -301,7 +302,8 @@ DECLARE_STACK_OF(void)
  * SSL_CTX, SSL, SSL_SESSION, and a few more
  */
 
-typedef struct crypto_ex_data_func_st {
+typedef struct crypto_ex_data_func_st 
+{
     long argl;                  /* Arbitary long */
     void *argp;                 /* Arbitary void * */
     CRYPTO_EX_new *new_func;
@@ -312,8 +314,7 @@ typedef struct crypto_ex_data_func_st {
 DECLARE_STACK_OF(CRYPTO_EX_DATA_FUNCS)
 
 /*
- * Per class, we have a STACK of CRYPTO_EX_DATA_FUNCS for each CRYPTO_EX_DATA
- * entry.
+ * Per class, we have a STACK of CRYPTO_EX_DATA_FUNCS for each CRYPTO_EX_DATA entry.
  */
 
 # define CRYPTO_EX_INDEX_BIO             0

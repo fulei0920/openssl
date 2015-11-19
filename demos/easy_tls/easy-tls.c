@@ -667,9 +667,7 @@ SSL_CTX *tls_create_ctx(struct tls_create_ctx_args a, void *apparg)
     if (tls_init(apparg) == -1)
         return NULL;
 
-    ret =
-        SSL_CTX_new((a.client_p ? SSLv23_client_method :
-                     SSLv23_server_method) ());
+    ret = SSL_CTX_new((a.client_p ? SSLv23_client_method : SSLv23_server_method) ());
 
     if (ret == NULL)
         goto err;

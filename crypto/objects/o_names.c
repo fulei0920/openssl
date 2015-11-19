@@ -168,9 +168,9 @@ const char *OBJ_NAME_get(const char *name, int type)
         ret = lh_OBJ_NAME_retrieve(names_lh, &on);
         if (ret == NULL)
             return (NULL);
-        if ((ret->alias) && !alias) 
+        if ((ret->alias) && !alias) /*alias为真查找该别名对应的原名字，为假查找该别名对应的原名的data*/
 		{
-            if (++num > 10)
+            if (++num > 10)  	/*别名递归查找至多10次*/
                 return (NULL);
             on.name = ret->data;
         } 

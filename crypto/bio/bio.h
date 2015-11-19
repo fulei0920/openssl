@@ -308,7 +308,8 @@ int BIO_method_type(const BIO *b);
 typedef void bio_info_cb (struct bio_st *, int, const char *, int, long,
                           long);
 
-typedef struct bio_method_st {
+typedef struct bio_method_st 
+{
     int type;
     const char *name;
     int (*bwrite) (BIO *, const char *, int);
@@ -321,7 +322,8 @@ typedef struct bio_method_st {
     long (*callback_ctrl) (BIO *, int, bio_info_cb *);
 } BIO_METHOD;
 
-struct bio_st {
+struct bio_st 
+{
     BIO_METHOD *method;
     /* bio, mode, argp, argi, argl, ret */
     long (*callback) (struct bio_st *, int, const char *, int, long, long);

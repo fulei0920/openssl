@@ -81,7 +81,8 @@ static void x509_verify_param_zero(X509_VERIFY_PARAM *param)
     param->inh_flags = 0;
     param->flags = 0;
     param->depth = -1;
-    if (param->policies) {
+    if (param->policies)
+	{
         sk_ASN1_OBJECT_pop_free(param->policies, ASN1_OBJECT_free);
         param->policies = NULL;
     }

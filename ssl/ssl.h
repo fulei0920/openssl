@@ -412,7 +412,8 @@ struct ssl_cipher_st {
 };
 
 /* Used to hold functions for SSLv2 or SSLv3/TLSv1 functions */
-struct ssl_method_st {
+struct ssl_method_st 
+{
     int version;
     int (*ssl_new) (SSL *s);
     void (*ssl_clear) (SSL *s);
@@ -821,12 +822,12 @@ struct ssl_comp_st {
 DECLARE_STACK_OF(SSL_COMP)
 DECLARE_LHASH_OF(SSL_SESSION);
 
-struct ssl_ctx_st {
+struct ssl_ctx_st 
+{
     const SSL_METHOD *method;
     STACK_OF(SSL_CIPHER) *cipher_list;
-    /* same as above but sorted for lookup */
-    STACK_OF(SSL_CIPHER) *cipher_list_by_id;
-    struct x509_store_st /* X509_STORE */ *cert_store;
+    STACK_OF(SSL_CIPHER) *cipher_list_by_id;		 /* same as above but sorted for lookup */
+    struct x509_store_st *cert_store;	 /* X509_STORE */
     LHASH_OF(SSL_SESSION) *sessions;
     /*
      * Most session-ids that will be cached, default is
@@ -840,13 +841,12 @@ struct ssl_ctx_st {
      * SSL_SESS_CACHE_SERVER, Default is SSL_SESSION_CACHE_SERVER, which
      * means only SSL_accept which cache SSL_SESSIONS.
      */
-    int session_cache_mode;
+    int session_cache_mode;  
     /*
      * If timeout is not 0, it is the default timeout value set when
-     * SSL_new() is called.  This has been put in to make life easier to set
-     * things up
+     * SSL_new() is called.  This has been put in to make life easier to set things up
      */
-    long session_timeout;
+    long session_timeout;  //initialized by SSL_METHOD->get_timeout()
     /*
      * If this callback is not null, it will be called each time a session id
      * is added to the cache.  If this function returns 1, it means that the
@@ -858,9 +858,9 @@ struct ssl_ctx_st {
      */
     int (*new_session_cb) (struct ssl_st *ssl, SSL_SESSION *sess);
     void (*remove_session_cb) (struct ssl_ctx_st *ctx, SSL_SESSION *sess);
-    SSL_SESSION *(*get_session_cb) (struct ssl_st *ssl,
-                                    unsigned char *data, int len, int *copy);
-    struct {
+    SSL_SESSION *(*get_session_cb) (struct ssl_st *ssl, unsigned char *data, int len, int *copy);
+    struct 
+	{
         int sess_connect;       /* SSL new conn - started */
         int sess_connect_renegotiate; /* SSL reneg - requested */
         int sess_connect_good;  /* SSL new conne/reneg - finished */
@@ -878,7 +878,7 @@ struct ssl_ctx_st {
                                  * processes - spooky :-) */
     } stats;
 
-    int references;
+    int references;   /*默认值 1*/
 
     /* if defined, these override the X509_verify_cert() calls */
     int (*app_verify_callback) (X509_STORE_CTX *, void *);
@@ -923,15 +923,14 @@ struct ssl_ctx_st {
     STACK_OF(X509_NAME) *client_CA;
 
     /*
-     * Default values to use in SSL structures follow (these are copied by
-     * SSL_new)
+     * Default values to use in SSL structures follow (these are copied by SSL_new)
      */
 
     unsigned long options;
     unsigned long mode;
-    long max_cert_list;
+    long max_cert_list;  	/*默认值SSL_MAX_CERT_LIST_DEFAULT*/
 
-    struct cert_st /* CERT */ *cert;
+    struct cert_st  *cert;	/* CERT */
     int read_ahead;
 
     /* callback that allows applications to peek at protocol messages */
@@ -2030,12 +2029,9 @@ const SSL_METHOD *SSLv3_server_method(void); /* SSLv3 */
 const SSL_METHOD *SSLv3_client_method(void); /* SSLv3 */
 # endif
 
-const SSL_METHOD *SSLv23_method(void); /* Negotiate highest available SSL/TLS
-                                        * version */
-const SSL_METHOD *SSLv23_server_method(void); /* Negotiate highest available
-                                               * SSL/TLS version */
-const SSL_METHOD *SSLv23_client_method(void); /* Negotiate highest available
-                                               * SSL/TLS version */
+const SSL_METHOD *SSLv23_method(void); /* Negotiate highest available SSL/TLS version */
+const SSL_METHOD *SSLv23_server_method(void); /* Negotiate highest available SSL/TLS version */
+const SSL_METHOD *SSLv23_client_method(void); /* Negotiate highest available SSL/TLS version */
 
 const SSL_METHOD *TLSv1_method(void); /* TLSv1.0 */
 const SSL_METHOD *TLSv1_server_method(void); /* TLSv1.0 */

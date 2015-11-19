@@ -167,7 +167,8 @@ const char ssl3_version_str[] = "SSLv3" OPENSSL_VERSION_PTEXT;
 #define SSL3_NUM_CIPHERS        (sizeof(ssl3_ciphers)/sizeof(SSL_CIPHER))
 
 /* list of available SSLv3 ciphers (sorted by id) */
-OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = {
+OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = 
+{
 
 /* The RSA ciphers */
 /* Cipher 01 */

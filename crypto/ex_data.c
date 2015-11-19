@@ -142,7 +142,8 @@
 #include <openssl/lhash.h>
 
 /* What an "implementation of ex_data functionality" looks like */
-struct st_CRYPTO_EX_DATA_IMPL {
+struct st_CRYPTO_EX_DATA_IMPL 
+{
         /*********************/
     /* GLOBAL OPERATIONS */
     /* Return a new class index */
@@ -180,10 +181,10 @@ static int int_get_new_index(int class_index, long argl, void *argp,
                              CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func,
                              CRYPTO_EX_free *free_func);
 static int int_new_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad);
-static int int_dup_ex_data(int class_index, CRYPTO_EX_DATA *to,
-                           CRYPTO_EX_DATA *from);
+static int int_dup_ex_data(int class_index, CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from);
 static void int_free_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad);
-static CRYPTO_EX_DATA_IMPL impl_default = {
+static CRYPTO_EX_DATA_IMPL impl_default = 
+{
     int_new_class,
     int_cleanup,
     int_get_new_index,
@@ -240,7 +241,8 @@ int CRYPTO_set_ex_data_implementation(const CRYPTO_EX_DATA_IMPL *i)
  * the global value representing the class that is used to distinguish these
  * items.
  */
-typedef struct st_ex_class_item {
+typedef struct st_ex_class_item 
+{
     int class_index;
     STACK_OF(CRYPTO_EX_DATA_FUNCS) *meth;
     int meth_num;
@@ -307,25 +309,32 @@ static void def_cleanup_cb(void *a_void)
 }
 
 /*
- * Return the EX_CLASS_ITEM from the "ex_data" hash table that corresponds to
+ * Return the EX_CLASS_ITEM from the "ex_data" hash table that corresponds to 
  * a given class. Handles locking.
+ * if not exist, create one and return it 
  */
 static EX_CLASS_ITEM *def_get_class(int class_index)
 {
     EX_CLASS_ITEM d, *p, *gen;
+	
     EX_DATA_CHECK(return NULL;)
-        d.class_index = class_index;
+	d.class_index = class_index;
     CRYPTO_w_lock(CRYPTO_LOCK_EX_DATA);
     p = lh_EX_CLASS_ITEM_retrieve(ex_data, &d);
-    if (!p) {
+    if (!p)
+	{
         gen = OPENSSL_malloc(sizeof(EX_CLASS_ITEM));
-        if (gen) {
+        if (gen)
+		{
             gen->class_index = class_index;
             gen->meth_num = 0;
             gen->meth = sk_CRYPTO_EX_DATA_FUNCS_new_null();
             if (!gen->meth)
-                OPENSSL_free(gen);
-            else {
+            {
+				OPENSSL_free(gen);
+			} 
+            else 
+			{
                 /*
                  * Because we're inside the ex_data lock, the return value
                  * from the insert will be NULL
@@ -345,14 +354,12 @@ static EX_CLASS_ITEM *def_get_class(int class_index)
  * Add a new method to the given EX_CLASS_ITEM and return the corresponding
  * index (or -1 for error). Handles locking.
  */
-static int def_add_index(EX_CLASS_ITEM *item, long argl, void *argp,
-                         CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func,
-                         CRYPTO_EX_free *free_func)
+static int def_add_index(EX_CLASS_ITEM *item, long argl, void *argp, CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
 {
     int toret = -1;
-    CRYPTO_EX_DATA_FUNCS *a =
-        (CRYPTO_EX_DATA_FUNCS *)OPENSSL_malloc(sizeof(CRYPTO_EX_DATA_FUNCS));
-    if (!a) {
+    CRYPTO_EX_DATA_FUNCS *a = (CRYPTO_EX_DATA_FUNCS *)OPENSSL_malloc(sizeof(CRYPTO_EX_DATA_FUNCS));
+    if (!a) 
+	{
         CRYPTOerr(CRYPTO_F_DEF_ADD_INDEX, ERR_R_MALLOC_FAILURE);
         return -1;
     }
@@ -362,8 +369,10 @@ static int def_add_index(EX_CLASS_ITEM *item, long argl, void *argp,
     a->dup_func = dup_func;
     a->free_func = free_func;
     CRYPTO_w_lock(CRYPTO_LOCK_EX_DATA);
-    while (sk_CRYPTO_EX_DATA_FUNCS_num(item->meth) <= item->meth_num) {
-        if (!sk_CRYPTO_EX_DATA_FUNCS_push(item->meth, NULL)) {
+    while (sk_CRYPTO_EX_DATA_FUNCS_num(item->meth) <= item->meth_num)
+	{
+        if (!sk_CRYPTO_EX_DATA_FUNCS_push(item->meth, NULL)) 
+		{
             CRYPTOerr(CRYPTO_F_DEF_ADD_INDEX, ERR_R_MALLOC_FAILURE);
             OPENSSL_free(a);
             goto err;
@@ -397,9 +406,7 @@ static void int_cleanup(void)
     impl = NULL;
 }
 
-static int int_get_new_index(int class_index, long argl, void *argp,
-                             CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func,
-                             CRYPTO_EX_free *free_func)
+static int int_get_new_index(int class_index, long argl, void *argp, CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
 {
     EX_CLASS_ITEM *item = def_get_class(class_index);
     if (!item)
@@ -420,12 +427,13 @@ static int int_new_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad)
     CRYPTO_EX_DATA_FUNCS **storage = NULL;
     EX_CLASS_ITEM *item = def_get_class(class_index);
     if (!item)
-        /* error is already set */
-        return 0;
+        return 0; /* error is already set */
+	
     ad->sk = NULL;
     CRYPTO_r_lock(CRYPTO_LOCK_EX_DATA);
     mx = sk_CRYPTO_EX_DATA_FUNCS_num(item->meth);
-    if (mx > 0) {
+    if (mx > 0) 
+	{
         storage = OPENSSL_malloc(mx * sizeof(CRYPTO_EX_DATA_FUNCS *));
         if (!storage)
             goto skip;
@@ -434,15 +442,16 @@ static int int_new_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad)
     }
  skip:
     CRYPTO_r_unlock(CRYPTO_LOCK_EX_DATA);
-    if ((mx > 0) && !storage) {
+    if ((mx > 0) && !storage) 
+	{
         CRYPTOerr(CRYPTO_F_INT_NEW_EX_DATA, ERR_R_MALLOC_FAILURE);
         return 0;
     }
     for (i = 0; i < mx; i++) {
-        if (storage[i] && storage[i]->new_func) {
+        if (storage[i] && storage[i]->new_func)
+		{
             ptr = CRYPTO_get_ex_data(ad, i);
-            storage[i]->new_func(obj, ptr, ad, i,
-                                 storage[i]->argl, storage[i]->argp);
+            storage[i]->new_func(obj, ptr, ad, i, storage[i]->argl, storage[i]->argp);
         }
     }
     if (storage)
@@ -561,16 +570,12 @@ void CRYPTO_cleanup_all_ex_data(void)
 }
 
 /* Inside an existing class, get/register a new index. */
-int CRYPTO_get_ex_new_index(int class_index, long argl, void *argp,
-                            CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func,
-                            CRYPTO_EX_free *free_func)
+int CRYPTO_get_ex_new_index(int class_index, long argl, void *argp, CRYPTO_EX_new *new_func, CRYPTO_EX_dup *dup_func, CRYPTO_EX_free *free_func)
 {
     int ret = -1;
 
     IMPL_CHECK
-        ret = EX_IMPL(get_new_index) (class_index,
-                                      argl, argp, new_func, dup_func,
-                                      free_func);
+    ret = EX_IMPL(get_new_index) (class_index,argl, argp, new_func, dup_func, free_func);
     return ret;
 }
 
@@ -580,17 +585,18 @@ int CRYPTO_get_ex_new_index(int class_index, long argl, void *argp,
  */
 int CRYPTO_new_ex_data(int class_index, void *obj, CRYPTO_EX_DATA *ad)
 {
-    IMPL_CHECK return EX_IMPL(new_ex_data) (class_index, obj, ad);
+    IMPL_CHECK 
+	return EX_IMPL(new_ex_data) (class_index, obj, ad);
 }
 
 /*
  * Duplicate a CRYPTO_EX_DATA variable - including calling dup() callbacks
  * for each index in the class used by this variable
  */
-int CRYPTO_dup_ex_data(int class_index, CRYPTO_EX_DATA *to,
-                       CRYPTO_EX_DATA *from)
+int CRYPTO_dup_ex_data(int class_index, CRYPTO_EX_DATA *to, CRYPTO_EX_DATA *from)
 {
-    IMPL_CHECK return EX_IMPL(dup_ex_data) (class_index, to, from);
+    IMPL_CHECK 
+	return EX_IMPL(dup_ex_data) (class_index, to, from);
 }
 
 /*

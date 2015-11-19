@@ -286,11 +286,13 @@ SSL *SSL_new(SSL_CTX *ctx)
 {
     SSL *s;
 
-    if (ctx == NULL) {
+    if (ctx == NULL) 
+	{
         SSLerr(SSL_F_SSL_NEW, SSL_R_NULL_SSL_CTX);
         return (NULL);
     }
-    if (ctx->method == NULL) {
+    if (ctx->method == NULL) 
+	{
         SSLerr(SSL_F_SSL_NEW, SSL_R_SSL_CTX_HAS_NO_DEFAULT_SSL_VERSION);
         return (NULL);
     }
@@ -1711,18 +1713,21 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
 {
     SSL_CTX *ret = NULL;
 
-    if (meth == NULL) {
+    if (meth == NULL) 
+	{
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_NULL_SSL_METHOD_PASSED);
         return (NULL);
     }
 #ifdef OPENSSL_FIPS
-    if (FIPS_mode() && (meth->version < TLS1_VERSION)) {
+    if (FIPS_mode() && (meth->version < TLS1_VERSION)) 
+	{
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_ONLY_TLS_ALLOWED_IN_FIPS_MODE);
         return NULL;
     }
 #endif
 
-    if (SSL_get_ex_data_X509_STORE_CTX_idx() < 0) {
+    if (SSL_get_ex_data_X509_STORE_CTX_idx() < 0) 
+	{
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_X509_VERIFICATION_SETUP_PROBLEMS);
         goto err;
     }
@@ -1791,11 +1796,9 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
     if (ret->cert_store == NULL)
         goto err;
 
-    ssl_create_cipher_list(ret->method,
-                           &ret->cipher_list, &ret->cipher_list_by_id,
-                           meth->version ==
-                           SSL2_VERSION ? "SSLv2" : SSL_DEFAULT_CIPHER_LIST);
-    if (ret->cipher_list == NULL || sk_SSL_CIPHER_num(ret->cipher_list) <= 0) {
+    ssl_create_cipher_list(ret->method, &ret->cipher_list, &ret->cipher_list_by_id, meth->version == SSL2_VERSION ? "SSLv2" : SSL_DEFAULT_CIPHER_LIST);
+    if (ret->cipher_list == NULL || sk_SSL_CIPHER_num(ret->cipher_list) <= 0) 
+	{
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_LIBRARY_HAS_NO_CIPHERS);
         goto err2;
     }
@@ -1804,15 +1807,18 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
     if (!ret->param)
         goto err;
 
-    if ((ret->rsa_md5 = EVP_get_digestbyname("ssl2-md5")) == NULL) {
+    if ((ret->rsa_md5 = EVP_get_digestbyname("ssl2-md5")) == NULL)
+	{
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_UNABLE_TO_LOAD_SSL2_MD5_ROUTINES);
         goto err2;
     }
-    if ((ret->md5 = EVP_get_digestbyname("ssl3-md5")) == NULL) {
+    if ((ret->md5 = EVP_get_digestbyname("ssl3-md5")) == NULL) 
+	{
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_UNABLE_TO_LOAD_SSL3_MD5_ROUTINES);
         goto err2;
     }
-    if ((ret->sha1 = EVP_get_digestbyname("ssl3-sha1")) == NULL) {
+    if ((ret->sha1 = EVP_get_digestbyname("ssl3-sha1")) == NULL)
+	{
         SSLerr(SSL_F_SSL_CTX_NEW, SSL_R_UNABLE_TO_LOAD_SSL3_SHA1_ROUTINES);
         goto err2;
     }
@@ -1863,7 +1869,8 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
     ret->rbuf_freelist->len = 0;
     ret->rbuf_freelist->head = NULL;
     ret->wbuf_freelist = OPENSSL_malloc(sizeof(SSL3_BUF_FREELIST));
-    if (!ret->wbuf_freelist) {
+    if (!ret->wbuf_freelist) 
+	{
         OPENSSL_free(ret->rbuf_freelist);
         goto err;
     }

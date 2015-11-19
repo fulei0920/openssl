@@ -157,8 +157,7 @@ int X509_LOOKUP_by_alias(X509_LOOKUP *ctx, int type, char *str, int len,
     return ctx->method->get_by_alias(ctx, type, str, len, ret);
 }
 
-static int x509_object_cmp(const X509_OBJECT *const *a,
-                           const X509_OBJECT *const *b)
+static int x509_object_cmp(const X509_OBJECT *const *a, const X509_OBJECT *const *b)
 {
     int ret;
 
@@ -204,7 +203,8 @@ X509_STORE *X509_STORE_new(void)
     ret->lookup_crls = 0;
     ret->cleanup = 0;
 
-    if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_X509_STORE, ret, &ret->ex_data)) {
+    if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_X509_STORE, ret, &ret->ex_data))
+	{
         sk_X509_OBJECT_free(ret->objs);
         OPENSSL_free(ret);
         return NULL;

@@ -68,11 +68,13 @@ BIO *BIO_new(BIO_METHOD *method)
     BIO *ret = NULL;
 
     ret = (BIO *)OPENSSL_malloc(sizeof(BIO));
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         BIOerr(BIO_F_BIO_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
-    if (!BIO_set(ret, method)) {
+    if (!BIO_set(ret, method))
+	{
         OPENSSL_free(ret);
         ret = NULL;
     }
@@ -97,10 +99,14 @@ int BIO_set(BIO *bio, BIO_METHOD *method)
     bio->num_write = 0L;
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_BIO, bio, &bio->ex_data);
     if (method->create != NULL)
-        if (!method->create(bio)) {
+    {
+        if (!method->create(bio)) 
+		{
             CRYPTO_free_ex_data(CRYPTO_EX_INDEX_BIO, bio, &bio->ex_data);
             return (0);
         }
+	}
+
     return (1);
 }
 

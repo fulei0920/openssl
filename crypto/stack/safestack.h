@@ -68,8 +68,7 @@ extern "C" {
 
 /*
  * In C++ we get problems because an explicit cast is needed from (void *) we
- * use CHECKED_STACK_OF to ensure the correct type is passed in the macros
- * below.
+ * use CHECKED_STACK_OF to ensure the correct type is passed in the macros below.
  */
 
 # define CHECKED_STACK_OF(type, p) \

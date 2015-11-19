@@ -141,15 +141,15 @@ int SSL_get_ex_data_X509_STORE_CTX_idx(void)
 
     CRYPTO_r_lock(CRYPTO_LOCK_SSL_CTX);
 
-    if (ssl_x509_store_ctx_idx < 0) {
+    if (ssl_x509_store_ctx_idx < 0) 
+	{
         CRYPTO_r_unlock(CRYPTO_LOCK_SSL_CTX);
         CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
         got_write_lock = 1;
 
-        if (ssl_x509_store_ctx_idx < 0) {
-            ssl_x509_store_ctx_idx =
-                X509_STORE_CTX_get_ex_new_index(0, "SSL for verify callback",
-                                                NULL, NULL, NULL);
+        if (ssl_x509_store_ctx_idx < 0) 
+		{
+            ssl_x509_store_ctx_idx = X509_STORE_CTX_get_ex_new_index(0, "SSL for verify callback", NULL, NULL, NULL);
         }
     }
 
@@ -181,7 +181,8 @@ CERT *ssl_cert_new(void)
     CERT *ret;
 
     ret = (CERT *)OPENSSL_malloc(sizeof(CERT));
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         SSLerr(SSL_F_SSL_CERT_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }

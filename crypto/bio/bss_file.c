@@ -102,7 +102,8 @@ static int MS_CALLBACK file_gets(BIO *h, char *str, int size);
 static long MS_CALLBACK file_ctrl(BIO *h, int cmd, long arg1, void *arg2);
 static int MS_CALLBACK file_new(BIO *h);
 static int MS_CALLBACK file_free(BIO *data);
-static BIO_METHOD methods_filep = {
+static BIO_METHOD methods_filep = 
+{
     BIO_TYPE_FILE,
     "FILE pointer",
     file_write,
@@ -240,7 +241,8 @@ static int MS_CALLBACK file_read(BIO *b, char *out, int outl)
 {
     int ret = 0;
 
-    if (b->init && (out != NULL)) {
+    if (b->init && (out != NULL)) 
+	{
         if (b->flags & BIO_FLAGS_UPLINK)
             ret = UP_fread(out, 1, (int)outl, b->ptr);
         else

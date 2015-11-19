@@ -115,11 +115,15 @@ int main(int argc, char *argv[])
      * For each test set up an SSL_CTX and SSL and see what ClientHello gets
      * produced when we try to connect
      */
-    for (; currtest < TOTAL_NUM_TESTS; currtest++) {
+    for (; currtest < TOTAL_NUM_TESTS; currtest++) 
+	{
         testresult = 0;
-        if (currtest == TEST_SET_SESSION_TICK_DATA_TLS_1_2) {
+        if (currtest == TEST_SET_SESSION_TICK_DATA_TLS_1_2) 
+		{
             ctx = SSL_CTX_new(TLSv1_2_method());
-        } else {
+        }
+		else 
+		{
             ctx = SSL_CTX_new(SSLv23_method());
         }
         con = SSL_new(ctx);
