@@ -728,16 +728,21 @@ int tls1_enc(SSL *s, int send)
     int bs, i, j, k, pad = 0, ret, mac_size = 0;
     const EVP_CIPHER *enc;
 
-    if (send) {
-        if (EVP_MD_CTX_md(s->write_hash)) {
+    if (send) 
+	{
+        if (EVP_MD_CTX_md(s->write_hash)) 
+		{
             int n = EVP_MD_CTX_size(s->write_hash);
             OPENSSL_assert(n >= 0);
         }
         ds = s->enc_write_ctx;
         rec = &(s->s3->wrec);
         if (s->enc_write_ctx == NULL)
-            enc = NULL;
-        else {
+        {
+			enc = NULL;
+		}
+        else
+		{
             int ivlen;
             enc = EVP_CIPHER_CTX_cipher(s->enc_write_ctx);
             /* For TLSv1.1 and later explicit IV */
@@ -746,21 +751,23 @@ int tls1_enc(SSL *s, int send)
                 ivlen = EVP_CIPHER_iv_length(enc);
             else
                 ivlen = 0;
-            if (ivlen > 1) {
+            if (ivlen > 1) 
+			{
                 if (rec->data != rec->input)
                     /*
                      * we can't write into the input stream: Can this ever
                      * happen?? (steve)
                      */
-                    fprintf(stderr,
-                            "%s:%d: rec->data != rec->input\n",
-                            __FILE__, __LINE__);
+                    fprintf(stderr, "%s:%d: rec->data != rec->input\n", __FILE__, __LINE__);
                 else if (RAND_bytes(rec->input, ivlen) <= 0)
                     return -1;
             }
         }
-    } else {
-        if (EVP_MD_CTX_md(s->read_hash)) {
+    } 
+	else 
+	{
+        if (EVP_MD_CTX_md(s->read_hash)) 
+		{
             int n = EVP_MD_CTX_size(s->read_hash);
             OPENSSL_assert(n >= 0);
         }
@@ -776,11 +783,14 @@ int tls1_enc(SSL *s, int send)
     fprintf(stderr, "tls1_enc(%d)\n", send);
 #endif                          /* KSSL_DEBUG */
 
-    if ((s->session == NULL) || (ds == NULL) || (enc == NULL)) {
+    if ((s->session == NULL) || (ds == NULL) || (enc == NULL)) 
+	{
         memmove(rec->data, rec->input, rec->length);
         rec->input = rec->data;
         ret = 1;
-    } else {
+    } 
+	else 
+	{
         l = rec->length;
         bs = EVP_CIPHER_block_size(ds->cipher);
 

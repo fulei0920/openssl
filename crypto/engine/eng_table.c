@@ -58,7 +58,8 @@
 #include "eng_int.h"
 
 /* The type of the items in the table */
-typedef struct st_engine_pile {
+typedef struct st_engine_pile
+{
     /* The 'nid' of this algorithm/mode */
     int nid;
     /* ENGINEs that implement this algorithm/mode. */
@@ -74,7 +75,8 @@ typedef struct st_engine_pile {
 DECLARE_LHASH_OF(ENGINE_PILE);
 
 /* The type exposed in eng_int.h */
-struct st_engine_table {
+struct st_engine_table 
+{
     LHASH_OF(ENGINE_PILE) piles;
 };                              /* ENGINE_TABLE */
 
@@ -240,8 +242,7 @@ void engine_table_cleanup(ENGINE_TABLE **table)
 #ifndef ENGINE_TABLE_DEBUG
 ENGINE *engine_table_select(ENGINE_TABLE **table, int nid)
 #else
-ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f,
-                                int l)
+ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f, int l)
 #endif
 {
     ENGINE *ret = NULL;
@@ -269,8 +270,7 @@ ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f,
         goto end;
     if (fnd->funct && engine_unlocked_init(fnd->funct)) {
 #ifdef ENGINE_TABLE_DEBUG
-        fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, using "
-                "ENGINE '%s' cached\n", f, l, nid, fnd->funct->id);
+        fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, using ENGINE '%s' cached\n", f, l, nid, fnd->funct->id);
 #endif
         ret = fnd->funct;
         goto end;

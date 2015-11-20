@@ -273,8 +273,8 @@ static int ssl23_no_ssl2_ciphers(SSL *s)
 }
 
 /*
- * Fill a ClientRandom or ServerRandom field of length len. Returns <= 0 on
- * failure, 1 on success.
+ * Fill a ClientRandom or ServerRandom field of length len. 
+ * Returns <= 0 on failure, 1 on success.
  */
 int ssl_fill_hello_random(SSL *s, int server, unsigned char *result, int len)
 {
@@ -286,13 +286,18 @@ int ssl_fill_hello_random(SSL *s, int server, unsigned char *result, int len)
         send_time = (s->mode & SSL_MODE_SEND_SERVERHELLO_TIME) != 0;
     else
         send_time = (s->mode & SSL_MODE_SEND_CLIENTHELLO_TIME) != 0;
-    if (send_time) {
+    if (send_time) 
+	{
         unsigned long Time = (unsigned long)time(NULL);
         unsigned char *p = result;
         l2n(Time, p);
         return RAND_pseudo_bytes(p, len - 4);
-    } else
-        return RAND_pseudo_bytes(result, len);
+    } 
+	else
+    {
+		 return RAND_pseudo_bytes(result, len);
+	}
+       
 }
 
 static int ssl23_client_hello(SSL *s)

@@ -63,6 +63,8 @@
 #include <openssl/bio.h>
 #include <openssl/stack.h>
 
+
+/*创建BIO*/
 BIO *BIO_new(BIO_METHOD *method)
 {
     BIO *ret = NULL;
@@ -81,6 +83,7 @@ BIO *BIO_new(BIO_METHOD *method)
     return (ret);
 }
 
+/*初始化BIO*/
 int BIO_set(BIO *bio, BIO_METHOD *method)
 {
     bio->method = method;
@@ -110,6 +113,7 @@ int BIO_set(BIO *bio, BIO_METHOD *method)
     return (1);
 }
 
+/*释放BIO*/
 int BIO_free(BIO *a)
 {
     int i;
@@ -117,6 +121,7 @@ int BIO_free(BIO *a)
     if (a == NULL)
         return (0);
 
+	/*减少引用计数*/
     i = CRYPTO_add(&a->references, -1, CRYPTO_LOCK_BIO);
 #ifdef REF_PRINT
     REF_PRINT("BIO", a);
@@ -124,13 +129,13 @@ int BIO_free(BIO *a)
     if (i > 0)
         return (1);
 #ifdef REF_CHECK
-    if (i < 0) {
+    if (i < 0)
+	{
         fprintf(stderr, "BIO_free, bad reference count\n");
         abort();
     }
 #endif
-    if ((a->callback != NULL) &&
-        ((i = (int)a->callback(a, BIO_CB_FREE, NULL, 0, 0L, 1L)) <= 0))
+    if ((a->callback != NULL) && ((i = (int)a->callback(a, BIO_CB_FREE, NULL, 0, 0L, 1L)) <= 0))
         return (i);
 
     CRYPTO_free_ex_data(CRYPTO_EX_INDEX_BIO, a, &a->ex_data);

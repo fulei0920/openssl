@@ -181,9 +181,7 @@ static const SSL_METHOD *ssl3_get_client_method(int ver)
         return (NULL);
 }
 
-IMPLEMENT_ssl3_meth_func(SSLv3_client_method,
-                         ssl_undefined_function,
-                         ssl3_connect, ssl3_get_client_method)
+IMPLEMENT_ssl3_meth_func(SSLv3_client_method, ssl_undefined_function, ssl3_connect, ssl3_get_client_method)
 #endif
 int ssl3_connect(SSL *s)
 {
@@ -212,16 +210,19 @@ int ssl3_connect(SSL *s)
      * don't await it anymore, because Heartbeats don't make sense during
      * handshakes anyway.
      */
-    if (s->tlsext_hb_pending) {
+    if (s->tlsext_hb_pending)
+	{
         s->tlsext_hb_pending = 0;
         s->tlsext_hb_seq++;
     }
 #endif
 
-    for (;;) {
+    for (;;) 
+	{
         state = s->state;
 
-        switch (s->state) {
+        switch (s->state)
+		{
         case SSL_ST_RENEGOTIATE:
             s->renegotiate = 1;
             s->state = SSL_ST_CONNECT;
@@ -236,7 +237,8 @@ int ssl3_connect(SSL *s)
             if (cb != NULL)
                 cb(s, SSL_CB_HANDSHAKE_START, 1);
 
-            if ((s->version & 0xff00) != 0x0300) {
+            if ((s->version & 0xff00) != 0x0300)
+			{
                 SSLerr(SSL_F_SSL3_CONNECT, ERR_R_INTERNAL_ERROR);
                 s->state = SSL_ST_ERR;
                 ret = -1;
@@ -246,13 +248,16 @@ int ssl3_connect(SSL *s)
             /* s->version=SSL3_VERSION; */
             s->type = SSL_ST_CONNECT;
 
-            if (s->init_buf == NULL) {
-                if ((buf = BUF_MEM_new()) == NULL) {
+            if (s->init_buf == NULL) 
+			{
+                if ((buf = BUF_MEM_new()) == NULL)
+				{
                     ret = -1;
                     s->state = SSL_ST_ERR;
                     goto end;
                 }
-                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
+                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH))
+				{
                     ret = -1;
                     s->state = SSL_ST_ERR;
                     goto end;
@@ -267,7 +272,8 @@ int ssl3_connect(SSL *s)
             }
 
             /* setup buffing BIO */
-            if (!ssl_init_wbio_buffer(s, 0)) {
+            if (!ssl_init_wbio_buffer(s, 0)) 
+			{
                 ret = -1;
                 s->state = SSL_ST_ERR;
                 goto end;
@@ -681,19 +687,20 @@ int ssl3_client_hello(SSL *s)
 #endif
 
     buf = (unsigned char *)s->init_buf->data;
-    if (s->state == SSL3_ST_CW_CLNT_HELLO_A) {
+    if (s->state == SSL3_ST_CW_CLNT_HELLO_A)
+	{
         SSL_SESSION *sess = s->session;
         if ((sess == NULL) || (sess->ssl_version != s->version) ||
 #ifdef OPENSSL_NO_TLSEXT
             !sess->session_id_length ||
 #else
             /*
-             * In the case of EAP-FAST, we can have a pre-shared
-             * "ticket" without a session ID.
+             * In the case of EAP-FAST, we can have a pre-shared "ticket" without a session ID.
              */
             (!sess->session_id_length && !sess->tlsext_tick) ||
 #endif
-            (sess->not_resumable)) {
+            (sess->not_resumable)) 
+        {
             if (!ssl_get_new_session(s, 0))
                 goto err;
         }
@@ -756,8 +763,10 @@ int ssl3_client_hello(SSL *s)
         else
             i = s->session->session_id_length;
         *(p++) = i;
-        if (i != 0) {
-            if (i > (int)sizeof(s->session->session_id)) {
+        if (i != 0) 
+		{
+            if (i > (int)sizeof(s->session->session_id)) 
+			{
                 SSLerr(SSL_F_SSL3_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
                 goto err;
             }
@@ -767,7 +776,8 @@ int ssl3_client_hello(SSL *s)
 
         /* Ciphers supported */
         i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &(p[2]), 0);
-        if (i == 0) {
+        if (i == 0) 
+		{
             SSLerr(SSL_F_SSL3_CLIENT_HELLO, SSL_R_NO_CIPHERS_AVAILABLE);
             goto err;
         }
@@ -777,8 +787,7 @@ int ssl3_client_hello(SSL *s)
          * chop number of supported ciphers to keep it well below this if we
          * use TLS v1.2
          */
-        if (TLS1_get_version(s) >= TLS1_2_VERSION
-            && i > OPENSSL_MAX_TLS1_2_CIPHER_LENGTH)
+        if (TLS1_get_version(s) >= TLS1_2_VERSION && i > OPENSSL_MAX_TLS1_2_CIPHER_LENGTH)
             i = OPENSSL_MAX_TLS1_2_CIPHER_LENGTH & ~1;
 #endif
         s2n(i, p);
@@ -789,13 +798,13 @@ int ssl3_client_hello(SSL *s)
         *(p++) = 1;
 #else
 
-        if ((s->options & SSL_OP_NO_COMPRESSION)
-            || !s->ctx->comp_methods)
+        if ((s->options & SSL_OP_NO_COMPRESSION) || !s->ctx->comp_methods)
             j = 0;
         else
             j = sk_SSL_COMP_num(s->ctx->comp_methods);
         *(p++) = 1 + j;
-        for (i = 0; i < j; i++) {
+        for (i = 0; i < j; i++) 
+		{
             comp = sk_SSL_COMP_value(s->ctx->comp_methods, i);
             *(p++) = comp->id;
         }
@@ -804,14 +813,13 @@ int ssl3_client_hello(SSL *s)
 
 #ifndef OPENSSL_NO_TLSEXT
         /* TLS extensions */
-        if (ssl_prepare_clienthello_tlsext(s) <= 0) {
+        if (ssl_prepare_clienthello_tlsext(s) <= 0) 
+		{
             SSLerr(SSL_F_SSL3_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
             goto err;
         }
-        if ((p =
-             ssl_add_clienthello_tlsext(s, p,
-                                        buf + SSL3_RT_MAX_PLAIN_LENGTH)) ==
-            NULL) {
+        if ((p = ssl_add_clienthello_tlsext(s, p, buf + SSL3_RT_MAX_PLAIN_LENGTH)) == NULL) 
+		{
             SSLerr(SSL_F_SSL3_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             goto err;
         }

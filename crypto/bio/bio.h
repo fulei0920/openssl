@@ -336,7 +336,7 @@ struct bio_st
     void *ptr;
     struct bio_st *next_bio;    /* used by filter BIOs */
     struct bio_st *prev_bio;    /* used by filter BIOs */
-    int references;
+    int references;				/*引用计数*/
     unsigned long num_read;
     unsigned long num_write;
     CRYPTO_EX_DATA ex_data;

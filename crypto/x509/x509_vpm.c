@@ -142,8 +142,7 @@ void X509_VERIFY_PARAM_free(X509_VERIFY_PARAM *param)
 /* Macro to test if a field should be copied from src to dest */
 
 #define test_x509_verify_param_copy(field, def) \
-        (to_overwrite || \
-                ((src->field != def) && (to_default || (dest->field == def))))
+        (to_overwrite || ((src->field != def) && (to_default || (dest->field == def))))
 
 /* Macro to test and copy a field if necessary */
 
@@ -182,7 +181,8 @@ int X509_VERIFY_PARAM_inherit(X509_VERIFY_PARAM *dest,
 
     /* If overwrite or check time not set, copy across */
 
-    if (to_overwrite || !(dest->flags & X509_V_FLAG_USE_CHECK_TIME)) {
+    if (to_overwrite || !(dest->flags & X509_V_FLAG_USE_CHECK_TIME)) 
+	{
         dest->check_time = src->check_time;
         dest->flags &= ~X509_V_FLAG_USE_CHECK_TIME;
         /* Don't need to copy flag: that is done below */
@@ -193,7 +193,8 @@ int X509_VERIFY_PARAM_inherit(X509_VERIFY_PARAM *dest,
 
     dest->flags |= src->flags;
 
-    if (test_x509_verify_param_copy(policies, NULL)) {
+    if (test_x509_verify_param_copy(policies, NULL))
+	{
         if (!X509_VERIFY_PARAM_set1_policies(dest, src->policies))
             return 0;
     }

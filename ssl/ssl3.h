@@ -378,14 +378,9 @@ typedef struct ssl3_record_st {
     /*
      * r
      */ unsigned int off;
-    /* pointer to the record data */
-    /*
-     * rw
-     */ unsigned char *data;
-    /* where the decode bytes are */
-    /*
-     * rw
-     */ unsigned char *input;
+    
+    unsigned char *data;	/* rw   pointer to the record data */
+   	unsigned char *input; /* rw    where the decode bytes are */
     /* only used with decompression - malloc()ed */
     /*
      * r
@@ -400,15 +395,13 @@ typedef struct ssl3_record_st {
      */ unsigned char seq_num[8];
 } SSL3_RECORD;
 
-typedef struct ssl3_buffer_st {
+typedef struct ssl3_buffer_st
+{
     /* at least SSL3_RT_MAX_PACKET_SIZE bytes, see ssl3_setup_buffers() */
     unsigned char *buf;
-    /* buffer size */
-    size_t len;
-    /* where to 'copy from' */
-    int offset;
-    /* how many bytes left */
-    int left;
+    size_t len;		/* buffer size */
+    int offset;		/* where to 'copy from' */
+    int left;		/* how many bytes left */
 } SSL3_BUFFER;
 
 # endif
@@ -450,7 +443,8 @@ typedef struct ssl3_buffer_st {
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
-typedef struct ssl3_state_st {
+typedef struct ssl3_state_st 
+{
     long flags;
     int delay_buf_pop_ret;
     unsigned char read_sequence[8];

@@ -604,7 +604,8 @@ typedef struct sess_cert_st {
  * This is for the SSLv3/TLSv1.0 differences in crypto/hash stuff It is a bit
  * of a mess of functions, but hell, think of it as an opaque structure :-)
  */
-typedef struct ssl3_enc_method {
+typedef struct ssl3_enc_method 
+{
     int (*enc) (SSL *, int);
     int (*mac) (SSL *, unsigned char *, int);
     int (*setup_key_block) (SSL *);

@@ -597,12 +597,12 @@ void CRYPTO_lock(int mode, int type, const char *file, int line)
 	}
 }
 
-int CRYPTO_add_lock(int *pointer, int amount, int type, const char *file,
-                    int line)
+int CRYPTO_add_lock(int *pointer, int amount, int type, const char *file, int line)
 {
     int ret = 0;
 
-    if (add_lock_callback != NULL) {
+    if (add_lock_callback != NULL) 
+	{
 #ifdef LOCK_DEBUG
         int before = *pointer;
 #endif
@@ -617,7 +617,9 @@ int CRYPTO_add_lock(int *pointer, int amount, int type, const char *file,
                     CRYPTO_get_lock_name(type), file, line);
         }
 #endif
-    } else {
+    }
+	else 
+	{
         CRYPTO_lock(CRYPTO_LOCK | CRYPTO_WRITE, type, file, line);
 
         ret = *pointer + amount;
@@ -625,10 +627,8 @@ int CRYPTO_add_lock(int *pointer, int amount, int type, const char *file,
         {
             CRYPTO_THREADID id;
             CRYPTO_THREADID_current(&id);
-            fprintf(stderr, "ladd:%08lx:%2d+%2d->%2d %-18s %s:%d\n",
-                    CRYPTO_THREADID_hash(&id),
-                    *pointer, amount, ret,
-                    CRYPTO_get_lock_name(type), file, line);
+            fprintf(stderr, "ladd:%08lx:%2d+%2d->%2d %-18s %s:%d\n", CRYPTO_THREADID_hash(&id),
+                    *pointer, amount, ret, CRYPTO_get_lock_name(type), file, line);
         }
 #endif
         *pointer = ret;

@@ -592,7 +592,8 @@ static SSL *doConnection(SSL *scon)
 
     if (scon == NULL)
         serverCon = SSL_new(tm_ctx);
-    else {
+    else
+	{
         serverCon = scon;
         SSL_set_connect_state(serverCon);
     }
@@ -605,7 +606,8 @@ static SSL *doConnection(SSL *scon)
 #endif
 
     /* ok, lets connect */
-    for (;;) {
+    for (;;) 
+	{
         i = SSL_connect(serverCon);
         if (BIO_sock_should_retry(i)) {
             BIO_printf(bio_err, "DELAY\n");

@@ -629,11 +629,13 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
     tot = s->s3->wnum;
     s->s3->wnum = 0;
 
-    if (SSL_in_init(s) && !s->in_handshake) {
+    if (SSL_in_init(s) && !s->in_handshake) 
+	{
         i = s->handshake_func(s);
         if (i < 0)
             return (i);
-        if (i == 0) {
+        if (i == 0)
+		{
             SSLerr(SSL_F_SSL3_WRITE_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
             return -1;
         }
@@ -648,20 +650,23 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
      * promptly send beyond the end of the users buffer ... so we trap and
      * report the error in a way the user will notice
      */
-    if (len < tot) {
+    if (len < tot) 
+	{
         SSLerr(SSL_F_SSL3_WRITE_BYTES, SSL_R_BAD_LENGTH);
         return (-1);
     }
 
     n = (len - tot);
-    for (;;) {
+    for (;;) 
+	{
         if (n > s->max_send_fragment)
             nw = s->max_send_fragment;
         else
             nw = n;
 
         i = do_ssl3_write(s, type, &(buf[tot]), nw, 0);
-        if (i <= 0) {
+        if (i <= 0) 
+		{
             s->s3->wnum = tot;
             return i;
         }
@@ -683,8 +688,7 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
     }
 }
 
-static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
-                         unsigned int len, int create_empty_fragment)
+static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned int len, int create_empty_fragment)
 {
     unsigned char *p, *plen;
     int i, mac_size, clear = 0;
@@ -703,7 +707,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
         return (ssl3_write_pending(s, type, buf, len));
 
     /* If we have an alert to send, lets send it */
-    if (s->s3->alert_dispatch) {
+    if (s->s3->alert_dispatch) 
+	{
         i = s->method->ssl_dispatch_alert(s);
         if (i <= 0)
             return (i);
@@ -720,16 +725,17 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     wr = &(s->s3->wrec);
     sess = s->session;
 
-    if ((sess == NULL) ||
-        (s->enc_write_ctx == NULL) ||
-        (EVP_MD_CTX_md(s->write_hash) == NULL)) {
+    if ((sess == NULL) || (s->enc_write_ctx == NULL) || (EVP_MD_CTX_md(s->write_hash) == NULL)) 
+   	{
 #if 1
         clear = s->enc_write_ctx ? 0 : 1; /* must be AEAD cipher */
 #else
         clear = 1;
 #endif
         mac_size = 0;
-    } else {
+    } 
+	else 
+	{
         mac_size = EVP_MD_CTX_size(s->write_hash);
         if (mac_size < 0)
             goto err;
@@ -738,7 +744,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     /*
      * 'create_empty_fragment' is true only when this function calls itself
      */
-    if (!clear && !create_empty_fragment && !s->s3->empty_fragment_done) {
+    if (!clear && !create_empty_fragment && !s->s3->empty_fragment_done) 
+	{
         /*
          * countermeasure against known-IV weakness in CBC ciphersuites (see
          * http://www.openssl.org/~bodo/tls-cbc.txt)
@@ -767,7 +774,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
         s->s3->empty_fragment_done = 1;
     }
 
-    if (create_empty_fragment) {
+    if (create_empty_fragment) 
+	{
 #if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD!=0
         /*
          * extra fragment would be couple of cipher blocks, which would be
@@ -779,9 +787,13 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
 #endif
         p = wb->buf + align;
         wb->offset = align;
-    } else if (prefix_len) {
+    }
+	else if (prefix_len) 
+   	{
         p = wb->buf + wb->offset + prefix_len;
-    } else {
+    }
+	else 
+	{
 #if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD!=0
         align = (long)wb->buf + SSL3_RT_HEADER_LENGTH;
         align = (-align) & (SSL3_ALIGN_PAYLOAD - 1);
@@ -797,11 +809,9 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
 
     *(p++) = (s->version >> 8);
     /*
-     * Some servers hang if iniatial client hello is larger than 256 bytes
-     * and record version number > TLS 1.0
+     * Some servers hang if iniatial client hello is larger than 256 bytes and record version number > TLS 1.0
      */
-    if (s->state == SSL3_ST_CW_CLNT_HELLO_B
-        && !s->renegotiate && TLS1_get_version(s) > TLS1_VERSION)
+    if (s->state == SSL3_ST_CW_CLNT_HELLO_B && !s->renegotiate && TLS1_get_version(s) > TLS1_VERSION)
         *(p++) = 0x1;
     else
         *(p++) = s->version & 0xff;
@@ -810,9 +820,11 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     plen = p;
     p += 2;
     /* Explicit IV length, block ciphers and TLS version 1.1 or later */
-    if (s->enc_write_ctx && s->version >= TLS1_1_VERSION) {
+    if (s->enc_write_ctx && s->version >= TLS1_1_VERSION) 
+	{
         int mode = EVP_CIPHER_CTX_mode(s->enc_write_ctx);
-        if (mode == EVP_CIPH_CBC_MODE) {
+        if (mode == EVP_CIPH_CBC_MODE)
+		{
             eivlen = EVP_CIPHER_CTX_iv_length(s->enc_write_ctx);
             if (eivlen <= 1)
                 eivlen = 0;
@@ -822,8 +834,12 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
             eivlen = EVP_GCM_TLS_EXPLICIT_IV_LEN;
         else
             eivlen = 0;
-    } else
-        eivlen = 0;
+    } 
+	else
+	{
+		eivlen = 0;
+	}
+        
 
     /* lets setup the record stuff. */
     wr->data = p + eivlen;
@@ -835,12 +851,16 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
      */
 
     /* first we compress */
-    if (s->compress != NULL) {
-        if (!ssl3_do_compress(s)) {
+    if (s->compress != NULL) 
+	{
+        if (!ssl3_do_compress(s)) 
+		{
             SSLerr(SSL_F_DO_SSL3_WRITE, SSL_R_COMPRESSION_FAILURE);
             goto err;
         }
-    } else {
+    } 
+	else 
+	{
         memcpy(wr->data, wr->input, wr->length);
         wr->input = wr->data;
     }
@@ -851,7 +871,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
      * wb->buf
      */
 
-    if (mac_size != 0) {
+    if (mac_size != 0) 
+	{
         if (s->method->ssl3_enc->mac(s, &(p[wr->length + eivlen]), 1) < 0)
             goto err;
         wr->length += mac_size;
@@ -860,7 +881,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     wr->input = p;
     wr->data = p;
 
-    if (eivlen) {
+    if (eivlen)
+	{
         /*
          * if (RAND_pseudo_bytes(p, eivlen) <= 0) goto err;
          */
@@ -880,7 +902,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
     wr->type = type;            /* not needed but helps for debugging */
     wr->length += SSL3_RT_HEADER_LENGTH;
 
-    if (create_empty_fragment) {
+    if (create_empty_fragment) 
+	{
         /*
          * we are in a recursive call; just return the length, don't write
          * out anything here
@@ -907,29 +930,29 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
 }
 
 /* if s->s3->wbuf.left != 0, we need to call this */
-int ssl3_write_pending(SSL *s, int type, const unsigned char *buf,
-                       unsigned int len)
+int ssl3_write_pending(SSL *s, int type, const unsigned char *buf, unsigned int len)
 {
     int i;
     SSL3_BUFFER *wb = &(s->s3->wbuf);
 
 /* XXXX */
-    if ((s->s3->wpend_tot > (int)len)
-        || ((s->s3->wpend_buf != buf) &&
-            !(s->mode & SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER))
-        || (s->s3->wpend_type != type)) {
+    if ((s->s3->wpend_tot > (int)len) || ((s->s3->wpend_buf != buf) &&
+            !(s->mode & SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER)) || (s->s3->wpend_type != type)) 
+    {
         SSLerr(SSL_F_SSL3_WRITE_PENDING, SSL_R_BAD_WRITE_RETRY);
         return (-1);
     }
 
-    for (;;) {
+    for (;;) 
+	{
         clear_sys_error();
-        if (s->wbio != NULL) {
+        if (s->wbio != NULL)
+		{
             s->rwstate = SSL_WRITING;
-            i = BIO_write(s->wbio,
-                          (char *)&(wb->buf[wb->offset]),
-                          (unsigned int)wb->left);
-        } else {
+            i = BIO_write(s->wbio, (char *)&(wb->buf[wb->offset]), (unsigned int)wb->left);
+        } 
+		else 
+		{
             SSLerr(SSL_F_SSL3_WRITE_PENDING, SSL_R_BIO_NOT_SET);
             i = -1;
         }

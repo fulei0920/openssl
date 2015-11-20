@@ -190,12 +190,14 @@ SSL3_ENC_METHOD ssl3_undef_enc_method = {
 int SSL_clear(SSL *s)
 {
 
-    if (s->method == NULL) {
+    if (s->method == NULL) 
+	{
         SSLerr(SSL_F_SSL_CLEAR, SSL_R_NO_METHOD_SPECIFIED);
         return (0);
     }
 
-    if (ssl_clear_bad_session(s)) {
+    if (ssl_clear_bad_session(s))
+	{
         SSL_SESSION_free(s->session);
         s->session = NULL;
     }
@@ -216,7 +218,8 @@ int SSL_clear(SSL *s)
     if (s->renegotiate)
         return (1);
 #else
-    if (s->renegotiate) {
+    if (s->renegotiate) 
+	{
         SSLerr(SSL_F_SSL_CLEAR, ERR_R_INTERNAL_ERROR);
         return 0;
     }
@@ -234,7 +237,8 @@ int SSL_clear(SSL *s)
     s->read_ahead = s->ctx->read_ahead;
 #endif
 
-    if (s->init_buf != NULL) {
+    if (s->init_buf != NULL)
+	{
         BUF_MEM_free(s->init_buf);
         s->init_buf = NULL;
     }
@@ -250,8 +254,8 @@ int SSL_clear(SSL *s)
      * Check to see if we were changed into a different method, if so, revert
      * back if we are not doing session-id reuse.
      */
-    if (!s->in_handshake && (s->session == NULL)
-        && (s->method != s->ctx->method)) {
+    if (!s->in_handshake && (s->session == NULL) && (s->method != s->ctx->method)) 
+    {
         s->method->ssl_free(s);
         s->method = s->ctx->method;
         if (!s->method->ssl_new(s))
@@ -310,7 +314,8 @@ SSL *SSL_new(SSL_CTX *ctx)
     s->mode = ctx->mode;
     s->max_cert_list = ctx->max_cert_list;
 
-    if (ctx->cert != NULL) {
+    if (ctx->cert != NULL) 
+	{
         /*
          * Earlier library versions used to copy the pointer to the CERT, not
          * its contents; only when setting new parameters for the per-SSL
@@ -324,8 +329,12 @@ SSL *SSL_new(SSL_CTX *ctx)
         s->cert = ssl_cert_dup(ctx->cert);
         if (s->cert == NULL)
             goto err;
-    } else
-        s->cert = NULL;         /* Cannot really happen (see SSL_CTX_new) */
+    } 
+	else
+	{
+		s->cert = NULL;         /* Cannot really happen (see SSL_CTX_new) */
+	}
+      
 
     s->read_ahead = ctx->read_ahead;
     s->msg_callback = ctx->msg_callback;
@@ -939,8 +948,7 @@ int SSL_check_private_key(const SSL *ssl)
 int SSL_accept(SSL *s)
 {
     if (s->handshake_func == 0)
-        /* Not properly initialized yet */
-        SSL_set_accept_state(s);
+        SSL_set_accept_state(s);	/* Not properly initialized yet */
 
     return (s->method->ssl_accept(s));
 }
@@ -948,8 +956,7 @@ int SSL_accept(SSL *s)
 int SSL_connect(SSL *s)
 {
     if (s->handshake_func == 0)
-        /* Not properly initialized yet */
-        SSL_set_connect_state(s);
+        SSL_set_connect_state(s);	 /* Not properly initialized yet */
 
     return (s->method->ssl_connect(s));
 }
@@ -1231,14 +1238,17 @@ int ssl_cipher_ptr_id_cmp(const SSL_CIPHER *const *ap,
         return ((l > 0) ? 1 : -1);
 }
 
-/** return a STACK of the ciphers available for the SSL and in order of
- * preference */
+/** return a STACK of the ciphers available for the SSL and in order of preference */
 STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL *s)
 {
-    if (s != NULL) {
-        if (s->cipher_list != NULL) {
+    if (s != NULL) 
+	{
+        if (s->cipher_list != NULL) 
+		{
             return (s->cipher_list);
-        } else if ((s->ctx != NULL) && (s->ctx->cipher_list != NULL)) {
+        } 
+		else if ((s->ctx != NULL) && (s->ctx->cipher_list != NULL)) 
+		{
             return (s->ctx->cipher_list);
         }
     }
@@ -1898,8 +1908,7 @@ SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
 # endif
 #endif
     /*
-     * Default is to connect to non-RI servers. When RI is more widely
-     * deployed might change this.
+     * Default is to connect to non-RI servers. When RI is more widely deployed might change this.
      */
     ret->options |= SSL_OP_LEGACY_SERVER_CONNECT;
 
@@ -2878,7 +2887,8 @@ void ssl_free_wbio_buffer(SSL *s)
     if (s->bbio == NULL)
         return;
 
-    if (s->bbio == s->wbio) {
+    if (s->bbio == s->wbio)
+	{
         /* remove buffering */
         s->wbio = BIO_pop(s->wbio);
 #ifdef REF_CHECK                /* not the usual REF_CHECK, but this avoids
@@ -3242,22 +3252,12 @@ void SSL_CTX_set_psk_client_callback(SSL_CTX *ctx,
     ctx->psk_client_callback = cb;
 }
 
-void SSL_set_psk_server_callback(SSL *s,
-                                 unsigned int (*cb) (SSL *ssl,
-                                                     const char *identity,
-                                                     unsigned char *psk,
-                                                     unsigned int
-                                                     max_psk_len))
+void SSL_set_psk_server_callback(SSL *s, unsigned int (*cb) (SSL *ssl, const char *identity, unsigned char *psk, unsigned int max_psk_len))
 {
     s->psk_server_callback = cb;
 }
 
-void SSL_CTX_set_psk_server_callback(SSL_CTX *ctx,
-                                     unsigned int (*cb) (SSL *ssl,
-                                                         const char *identity,
-                                                         unsigned char *psk,
-                                                         unsigned int
-                                                         max_psk_len))
+void SSL_CTX_set_psk_server_callback(SSL_CTX *ctx, unsigned int (*cb) (SSL *ssl, const char *identity, unsigned char *psk, unsigned int max_psk_len))
 {
     ctx->psk_server_callback = cb;
 }

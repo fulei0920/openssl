@@ -1245,13 +1245,9 @@ const char *SSL_get_psk_identity(const SSL *s);
 
 struct ssl_st 
 {
-    /*
-     * protocol version (one of SSL2_VERSION, SSL3_VERSION, TLS1_VERSION,
-     * DTLS1_VERSION)
-     */
-    int version;
-    /* SSL_ST_CONNECT or SSL_ST_ACCEPT */
-    int type;
+    
+    int version;	/* protocol version (one of SSL2_VERSION, SSL3_VERSION, TLS1_VERSION, DTLS1_VERSION) */
+    int type;	 	/* SSL_ST_CONNECT or SSL_ST_ACCEPT */
     /* SSLv3 */
     const SSL_METHOD *method;
     /*
@@ -1306,8 +1302,7 @@ struct ssl_st
     /* where we are when reading */
     int rstate;
     BUF_MEM *init_buf;          /* buffer used during init */
-    void *init_msg;             /* pointer to handshake message body, set by
-                                 * ssl3_get_message() */
+    void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
     int init_num;               /* amount read/written */
     int init_off;               /* amount read/written */
     /* used internally to point at a raw packet */
@@ -1316,8 +1311,8 @@ struct ssl_st
     struct ssl2_state_st *s2;   /* SSLv2 variables */
     struct ssl3_state_st *s3;   /* SSLv3 variables */
     struct dtls1_state_st *d1;  /* DTLSv1 variables */
-    int read_ahead;             /* Read as many input bytes as possible (for
-                                 * non-blocking reads) */
+    int read_ahead;             /* Read as many input bytes as possible (for non-blocking reads) */
+	
     /* callback that allows applications to peek at protocol messages */
     void (*msg_callback) (int write_p, int version, int content_type,
                           const void *buf, size_t len, SSL *ssl, void *arg);
@@ -1343,7 +1338,7 @@ struct ssl_st
 #  else
     char *expand;
 #  endif
-    EVP_CIPHER_CTX *enc_write_ctx; /* cryptographic state */
+    EVP_CIPHER_CTX *enc_write_ctx; 	/* cryptographic state */
     EVP_MD_CTX *write_hash;     /* used for mac generation */
 #  ifndef OPENSSL_NO_COMP
     COMP_CTX *compress;         /* compression */
@@ -1440,12 +1435,12 @@ struct ssl_st
     /* RFC4507 session ticket expected to be received or sent */
     int tlsext_ticket_expected;
 #   ifndef OPENSSL_NO_EC
+
     size_t tlsext_ecpointformatlist_length;
-    /* our list */
-    unsigned char *tlsext_ecpointformatlist;
+    unsigned char *tlsext_ecpointformatlist;  /* our list */
     size_t tlsext_ellipticcurvelist_length;
-    /* our list */
-    unsigned char *tlsext_ellipticcurvelist;
+    unsigned char *tlsext_ellipticcurvelist; /* our list */
+	
 #   endif                       /* OPENSSL_NO_EC */
     /*
      * draft-rescorla-tls-opaque-prf-input-00.txt information to be used for
@@ -1499,8 +1494,7 @@ struct ssl_st
      */
     int renegotiate;
 #  ifndef OPENSSL_NO_SRP
-    /* ctx for SRP authentication */
-    SRP_CTX srp_ctx;
+    SRP_CTX srp_ctx;  /* ctx for SRP authentication */
 #  endif
 };
 

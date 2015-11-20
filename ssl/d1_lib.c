@@ -70,7 +70,8 @@ static void get_current_time(struct timeval *t);
 const char dtls1_version_str[] = "DTLSv1" OPENSSL_VERSION_PTEXT;
 int dtls1_listen(SSL *s, struct sockaddr *client);
 
-SSL3_ENC_METHOD DTLSv1_enc_data = {
+SSL3_ENC_METHOD DTLSv1_enc_data = 
+{
     dtls1_enc,
     tls1_mac,
     tls1_setup_key_block,

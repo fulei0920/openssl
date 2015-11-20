@@ -173,7 +173,8 @@ void engine_pkey_asn1_meths_free(ENGINE *e);
  * This is a structure for storing implementations of various crypto
  * algorithms and functions.
  */
-struct engine_st {
+struct engine_st 
+{
     const char *id;
     const char *name;
     const RSA_METHOD *rsa_meth;

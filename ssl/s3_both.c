@@ -132,23 +132,21 @@ int ssl3_do_write(SSL *s, int type)
 {
     int ret;
 
-    ret = ssl3_write_bytes(s, type, &s->init_buf->data[s->init_off],
-                           s->init_num);
+    ret = ssl3_write_bytes(s, type, &s->init_buf->data[s->init_off], s->init_num);
     if (ret < 0)
         return (-1);
+	
     if (type == SSL3_RT_HANDSHAKE)
         /*
          * should not be done for 'Hello Request's, but in that case we'll
          * ignore the result anyway
          */
-        ssl3_finish_mac(s, (unsigned char *)&s->init_buf->data[s->init_off],
-                        ret);
+        ssl3_finish_mac(s, (unsigned char *)&s->init_buf->data[s->init_off], ret);
 
-    if (ret == s->init_num) {
+    if (ret == s->init_num) 
+	{
         if (s->msg_callback)
-            s->msg_callback(1, s->version, type, s->init_buf->data,
-                            (size_t)(s->init_off + s->init_num), s,
-                            s->msg_callback_arg);
+            s->msg_callback(1, s->version, type, s->init_buf->data, (size_t)(s->init_off + s->init_num), s, s->msg_callback_arg);
         return (1);
     }
     s->init_off += ret;
@@ -767,9 +765,9 @@ int ssl3_setup_write_buffer(SSL *s)
     align = (-SSL3_RT_HEADER_LENGTH) & (SSL3_ALIGN_PAYLOAD - 1);
 #endif
 
-    if (s->s3->wbuf.buf == NULL) {
-        len = s->max_send_fragment
-            + SSL3_RT_SEND_MAX_ENCRYPTED_OVERHEAD + headerlen + align;
+    if (s->s3->wbuf.buf == NULL) 
+	{
+        len = s->max_send_fragment + SSL3_RT_SEND_MAX_ENCRYPTED_OVERHEAD + headerlen + align;
 #ifndef OPENSSL_NO_COMP
         if (!(s->options & SSL_OP_NO_COMPRESSION))
             len += SSL3_RT_MAX_COMPRESSED_OVERHEAD;

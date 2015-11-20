@@ -203,7 +203,8 @@ static int nid_list[] = {
     NID_secp521r1               /* secp521r1 (25) */
 };
 
-static int pref_list[] = {
+static int pref_list[] = 
+{
 # ifndef OPENSSL_NO_EC2M
     NID_sect571r1,              /* sect571r1 (14) */
     NID_sect571k1,              /* sect571k1 (13) */
@@ -255,59 +256,60 @@ int tls1_ec_curve_id2nid(int curve_id)
 int tls1_ec_nid2curve_id(int nid)
 {
     /* ECC curves from RFC 4492 */
-    switch (nid) {
-    case NID_sect163k1:        /* sect163k1 (1) */
-        return 1;
-    case NID_sect163r1:        /* sect163r1 (2) */
-        return 2;
-    case NID_sect163r2:        /* sect163r2 (3) */
-        return 3;
-    case NID_sect193r1:        /* sect193r1 (4) */
-        return 4;
-    case NID_sect193r2:        /* sect193r2 (5) */
-        return 5;
-    case NID_sect233k1:        /* sect233k1 (6) */
-        return 6;
-    case NID_sect233r1:        /* sect233r1 (7) */
-        return 7;
-    case NID_sect239k1:        /* sect239k1 (8) */
-        return 8;
-    case NID_sect283k1:        /* sect283k1 (9) */
-        return 9;
-    case NID_sect283r1:        /* sect283r1 (10) */
-        return 10;
-    case NID_sect409k1:        /* sect409k1 (11) */
-        return 11;
-    case NID_sect409r1:        /* sect409r1 (12) */
-        return 12;
-    case NID_sect571k1:        /* sect571k1 (13) */
-        return 13;
-    case NID_sect571r1:        /* sect571r1 (14) */
-        return 14;
-    case NID_secp160k1:        /* secp160k1 (15) */
-        return 15;
-    case NID_secp160r1:        /* secp160r1 (16) */
-        return 16;
-    case NID_secp160r2:        /* secp160r2 (17) */
-        return 17;
-    case NID_secp192k1:        /* secp192k1 (18) */
-        return 18;
-    case NID_X9_62_prime192v1: /* secp192r1 (19) */
-        return 19;
-    case NID_secp224k1:        /* secp224k1 (20) */
-        return 20;
-    case NID_secp224r1:        /* secp224r1 (21) */
-        return 21;
-    case NID_secp256k1:        /* secp256k1 (22) */
-        return 22;
-    case NID_X9_62_prime256v1: /* secp256r1 (23) */
-        return 23;
-    case NID_secp384r1:        /* secp384r1 (24) */
-        return 24;
-    case NID_secp521r1:        /* secp521r1 (25) */
-        return 25;
-    default:
-        return 0;
+    switch (nid) 
+	{
+	    case NID_sect163k1:        /* sect163k1 (1) */
+	        return 1;
+	    case NID_sect163r1:        /* sect163r1 (2) */
+	        return 2;
+	    case NID_sect163r2:        /* sect163r2 (3) */
+	        return 3;
+	    case NID_sect193r1:        /* sect193r1 (4) */
+	        return 4;
+	    case NID_sect193r2:        /* sect193r2 (5) */
+	        return 5;
+	    case NID_sect233k1:        /* sect233k1 (6) */
+	        return 6;
+	    case NID_sect233r1:        /* sect233r1 (7) */
+	        return 7;
+	    case NID_sect239k1:        /* sect239k1 (8) */
+	        return 8;
+	    case NID_sect283k1:        /* sect283k1 (9) */
+	        return 9;
+	    case NID_sect283r1:        /* sect283r1 (10) */
+	        return 10;
+	    case NID_sect409k1:        /* sect409k1 (11) */
+	        return 11;
+	    case NID_sect409r1:        /* sect409r1 (12) */
+	        return 12;
+	    case NID_sect571k1:        /* sect571k1 (13) */
+	        return 13;
+	    case NID_sect571r1:        /* sect571r1 (14) */
+	        return 14;
+	    case NID_secp160k1:        /* secp160k1 (15) */
+	        return 15;
+	    case NID_secp160r1:        /* secp160r1 (16) */
+	        return 16;
+	    case NID_secp160r2:        /* secp160r2 (17) */
+	        return 17;
+	    case NID_secp192k1:        /* secp192k1 (18) */
+	        return 18;
+	    case NID_X9_62_prime192v1: /* secp192r1 (19) */
+	        return 19;
+	    case NID_secp224k1:        /* secp224k1 (20) */
+	        return 20;
+	    case NID_secp224r1:        /* secp224r1 (21) */
+	        return 21;
+	    case NID_secp256k1:        /* secp256k1 (22) */
+	        return 22;
+	    case NID_X9_62_prime256v1: /* secp256r1 (23) */
+	        return 23;
+	    case NID_secp384r1:        /* secp384r1 (24) */
+	        return 24;
+	    case NID_secp521r1:        /* secp521r1 (25) */
+	        return 25;
+	    default:
+	        return 0;
     }
 }
 #endif                          /* OPENSSL_NO_EC */
@@ -365,8 +367,7 @@ int tls12_get_req_sig_algs(SSL *s, unsigned char *p)
     return (int)slen;
 }
 
-unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
-                                          unsigned char *limit)
+unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned char *limit)
 {
     int extdatalen = 0;
     unsigned char *orig = buf;
@@ -381,7 +382,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
     if (ret >= limit)
         return NULL;            /* this really never occurs, but ... */
 
-    if (s->tlsext_hostname != NULL) {
+    if (s->tlsext_hostname != NULL) 
+	{
         /* Add TLS extension servername to the Client Hello message */
         unsigned long size_str;
         long lenmax;
@@ -415,7 +417,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
     }
 
     /* Add RI if renegotiating */
-    if (s->renegotiate) {
+    if (s->renegotiate) 
+	{
         int el;
 
         if (!ssl_add_clienthello_renegotiate_ext(s, 0, &el, 0)) {
@@ -438,11 +441,11 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
     }
 # ifndef OPENSSL_NO_SRP
     /* Add SRP username if there is one */
-    if (s->srp_ctx.login != NULL) { /* Add TLS extension SRP username to the
-                                     * Client Hello message */
-
+    if (s->srp_ctx.login != NULL)	/* Add TLS extension SRP username to the Client Hello message */
+	{ 
         int login_len = strlen(s->srp_ctx.login);
-        if (login_len > 255 || login_len == 0) {
+        if (login_len > 255 || login_len == 0) 
+		{
             SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
             return NULL;
         }
@@ -466,7 +469,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
 # endif
 
 # ifndef OPENSSL_NO_EC
-    if (s->tlsext_ecpointformatlist != NULL) {
+    if (s->tlsext_ecpointformatlist != NULL)
+	{
         /*
          * Add TLS extension ECPointFormats to the ClientHello message
          */
@@ -476,7 +480,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
             return NULL;
         if (s->tlsext_ecpointformatlist_length > (unsigned long)lenmax)
             return NULL;
-        if (s->tlsext_ecpointformatlist_length > 255) {
+        if (s->tlsext_ecpointformatlist_length > 255) 
+		{
             SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
             return NULL;
         }
@@ -484,11 +489,11 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
         s2n(TLSEXT_TYPE_ec_point_formats, ret);
         s2n(s->tlsext_ecpointformatlist_length + 1, ret);
         *(ret++) = (unsigned char)s->tlsext_ecpointformatlist_length;
-        memcpy(ret, s->tlsext_ecpointformatlist,
-               s->tlsext_ecpointformatlist_length);
+        memcpy(ret, s->tlsext_ecpointformatlist, s->tlsext_ecpointformatlist_length);
         ret += s->tlsext_ecpointformatlist_length;
     }
-    if (s->tlsext_ellipticcurvelist != NULL) {
+    if (s->tlsext_ellipticcurvelist != NULL) 
+	{
         /*
          * Add TLS extension EllipticCurves to the ClientHello message
          */
@@ -498,7 +503,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
             return NULL;
         if (s->tlsext_ellipticcurvelist_length > (unsigned long)lenmax)
             return NULL;
-        if (s->tlsext_ellipticcurvelist_length > 65532) {
+        if (s->tlsext_ellipticcurvelist_length > 65532)
+		{
             SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
             return NULL;
         }
@@ -507,13 +513,12 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf,
         s2n(s->tlsext_ellipticcurvelist_length + 2, ret);
 
         s2n(s->tlsext_ellipticcurvelist_length, ret);
-        memcpy(ret, s->tlsext_ellipticcurvelist,
-               s->tlsext_ellipticcurvelist_length);
+        memcpy(ret, s->tlsext_ellipticcurvelist, s->tlsext_ellipticcurvelist_length);
         ret += s->tlsext_ellipticcurvelist_length;
     }
 # endif                         /* OPENSSL_NO_EC */
-
-    if (!(SSL_get_options(s) & SSL_OP_NO_TICKET)) {
+    if (!(SSL_get_options(s) & SSL_OP_NO_TICKET))
+	{
         int ticklen;
         if (!s->new_session && s->session && s->session->tlsext_tick)
             ticklen = s->session->tlsext_ticklen;
@@ -1703,47 +1708,45 @@ int ssl_prepare_clienthello_tlsext(SSL *s)
     unsigned long alg_k, alg_a;
     STACK_OF(SSL_CIPHER) *cipher_stack = SSL_get_ciphers(s);
 
-    for (i = 0; i < sk_SSL_CIPHER_num(cipher_stack); i++) {
+    for (i = 0; i < sk_SSL_CIPHER_num(cipher_stack); i++) 
+	{
         SSL_CIPHER *c = sk_SSL_CIPHER_value(cipher_stack, i);
 
         alg_k = c->algorithm_mkey;
         alg_a = c->algorithm_auth;
-        if ((alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe)
-             || (alg_a & SSL_aECDSA))) {
+        if ((alg_k & (SSL_kEECDH | SSL_kECDHr | SSL_kECDHe) || (alg_a & SSL_aECDSA)))
+		{
             using_ecc = 1;
             break;
         }
     }
     using_ecc = using_ecc && (s->version >= TLS1_VERSION);
-    if (using_ecc) {
+    if (using_ecc) 
+	{
         if (s->tlsext_ecpointformatlist != NULL)
             OPENSSL_free(s->tlsext_ecpointformatlist);
-        if ((s->tlsext_ecpointformatlist = OPENSSL_malloc(3)) == NULL) {
-            SSLerr(SSL_F_SSL_PREPARE_CLIENTHELLO_TLSEXT,
-                   ERR_R_MALLOC_FAILURE);
+        if ((s->tlsext_ecpointformatlist = OPENSSL_malloc(3)) == NULL) 
+		{
+            SSLerr(SSL_F_SSL_PREPARE_CLIENTHELLO_TLSEXT, ERR_R_MALLOC_FAILURE);
             return -1;
         }
         s->tlsext_ecpointformatlist_length = 3;
         s->tlsext_ecpointformatlist[0] = TLSEXT_ECPOINTFORMAT_uncompressed;
-        s->tlsext_ecpointformatlist[1] =
-            TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime;
-        s->tlsext_ecpointformatlist[2] =
-            TLSEXT_ECPOINTFORMAT_ansiX962_compressed_char2;
+        s->tlsext_ecpointformatlist[1] = TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime;
+        s->tlsext_ecpointformatlist[2] = TLSEXT_ECPOINTFORMAT_ansiX962_compressed_char2;
 
         /* we support all named elliptic curves in RFC 4492 */
         if (s->tlsext_ellipticcurvelist != NULL)
             OPENSSL_free(s->tlsext_ellipticcurvelist);
-        s->tlsext_ellipticcurvelist_length =
-            sizeof(pref_list) / sizeof(pref_list[0]) * 2;
-        if ((s->tlsext_ellipticcurvelist =
-             OPENSSL_malloc(s->tlsext_ellipticcurvelist_length)) == NULL) {
+        s->tlsext_ellipticcurvelist_length = sizeof(pref_list) / sizeof(pref_list[0]) * 2;
+        if ((s->tlsext_ellipticcurvelist = OPENSSL_malloc(s->tlsext_ellipticcurvelist_length)) == NULL) 
+		{
             s->tlsext_ellipticcurvelist_length = 0;
-            SSLerr(SSL_F_SSL_PREPARE_CLIENTHELLO_TLSEXT,
-                   ERR_R_MALLOC_FAILURE);
+            SSLerr(SSL_F_SSL_PREPARE_CLIENTHELLO_TLSEXT, ERR_R_MALLOC_FAILURE);
             return -1;
         }
-        for (i = 0, j = s->tlsext_ellipticcurvelist; (unsigned int)i <
-             sizeof(pref_list) / sizeof(pref_list[0]); i++) {
+        for (i = 0, j = s->tlsext_ellipticcurvelist; (unsigned int)i < sizeof(pref_list) / sizeof(pref_list[0]); i++) 
+		{
             int id = tls1_ec_nid2curve_id(pref_list[i]);
             s2n(id, j);
         }

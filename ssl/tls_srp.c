@@ -136,14 +136,11 @@ int SSL_SRP_CTX_init(struct ssl_st *s)
         return 0;
     s->srp_ctx.SRP_cb_arg = ctx->srp_ctx.SRP_cb_arg;
     /* set client Hello login callback */
-    s->srp_ctx.TLS_ext_srp_username_callback =
-        ctx->srp_ctx.TLS_ext_srp_username_callback;
+    s->srp_ctx.TLS_ext_srp_username_callback = ctx->srp_ctx.TLS_ext_srp_username_callback;
     /* set SRP N/g param callback for verification */
-    s->srp_ctx.SRP_verify_param_callback =
-        ctx->srp_ctx.SRP_verify_param_callback;
+    s->srp_ctx.SRP_verify_param_callback = ctx->srp_ctx.SRP_verify_param_callback;
     /* set SRP client passwd callback */
-    s->srp_ctx.SRP_give_srp_client_pwd_callback =
-        ctx->srp_ctx.SRP_give_srp_client_pwd_callback;
+    s->srp_ctx.SRP_give_srp_client_pwd_callback = ctx->srp_ctx.SRP_give_srp_client_pwd_callback;
 
     s->srp_ctx.N = NULL;
     s->srp_ctx.g = NULL;

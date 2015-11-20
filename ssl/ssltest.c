@@ -1225,8 +1225,7 @@ int doit_biopair(SSL *s_ssl, SSL *c_ssl, long count,
 
             if (debug)
                 if (SSL_in_init(c_ssl))
-                    printf("client waiting in SSL_connect - %s\n",
-                           SSL_state_string_long(c_ssl));
+                    printf("client waiting in SSL_connect - %s\n", SSL_state_string_long(c_ssl));
 
             if (cw_num > 0) {
                 /* Write to server. */

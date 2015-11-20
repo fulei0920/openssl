@@ -180,7 +180,8 @@ static int mem_write(BIO *b, const char *in, int inl)
         goto end;
     }
 
-    if (b->flags & BIO_FLAGS_MEM_RDONLY) {
+    if (b->flags & BIO_FLAGS_MEM_RDONLY) 
+	{
         BIOerr(BIO_F_MEM_WRITE, BIO_R_WRITE_TO_READ_ONLY_BIO);
         goto end;
     }

@@ -129,7 +129,8 @@ struct rsa_meth_st {
     int (*rsa_keygen) (RSA *rsa, int bits, BIGNUM *e, BN_GENCB *cb);
 };
 
-struct rsa_st {
+struct rsa_st
+{
     /*
      * The first parameter is used to pickup errors where this is passed
      * instead of aEVP_PKEY, it is set to 0

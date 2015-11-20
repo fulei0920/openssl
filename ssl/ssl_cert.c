@@ -200,7 +200,8 @@ CERT *ssl_cert_dup(CERT *cert)
     int i;
 
     ret = (CERT *)OPENSSL_malloc(sizeof(CERT));
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
@@ -209,8 +210,7 @@ CERT *ssl_cert_dup(CERT *cert)
 
     ret->key = &ret->pkeys[cert->key - &cert->pkeys[0]];
     /*
-     * or ret->key = ret->pkeys + (cert->key - cert->pkeys), if you find that
-     * more readable
+     * or ret->key = ret->pkeys + (cert->key - cert->pkeys), if you find that more readable
      */
 
     ret->valid = cert->valid;
@@ -220,7 +220,8 @@ CERT *ssl_cert_dup(CERT *cert)
     ret->export_mask_a = cert->export_mask_a;
 
 #ifndef OPENSSL_NO_RSA
-    if (cert->rsa_tmp != NULL) {
+    if (cert->rsa_tmp != NULL)
+	{
         RSA_up_ref(cert->rsa_tmp);
         ret->rsa_tmp = cert->rsa_tmp;
     }
@@ -228,9 +229,11 @@ CERT *ssl_cert_dup(CERT *cert)
 #endif
 
 #ifndef OPENSSL_NO_DH
-    if (cert->dh_tmp != NULL) {
+    if (cert->dh_tmp != NULL)
+	{
         ret->dh_tmp = DHparams_dup(cert->dh_tmp);
-        if (ret->dh_tmp == NULL) {
+        if (ret->dh_tmp == NULL)
+		{
             SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_DH_LIB);
             goto err;
         }
@@ -255,9 +258,11 @@ CERT *ssl_cert_dup(CERT *cert)
 #endif
 
 #ifndef OPENSSL_NO_ECDH
-    if (cert->ecdh_tmp) {
+    if (cert->ecdh_tmp) 
+	{
         ret->ecdh_tmp = EC_KEY_dup(cert->ecdh_tmp);
-        if (ret->ecdh_tmp == NULL) {
+        if (ret->ecdh_tmp == NULL) 
+		{
             SSLerr(SSL_F_SSL_CERT_DUP, ERR_R_EC_LIB);
             goto err;
         }
@@ -265,22 +270,23 @@ CERT *ssl_cert_dup(CERT *cert)
     ret->ecdh_tmp_cb = cert->ecdh_tmp_cb;
 #endif
 
-    for (i = 0; i < SSL_PKEY_NUM; i++) {
-        if (cert->pkeys[i].x509 != NULL) {
+    for (i = 0; i < SSL_PKEY_NUM; i++) 
+	{
+        if (cert->pkeys[i].x509 != NULL)
+		{
             ret->pkeys[i].x509 = cert->pkeys[i].x509;
             CRYPTO_add(&ret->pkeys[i].x509->references, 1, CRYPTO_LOCK_X509);
         }
 
-        if (cert->pkeys[i].privatekey != NULL) {
+        if (cert->pkeys[i].privatekey != NULL) 
+		{
             ret->pkeys[i].privatekey = cert->pkeys[i].privatekey;
-            CRYPTO_add(&ret->pkeys[i].privatekey->references, 1,
-                       CRYPTO_LOCK_EVP_PKEY);
+            CRYPTO_add(&ret->pkeys[i].privatekey->references, 1, CRYPTO_LOCK_EVP_PKEY);
         }
     }
 
     /*
-     * ret->extra_certs *should* exist, but currently the own certificate
-     * chain is held inside SSL_CTX
+     * ret->extra_certs *should* exist, but currently the own certificate chain is held inside SSL_CTX
      */
 
     ret->references = 1;

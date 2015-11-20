@@ -266,7 +266,8 @@ int RSA_up_ref(RSA *r)
     REF_PRINT("RSA", r);
 #endif
 #ifdef REF_CHECK
-    if (i < 2) {
+    if (i < 2)
+	{
         fprintf(stderr, "RSA_up_ref, bad reference count\n");
         abort();
     }
