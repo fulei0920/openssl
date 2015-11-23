@@ -75,7 +75,8 @@ X509_LOOKUP *X509_LOOKUP_new(X509_LOOKUP_METHOD *method)
     ret->method = method;
     ret->method_data = NULL;
     ret->store_ctx = NULL;
-    if ((method->new_item != NULL) && !method->new_item(ret)) {
+    if ((method->new_item != NULL) && !method->new_item(ret))
+	{
         OPENSSL_free(ret);
         return NULL;
     }
@@ -260,9 +261,11 @@ X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m)
     X509_LOOKUP *lu;
 
     sk = v->get_cert_methods;
-    for (i = 0; i < sk_X509_LOOKUP_num(sk); i++) {
+    for (i = 0; i < sk_X509_LOOKUP_num(sk); i++)
+	{
         lu = sk_X509_LOOKUP_value(sk, i);
-        if (m == lu->method) {
+        if (m == lu->method) 
+		{
             return lu;
         }
     }
@@ -270,11 +273,15 @@ X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m)
     lu = X509_LOOKUP_new(m);
     if (lu == NULL)
         return NULL;
-    else {
+    else 
+	{
         lu->store_ctx = v;
         if (sk_X509_LOOKUP_push(v->get_cert_methods, lu))
-            return lu;
-        else {
+        {
+			return lu;
+		}
+        else 
+		{
             X509_LOOKUP_free(lu);
             return NULL;
         }

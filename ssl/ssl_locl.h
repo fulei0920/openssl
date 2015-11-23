@@ -502,7 +502,7 @@
 
 typedef struct cert_pkey_st 
 {
-    X509 *x509;
+    X509 *x509;				/*÷§ Èƒ⁄»›*/			
     EVP_PKEY *privatekey;
     const EVP_MD *digest;	/* Digest to use when signing */
 } CERT_PKEY;
@@ -512,8 +512,7 @@ typedef struct cert_st
     /* Current active set */
     /*
      * ALWAYS points to an element of the pkeys array
-     * Probably it would make more sense to store
-     * an index, not a pointer.
+     * Probably it would make more sense to store an index, not a pointer.
      */
     CERT_PKEY *key;
     /*
@@ -546,8 +545,7 @@ typedef struct sess_cert_st {
     STACK_OF(X509) *cert_chain; /* as received from peer (not for SSL2) */
     /* The 'peer_...' members are used only by clients. */
     int peer_cert_type;
-    CERT_PKEY *peer_key;        /* points to an element of peer_pkeys (never
-                                 * NULL!) */
+    CERT_PKEY *peer_key;        /* points to an element of peer_pkeys (never NULL!) */
     CERT_PKEY peer_pkeys[SSL_PKEY_NUM];
     /*
      * Obviously we don't have the private keys of these, so maybe we

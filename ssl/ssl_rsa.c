@@ -97,14 +97,18 @@ int SSL_use_certificate_file(SSL *ssl, const char *file, int type)
         SSLerr(SSL_F_SSL_USE_CERTIFICATE_FILE, ERR_R_SYS_LIB);
         goto end;
     }
-    if (type == SSL_FILETYPE_ASN1) {
+    if (type == SSL_FILETYPE_ASN1)
+	{
         j = ERR_R_ASN1_LIB;
         x = d2i_X509_bio(in, NULL);
-    } else if (type == SSL_FILETYPE_PEM) {
+    }
+	else if (type == SSL_FILETYPE_PEM)
+   	{
         j = ERR_R_PEM_LIB;
-        x = PEM_read_bio_X509(in, NULL, ssl->ctx->default_passwd_callback,
-                              ssl->ctx->default_passwd_callback_userdata);
-    } else {
+        x = PEM_read_bio_X509(in, NULL, ssl->ctx->default_passwd_callback, ssl->ctx->default_passwd_callback_userdata);
+    } 
+	else
+	{
         SSLerr(SSL_F_SSL_USE_CERTIFICATE_FILE, SSL_R_BAD_SSL_FILETYPE);
         goto end;
     }
@@ -173,12 +177,14 @@ static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
     int i;
 
     i = ssl_cert_type(NULL, pkey);
-    if (i < 0) {
+    if (i < 0) 
+	{
         SSLerr(SSL_F_SSL_SET_PKEY, SSL_R_UNKNOWN_CERTIFICATE_TYPE);
         return (0);
     }
 
-    if (c->pkeys[i].x509 != NULL) {
+    if (c->pkeys[i].x509 != NULL) 
+	{
         EVP_PKEY *pktmp;
         pktmp = X509_get_pubkey(c->pkeys[i].x509);
         EVP_PKEY_copy_parameters(pktmp, pkey);
@@ -187,14 +193,14 @@ static int ssl_set_pkey(CERT *c, EVP_PKEY *pkey)
 
 #ifndef OPENSSL_NO_RSA
         /*
-         * Don't check the public/private key, this is mostly for smart
-         * cards.
+         * Don't check the public/private key, this is mostly for smart cards.
          */
-        if ((pkey->type == EVP_PKEY_RSA) &&
-            (RSA_flags(pkey->pkey.rsa) & RSA_METHOD_FLAG_NO_CHECK)) ;
+        if ((pkey->type == EVP_PKEY_RSA) && (RSA_flags(pkey->pkey.rsa) & RSA_METHOD_FLAG_NO_CHECK)) 
+			/*nothing*/;
         else
 #endif
-        if (!X509_check_private_key(c->pkeys[i].x509, pkey)) {
+        if (!X509_check_private_key(c->pkeys[i].x509, pkey))
+		{
             X509_free(c->pkeys[i].x509);
             c->pkeys[i].x509 = NULL;
             return 0;
@@ -350,13 +356,16 @@ int SSL_use_PrivateKey_ASN1(int type, SSL *ssl, const unsigned char *d,
     return (ret);
 }
 
+/*用于加载自己的证书*/
 int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x)
 {
-    if (x == NULL) {
+    if (x == NULL) 
+	{
         SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE, ERR_R_PASSED_NULL_PARAMETER);
         return (0);
     }
-    if (!ssl_cert_inst(&ctx->cert)) {
+    if (!ssl_cert_inst(&ctx->cert))
+	{
         SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE, ERR_R_MALLOC_FAILURE);
         return (0);
     }
@@ -369,19 +378,22 @@ static int ssl_set_cert(CERT *c, X509 *x)
     int i;
 
     pkey = X509_get_pubkey(x);
-    if (pkey == NULL) {
+    if (pkey == NULL)
+	{
         SSLerr(SSL_F_SSL_SET_CERT, SSL_R_X509_LIB);
         return (0);
     }
 
     i = ssl_cert_type(x, pkey);
-    if (i < 0) {
+    if (i < 0)
+	{
         SSLerr(SSL_F_SSL_SET_CERT, SSL_R_UNKNOWN_CERTIFICATE_TYPE);
         EVP_PKEY_free(pkey);
         return (0);
     }
 
-    if (c->pkeys[i].privatekey != NULL) {
+    if (c->pkeys[i].privatekey != NULL)
+	{
         EVP_PKEY_copy_parameters(pkey, c->pkeys[i].privatekey);
         ERR_clear_error();
 
@@ -421,6 +433,12 @@ static int ssl_set_cert(CERT *c, X509 *x)
 }
 
 #ifndef OPENSSL_NO_STDIO
+/*
+用于从文件中加载自己的证书
+file -- 指向证书文件
+type -- 指定证书文件的编码类型(SSL_FILETYPE_PEM/SSL_FILETYPE_ASN1)
+返回值 -- 成功返回1，失败返回0
+*/
 int SSL_CTX_use_certificate_file(SSL_CTX *ctx, const char *file, int type)
 {
     int j;
@@ -434,18 +452,24 @@ int SSL_CTX_use_certificate_file(SSL_CTX *ctx, const char *file, int type)
         goto end;
     }
 
-    if (BIO_read_filename(in, file) <= 0) {
+    if (BIO_read_filename(in, file) <= 0)
+	{
         SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_SYS_LIB);
         goto end;
     }
-    if (type == SSL_FILETYPE_ASN1) {
+	
+    if (type == SSL_FILETYPE_ASN1) 
+	{
         j = ERR_R_ASN1_LIB;
         x = d2i_X509_bio(in, NULL);
-    } else if (type == SSL_FILETYPE_PEM) {
+    } 
+	else if (type == SSL_FILETYPE_PEM) 
+	{
         j = ERR_R_PEM_LIB;
-        x = PEM_read_bio_X509(in, NULL, ctx->default_passwd_callback,
-                              ctx->default_passwd_callback_userdata);
-    } else {
+        x = PEM_read_bio_X509(in, NULL, ctx->default_passwd_callback, ctx->default_passwd_callback_userdata);
+    } 
+	else 
+	{
         SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, SSL_R_BAD_SSL_FILETYPE);
         goto end;
     }
@@ -570,13 +594,18 @@ int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const unsigned char *d,
 }
 #endif                          /* !OPENSSL_NO_RSA */
 
+/*
+用于加载自己的私钥
+*/
 int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey)
 {
-    if (pkey == NULL) {
+    if (pkey == NULL) 
+	{
         SSLerr(SSL_F_SSL_CTX_USE_PRIVATEKEY, ERR_R_PASSED_NULL_PARAMETER);
         return (0);
     }
-    if (!ssl_cert_inst(&ctx->cert)) {
+    if (!ssl_cert_inst(&ctx->cert)) 
+	{
         SSLerr(SSL_F_SSL_CTX_USE_PRIVATEKEY, ERR_R_MALLOC_FAILURE);
         return (0);
     }
@@ -584,6 +613,12 @@ int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey)
 }
 
 #ifndef OPENSSL_NO_STDIO
+/*
+用于从文件中加载自己的私钥
+file -- 指向私钥文件
+type -- 指定私钥文件的编码类型(SSL_FILETYPE_PEM/ SSL_FILETYPE_PEM)
+返回值 -- 成功返回1， 失败返回0
+*/
 int SSL_CTX_use_PrivateKey_file(SSL_CTX *ctx, const char *file, int type)
 {
     int j, ret = 0;
@@ -591,28 +626,34 @@ int SSL_CTX_use_PrivateKey_file(SSL_CTX *ctx, const char *file, int type)
     EVP_PKEY *pkey = NULL;
 
     in = BIO_new(BIO_s_file_internal());
-    if (in == NULL) {
+    if (in == NULL)
+	{
         SSLerr(SSL_F_SSL_CTX_USE_PRIVATEKEY_FILE, ERR_R_BUF_LIB);
         goto end;
     }
-
-    if (BIO_read_filename(in, file) <= 0) {
+    if (BIO_read_filename(in, file) <= 0) 
+	{
         SSLerr(SSL_F_SSL_CTX_USE_PRIVATEKEY_FILE, ERR_R_SYS_LIB);
         goto end;
     }
-    if (type == SSL_FILETYPE_PEM) {
+	
+    if (type == SSL_FILETYPE_PEM) 
+	{
         j = ERR_R_PEM_LIB;
-        pkey = PEM_read_bio_PrivateKey(in, NULL,
-                                       ctx->default_passwd_callback,
-                                       ctx->default_passwd_callback_userdata);
-    } else if (type == SSL_FILETYPE_ASN1) {
+        pkey = PEM_read_bio_PrivateKey(in, NULL, ctx->default_passwd_callback, ctx->default_passwd_callback_userdata);
+    }
+	else if (type == SSL_FILETYPE_ASN1)
+	{
         j = ERR_R_ASN1_LIB;
         pkey = d2i_PrivateKey_bio(in, NULL);
-    } else {
+    }
+	else 
+	{
         SSLerr(SSL_F_SSL_CTX_USE_PRIVATEKEY_FILE, SSL_R_BAD_SSL_FILETYPE);
         goto end;
     }
-    if (pkey == NULL) {
+    if (pkey == NULL)
+	{
         SSLerr(SSL_F_SSL_CTX_USE_PRIVATEKEY_FILE, j);
         goto end;
     }

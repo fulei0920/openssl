@@ -154,7 +154,8 @@ typedef struct X509_val_st {
     ASN1_TIME *notAfter;
 } X509_VAL;
 
-struct X509_pubkey_st {
+struct X509_pubkey_st 
+{
     X509_ALGOR *algor;
     ASN1_BIT_STRING *public_key;
     EVP_PKEY *pkey;
@@ -239,7 +240,8 @@ typedef struct X509_req_st {
     int references;
 } X509_REQ;
 
-typedef struct x509_cinf_st {
+typedef struct x509_cinf_st 
+{
     ASN1_INTEGER *version;      /* [ 0 ] default of v1 */
     ASN1_INTEGER *serialNumber;
     X509_ALGOR *signature;
@@ -267,12 +269,14 @@ typedef struct x509_cert_aux_st {
     STACK_OF(X509_ALGOR) *other; /* other unspecified info */
 } X509_CERT_AUX;
 
-struct x509_st {
+/*表示证书*/
+struct x509_st 
+{
     X509_CINF *cert_info;
     X509_ALGOR *sig_alg;
     ASN1_BIT_STRING *signature;
     int valid;
-    int references;
+    int references;				/*引用计数*/
     char *name;
     CRYPTO_EX_DATA ex_data;
     /* These contain copies of various extension values */

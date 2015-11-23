@@ -619,11 +619,11 @@ struct ssl_session_st {
  */
 # define SSL_OP_TLS_ROLLBACK_BUG                         0x00800000L
 
-# define SSL_OP_NO_SSLv2                                 0x01000000L
-# define SSL_OP_NO_SSLv3                                 0x02000000L
-# define SSL_OP_NO_TLSv1                                 0x04000000L
-# define SSL_OP_NO_TLSv1_2                               0x08000000L
-# define SSL_OP_NO_TLSv1_1                               0x10000000L
+# define SSL_OP_NO_SSLv2                                 0x01000000L  	/*不支持sslv2*/
+# define SSL_OP_NO_SSLv3                                 0x02000000L	/*不支持sslv3*/
+# define SSL_OP_NO_TLSv1                                 0x04000000L	/*不支持tlsv1*/
+# define SSL_OP_NO_TLSv1_2                               0x08000000L	/*不支持tlsv1.2*/
+# define SSL_OP_NO_TLSv1_1                               0x10000000L	/*不支持tlsv1.1*/
 
 /*
  * These next two were never actually used for anything since SSLeay zap so
@@ -826,8 +826,8 @@ struct ssl_ctx_st
 {
     const SSL_METHOD *method;
     STACK_OF(SSL_CIPHER) *cipher_list;
-    STACK_OF(SSL_CIPHER) *cipher_list_by_id;		 /* same as above but sorted for lookup */
-    struct x509_store_st *cert_store;	 /* X509_STORE */
+    STACK_OF(SSL_CIPHER) *cipher_list_by_id;		/* same as above but sorted for lookup */
+    struct x509_store_st *cert_store;	 			/* X509_STORE */
     LHASH_OF(SSL_SESSION) *sessions;
     /*
      * Most session-ids that will be cached, default is
@@ -887,12 +887,8 @@ struct ssl_ctx_st
      * before OpenSSL 0.9.7, 'app_verify_arg' was ignored
      * ('app_verify_callback' was called with just one argument)
      */
-
-    /* Default password callback. */
-    pem_password_cb *default_passwd_callback;
-
-    /* Default password callback user data. */
-    void *default_passwd_callback_userdata;
+    pem_password_cb *default_passwd_callback;	 /* Default password callback. */
+    void *default_passwd_callback_userdata;		 /* Default password callback user data. */
 
     /* get client cert callback */
     int (*client_cert_cb) (SSL *ssl, X509 **x509, EVP_PKEY **pkey);
@@ -911,8 +907,8 @@ struct ssl_ctx_st
     const EVP_MD *md5;          /* For SSLv3/TLSv1 'ssl3-md5' */
     const EVP_MD *sha1;         /* For SSLv3/TLSv1 'ssl3->sha1' */
 
-    STACK_OF(X509) *extra_certs;
-    STACK_OF(SSL_COMP) *comp_methods; /* stack of SSL_COMP, SSLv3/TLSv1 */
+    STACK_OF(X509) *extra_certs;		/*存储多个其它的证书*/
+    STACK_OF(SSL_COMP) *comp_methods; 	/* stack of SSL_COMP, SSLv3/TLSv1 */
 
     /* Default values used when no per-SSL value is defined follow */
 
@@ -1243,6 +1239,7 @@ const char *SSL_get_psk_identity(const SSL *s);
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
+/*表示一个TLS/SSL连接，其中保存了该TLS/SSL连接需要的数据*/
 struct ssl_st 
 {
     
@@ -1255,17 +1252,12 @@ struct ssl_st
      * is so data can be read and written to different handlers
      */
 #  ifndef OPENSSL_NO_BIO
-    /* used by SSL_read */
-    BIO *rbio;
-    /* used by SSL_write */
-    BIO *wbio;
-    /* used during session-id reuse to concatenate messages */
-    BIO *bbio;
+    BIO *rbio;		/* used by SSL_read */
+    BIO *wbio;		/* used by SSL_write */
+    BIO *bbio;		/* used during session-id reuse to concatenate messages */
 #  else
-    /* used by SSL_read */
-    char *rbio;
-    /* used by SSL_write */
-    char *wbio;
+    char *rbio;		/* used by SSL_read */
+    char *wbio;		/* used by SSL_write */
     char *bbio;
 #  endif
     /*
@@ -1274,9 +1266,9 @@ struct ssl_st
      * request needs re-doing when in SSL_accept or SSL_connect
      */
     int rwstate;
-    /* true when we are actually in SSL_accept() or SSL_connect() */
-    int in_handshake;
-    int (*handshake_func) (SSL *);
+   
+    int in_handshake;	 /* true when we are actually in SSL_accept() or SSL_connect() */
+    int (*handshake_func) (SSL *);  /*客户端--SSL_METHOD.ssl_connect 服务器--SSL_METHOD.ssl_accept*/
     /*
      * Imagine that here's a boolean member "init" that is switched as soon
      * as SSL_set_{accept/connect}_state is called for the first time, so
@@ -1297,10 +1289,10 @@ struct ssl_st
     int quiet_shutdown;
     /* we have shut things down, 0x01 sent, 0x02 for received */
     int shutdown;
-    /* where we are */
-    int state;
-    /* where we are when reading */
-    int rstate;
+    
+    int state;					/* where we are */
+   
+    int rstate;					/* where we are when reading */
     BUF_MEM *init_buf;          /* buffer used during init */
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
     int init_num;               /* amount read/written */
@@ -1585,7 +1577,7 @@ size_t SSL_get_peer_finished(const SSL *s, void *buf, size_t count);
  */
 # define SSL_VERIFY_NONE                 0x00
 # define SSL_VERIFY_PEER                 0x01
-# define SSL_VERIFY_FAIL_IF_NO_PEER_CERT 0x02
+# define SSL_VERIFY_FAIL_IF_NO_PEER_CERT 0x02	/*只适用于服务器且必须与SSL_VERIFY_PEER一起使用，要求客户端必须提供证书*/
 # define SSL_VERIFY_CLIENT_ONCE          0x04
 
 # define OpenSSL_add_ssl_algorithms()    SSL_library_init()
@@ -1940,14 +1932,11 @@ void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx,
 # ifndef OPENSSL_NO_RSA
 int SSL_CTX_use_RSAPrivateKey(SSL_CTX *ctx, RSA *rsa);
 # endif
-int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const unsigned char *d,
-                                   long len);
+int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const unsigned char *d, long len);
 int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey);
-int SSL_CTX_use_PrivateKey_ASN1(int pk, SSL_CTX *ctx,
-                                const unsigned char *d, long len);
+int SSL_CTX_use_PrivateKey_ASN1(int pk, SSL_CTX *ctx, const unsigned char *d, long len);
 int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);
-int SSL_CTX_use_certificate_ASN1(SSL_CTX *ctx, int len,
-                                 const unsigned char *d);
+int SSL_CTX_use_certificate_ASN1(SSL_CTX *ctx, int len, const unsigned char *d);
 
 void SSL_CTX_set_default_passwd_cb(SSL_CTX *ctx, pem_password_cb *cb);
 void SSL_CTX_set_default_passwd_cb_userdata(SSL_CTX *ctx, void *u);
@@ -2090,8 +2079,7 @@ void SSL_set_shutdown(SSL *ssl, int mode);
 int SSL_get_shutdown(const SSL *ssl);
 int SSL_version(const SSL *ssl);
 int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx);
-int SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile,
-                                  const char *CApath);
+int SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile, const char *CApath);
 # define SSL_get0_session SSL_get_session/* just peek at pointer */
 SSL_SESSION *SSL_get_session(const SSL *ssl);
 SSL_SESSION *SSL_get1_session(SSL *ssl); /* obtain a reference count */

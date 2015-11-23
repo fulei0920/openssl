@@ -72,8 +72,7 @@
 
 int pem_check_suffix(const char *pem_str, const char *suffix);
 
-EVP_PKEY *PEM_read_bio_PrivateKey(BIO *bp, EVP_PKEY **x, pem_password_cb *cb,
-                                  void *u)
+EVP_PKEY *PEM_read_bio_PrivateKey(BIO *bp, EVP_PKEY **x, pem_password_cb *cb, void *u)
 {
     char *nm = NULL;
     const unsigned char *p = NULL;
@@ -86,7 +85,8 @@ EVP_PKEY *PEM_read_bio_PrivateKey(BIO *bp, EVP_PKEY **x, pem_password_cb *cb,
         return NULL;
     p = data;
 
-    if (strcmp(nm, PEM_STRING_PKCS8INF) == 0) {
+    if (strcmp(nm, PEM_STRING_PKCS8INF) == 0)
+	{
         PKCS8_PRIV_KEY_INFO *p8inf;
         p8inf = d2i_PKCS8_PRIV_KEY_INFO(NULL, &p, len);
         if (!p8inf)
@@ -98,7 +98,9 @@ EVP_PKEY *PEM_read_bio_PrivateKey(BIO *bp, EVP_PKEY **x, pem_password_cb *cb,
             *x = ret;
         }
         PKCS8_PRIV_KEY_INFO_free(p8inf);
-    } else if (strcmp(nm, PEM_STRING_PKCS8) == 0) {
+    }
+	else if (strcmp(nm, PEM_STRING_PKCS8) == 0)
+    {
         PKCS8_PRIV_KEY_INFO *p8inf;
         X509_SIG *p8;
         int klen;

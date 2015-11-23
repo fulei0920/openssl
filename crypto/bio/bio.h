@@ -325,8 +325,7 @@ typedef struct bio_method_st
 struct bio_st 
 {
     BIO_METHOD *method;
-    /* bio, mode, argp, argi, argl, ret */
-    long (*callback) (struct bio_st *, int, const char *, int, long, long);
+    long (*callback) (struct bio_st *, int, const char *, int, long, long);  /* bio, mode, argp, argi, argl, ret */
     char *cb_arg;               /* first argument for the callback */
     int init;
     int shutdown;

@@ -267,9 +267,7 @@ static int check_pem(const char *nm, const char *name)
     return 0;
 }
 
-int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm,
-                       const char *name, BIO *bp, pem_password_cb *cb,
-                       void *u)
+int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm, const char *name, BIO *bp, pem_password_cb *cb, void *u)
 {
     EVP_CIPHER_INFO cipher;
     char *nm = NULL, *header = NULL;
@@ -277,8 +275,10 @@ int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm,
     long len;
     int ret = 0;
 
-    for (;;) {
-        if (!PEM_read_bio(bp, &nm, &header, &data, &len)) {
+    for (;;) 
+	{
+        if (!PEM_read_bio(bp, &nm, &header, &data, &len)) 
+		{
             if (ERR_GET_REASON(ERR_peek_error()) == PEM_R_NO_START_LINE)
                 ERR_add_error_data(2, "Expecting: ", name);
             return 0;
@@ -667,8 +667,7 @@ int PEM_read(FILE *fp, char **name, char **header, unsigned char **data,
 }
 #endif
 
-int PEM_read_bio(BIO *bp, char **name, char **header, unsigned char **data,
-                 long *len)
+int PEM_read_bio(BIO *bp, char **name, char **header, unsigned char **data, long *len)
 {
     EVP_ENCODE_CTX ctx;
     int end = 0, i, k, bl = 0, hl = 0, nohead = 0;

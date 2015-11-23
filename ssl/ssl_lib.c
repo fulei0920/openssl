@@ -286,6 +286,11 @@ int SSL_CTX_set_ssl_version(SSL_CTX *ctx, const SSL_METHOD *meth)
     return (1);
 }
 
+/*
+创建新的SSL结构。
+新建的SSL结构从SSL环境ctx继承设置，可以对SSL重新进行设置以取代从SSL环境中继承的缺省设置，
+新做的设置只对该SSL结构有效，与从同一环境创建的其他SSL结构无关。
+*/
 SSL *SSL_new(SSL_CTX *ctx)
 {
     SSL *s;
@@ -630,8 +635,10 @@ void SSL_set_bio(SSL *s, BIO *rbio, BIO *wbio)
     /*
      * If the output buffering BIO is still in place, remove it
      */
-    if (s->bbio != NULL) {
-        if (s->wbio == s->bbio) {
+    if (s->bbio != NULL)
+	{
+        if (s->wbio == s->bbio)
+		{
             s->wbio = s->wbio->next_bio;
             s->bbio->next_bio = NULL;
         }
@@ -684,6 +691,12 @@ int SSL_get_wfd(const SSL *s)
 }
 
 #ifndef OPENSSL_NO_SOCK
+/*
+将文件描述符fd作为ssl输入输出设备(即通信通道)，所有随后的数据I/O都将通过fd进行
+fd -- 通常fd是一个代表已经建立的套接字连接的套接字描述符
+		ssl继承fd的行为特性，即如果fd是阻塞/非阻塞的，那么ssl也是阻塞/非阻塞的
+返回值 -- 成功返回1，失败返回0
+*/
 int SSL_set_fd(SSL *s, int fd)
 {
     int ret = 0;
@@ -691,7 +704,8 @@ int SSL_set_fd(SSL *s, int fd)
 
     bio = BIO_new(BIO_s_socket());
 
-    if (bio == NULL) {
+    if (bio == NULL)
+	{
         SSLerr(SSL_F_SSL_SET_FD, ERR_R_BUF_LIB);
         goto err;
     }
@@ -785,7 +799,8 @@ int SSL_get_verify_depth(const SSL *s)
     return X509_VERIFY_PARAM_get_depth(s->param);
 }
 
-int (*SSL_get_verify_callback(const SSL *s)) (int, X509_STORE_CTX *) {
+int (*SSL_get_verify_callback(const SSL *s)) (int, X509_STORE_CTX *)
+{
     return (s->verify_callback);
 }
 
@@ -799,12 +814,12 @@ int SSL_CTX_get_verify_depth(const SSL_CTX *ctx)
     return X509_VERIFY_PARAM_get_depth(ctx->param);
 }
 
-int (*SSL_CTX_get_verify_callback(const SSL_CTX *ctx)) (int, X509_STORE_CTX *) {
+int (*SSL_CTX_get_verify_callback(const SSL_CTX *ctx)) (int, X509_STORE_CTX *) 
+{
     return (ctx->default_verify_callback);
 }
 
-void SSL_set_verify(SSL *s, int mode,
-                    int (*callback) (int ok, X509_STORE_CTX *ctx))
+void SSL_set_verify(SSL *s, int mode, int (*callback) (int ok, X509_STORE_CTX *ctx))
 {
     s->verify_mode = mode;
     if (callback != NULL)
@@ -904,22 +919,24 @@ void SSL_copy_session_id(SSL *t, const SSL *f)
     SSL_set_session_id_context(t, f->sid_ctx, f->sid_ctx_length);
 }
 
-/* Fix this so it checks all the valid key/cert options */
+/* 
+Fix this so it checks all the valid key/cert options 
+验证私钥和证书是否相符
+返回值 -- 成功返回1， 失败返回0
+*/
 int SSL_CTX_check_private_key(const SSL_CTX *ctx)
 {
-    if ((ctx == NULL) ||
-        (ctx->cert == NULL) || (ctx->cert->key->x509 == NULL)) {
-        SSLerr(SSL_F_SSL_CTX_CHECK_PRIVATE_KEY,
-               SSL_R_NO_CERTIFICATE_ASSIGNED);
+    if ((ctx == NULL) || (ctx->cert == NULL) || (ctx->cert->key->x509 == NULL)) 
+    {
+        SSLerr(SSL_F_SSL_CTX_CHECK_PRIVATE_KEY, SSL_R_NO_CERTIFICATE_ASSIGNED);
         return (0);
     }
-    if (ctx->cert->key->privatekey == NULL) {
-        SSLerr(SSL_F_SSL_CTX_CHECK_PRIVATE_KEY,
-               SSL_R_NO_PRIVATE_KEY_ASSIGNED);
+    if (ctx->cert->key->privatekey == NULL) 
+	{
+        SSLerr(SSL_F_SSL_CTX_CHECK_PRIVATE_KEY, SSL_R_NO_PRIVATE_KEY_ASSIGNED);
         return (0);
     }
-    return (X509_check_private_key
-            (ctx->cert->key->x509, ctx->cert->key->privatekey));
+    return (X509_check_private_key(ctx->cert->key->x509, ctx->cert->key->privatekey));
 }
 
 /* Fix this function so that it takes an optional type parameter */
@@ -945,6 +962,10 @@ int SSL_check_private_key(const SSL *ssl)
                                    ssl->cert->key->privatekey));
 }
 
+/*
+建立握手，用于服务器端
+返回值 -- 成功返回1， 失败返回0， 重试返回-1， 应使用SSL_get_error确定返回值
+*/
 int SSL_accept(SSL *s)
 {
     if (s->handshake_func == 0)
@@ -953,6 +974,10 @@ int SSL_accept(SSL *s)
     return (s->method->ssl_accept(s));
 }
 
+/*
+建立握手，用于客户端
+返回值 -- 成功返回1， 失败返回0， 重试返回-1， 应使用SSL_get_error确定返回值
+*/
 int SSL_connect(SSL *s)
 {
     if (s->handshake_func == 0)
@@ -995,12 +1020,14 @@ int SSL_peek(SSL *s, void *buf, int num)
 
 int SSL_write(SSL *s, const void *buf, int num)
 {
-    if (s->handshake_func == 0) {
+    if (s->handshake_func == 0) 
+	{
         SSLerr(SSL_F_SSL_WRITE, SSL_R_UNINITIALIZED);
         return -1;
     }
 
-    if (s->shutdown & SSL_SENT_SHUTDOWN) {
+    if (s->shutdown & SSL_SENT_SHUTDOWN) 
+	{
         s->rwstate = SSL_NOTHING;
         SSLerr(SSL_F_SSL_WRITE, SSL_R_PROTOCOL_IS_SHUTDOWN);
         return (-1);
@@ -1126,7 +1153,8 @@ long SSL_CTX_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 {
     long l;
 
-    switch (cmd) {
+    switch (cmd) 
+	{
     case SSL_CTRL_GET_READ_AHEAD:
         return (ctx->read_ahead);
     case SSL_CTRL_SET_READ_AHEAD:
@@ -1286,13 +1314,18 @@ const char *SSL_get_cipher_list(const SSL *s, int n)
     return (c->name);
 }
 
-/** specify the ciphers to be used by default by the SSL_CTX */
+/* 
+specify the ciphers to be used by default by the SSL_CTX 
+设置允许使用的密码组
+str -- 表示允许使用的密码组列表， 列表的各部分以冒号分隔，
+	如"RC4-SHA; DES-CBC3-SHA",表示可使用密码组TLS_RSA_WITH_RC4_128_SHA和TLS_RSA_WITH_3DES_EDE_CBC_SHA
+返回值 -- 成功返回1，失败返回0 
+*/
 int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
 {
     STACK_OF(SSL_CIPHER) *sk;
 
-    sk = ssl_create_cipher_list(ctx->method, &ctx->cipher_list,
-                                &ctx->cipher_list_by_id, str);
+    sk = ssl_create_cipher_list(ctx->method, &ctx->cipher_list, &ctx->cipher_list_by_id, str);
     /*
      * ssl_create_cipher_list may return an empty stack if it was unable to
      * find a cipher matching the given rule string (for example if the rule
@@ -1302,7 +1335,8 @@ int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
      */
     if (sk == NULL)
         return 0;
-    else if (sk_SSL_CIPHER_num(sk) == 0) {
+    else if (sk_SSL_CIPHER_num(sk) == 0)
+	{
         SSLerr(SSL_F_SSL_CTX_SET_CIPHER_LIST, SSL_R_NO_CIPHER_MATCH);
         return 0;
     }
@@ -1314,8 +1348,7 @@ int SSL_set_cipher_list(SSL *s, const char *str)
 {
     STACK_OF(SSL_CIPHER) *sk;
 
-    sk = ssl_create_cipher_list(s->ctx->method, &s->cipher_list,
-                                &s->cipher_list_by_id, str);
+    sk = ssl_create_cipher_list(s->ctx->method, &s->cipher_list, &s->cipher_list_by_id, str);
     /* see comment in SSL_CTX_set_cipher_list */
     if (sk == NULL)
         return 0;
@@ -2045,8 +2078,7 @@ void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx,
     ctx->app_verify_arg = arg;
 }
 
-void SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
-                        int (*cb) (int, X509_STORE_CTX *))
+void SSL_CTX_set_verify(SSL_CTX *ctx, int mode, int (*cb) (int, X509_STORE_CTX *))
 {
     ctx->verify_mode = mode;
     ctx->default_verify_callback = cb;
@@ -2571,14 +2603,16 @@ int SSL_do_handshake(SSL *s)
 {
     int ret = 1;
 
-    if (s->handshake_func == NULL) {
+    if (s->handshake_func == NULL) 
+	{
         SSLerr(SSL_F_SSL_DO_HANDSHAKE, SSL_R_CONNECTION_TYPE_NOT_SET);
         return (-1);
     }
 
     s->method->ssl_renegotiate_check(s);
 
-    if (SSL_in_init(s) || SSL_in_before(s)) {
+    if (SSL_in_init(s) || SSL_in_before(s))
+	{
         ret = s->handshake_func(s);
     }
     return (ret);
@@ -2994,8 +3028,14 @@ int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx)
     return (X509_STORE_set_default_paths(ctx->cert_store));
 }
 
-int SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile,
-                                  const char *CApath)
+
+/*
+用于加载受信任的CA证书
+CAfile -- 如果不为NULL,则它指向的文件包含PEM格式编码的一个或多个CA证书。
+CApath -- 如果不为NULL,则它指向一个包含PEM格式的CA证书的目录，目录中每一个文件包含一份CA证书，文件名是证书中CA名的HASH值
+返回值 -- 成功返回1， 失败返回0
+*/
+int SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile, const char *CApath)
 {
     return (X509_STORE_load_locations(ctx->cert_store, CAfile, CApath));
 }

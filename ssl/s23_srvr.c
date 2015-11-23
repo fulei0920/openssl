@@ -141,9 +141,7 @@ static const SSL_METHOD *ssl23_get_server_method(int ver)
         return (NULL);
 }
 
-IMPLEMENT_ssl23_meth_func(SSLv23_server_method,
-                          ssl23_accept,
-                          ssl_undefined_function, ssl23_get_server_method)
+IMPLEMENT_ssl23_meth_func(SSLv23_server_method, ssl23_accept, ssl_undefined_function, ssl23_get_server_method)
 
 int ssl23_accept(SSL *s)
 {
@@ -166,10 +164,12 @@ int ssl23_accept(SSL *s)
     if (!SSL_in_init(s) || SSL_in_before(s))
         SSL_clear(s);
 
-    for (;;) {
+    for (;;)
+	{
         state = s->state;
 
-        switch (s->state) {
+        switch (s->state)
+		{
         case SSL_ST_BEFORE:
         case SSL_ST_ACCEPT:
         case SSL_ST_BEFORE | SSL_ST_ACCEPT:
@@ -182,12 +182,15 @@ int ssl23_accept(SSL *s)
             /* s->version=SSL3_VERSION; */
             s->type = SSL_ST_ACCEPT;
 
-            if (s->init_buf == NULL) {
-                if ((buf = BUF_MEM_new()) == NULL) {
+            if (s->init_buf == NULL) 
+			{
+                if ((buf = BUF_MEM_new()) == NULL)
+				{
                     ret = -1;
                     goto end;
                 }
-                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
+                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH))
+				{
                     BUF_MEM_free(buf);
                     ret = -1;
                     goto end;
