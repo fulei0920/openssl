@@ -399,9 +399,9 @@ typedef struct ssl3_buffer_st
 {
     /* at least SSL3_RT_MAX_PACKET_SIZE bytes, see ssl3_setup_buffers() */
     unsigned char *buf;
-    size_t len;		/* buffer size */
-    int offset;		/* where to 'copy from' */
-    int left;		/* how many bytes left */
+    size_t len;			/* buffer size */
+    int offset;			/* where to 'copy from' */
+    int left;			/* how many bytes left */
 } SSL3_BUFFER;
 
 # endif

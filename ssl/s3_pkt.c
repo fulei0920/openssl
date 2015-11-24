@@ -1019,10 +1019,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         if (!ssl3_setup_read_buffer(s))
             return (-1);
 
-    if ((type && (type != SSL3_RT_APPLICATION_DATA)
-         && (type != SSL3_RT_HANDSHAKE)) || (peek
-                                             && (type !=
-                                                 SSL3_RT_APPLICATION_DATA))) {
+    if ((type && (type != SSL3_RT_APPLICATION_DATA) && (type != SSL3_RT_HANDSHAKE)) || (peek && (type != SSL3_RT_APPLICATION_DATA))) 
+   	{
         SSLerr(SSL_F_SSL3_READ_BYTES, ERR_R_INTERNAL_ERROR);
         return -1;
     }
@@ -1036,7 +1034,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
 
         /* peek == 0 */
         n = 0;
-        while ((len > 0) && (s->s3->handshake_fragment_len > 0)) {
+        while ((len > 0) && (s->s3->handshake_fragment_len > 0)) 
+		{
             *dst++ = *src++;
             len--;
             s->s3->handshake_fragment_len--;
@@ -1052,12 +1051,14 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
      * Now s->s3->handshake_fragment_len == 0 if type == SSL3_RT_HANDSHAKE.
      */
 
-    if (!s->in_handshake && SSL_in_init(s)) {
+    if (!s->in_handshake && SSL_in_init(s)) 
+	{
         /* type == SSL3_RT_APPLICATION_DATA */
         i = s->handshake_func(s);
         if (i < 0)
             return (i);
-        if (i == 0) {
+        if (i == 0) 
+		{
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_SSL_HANDSHAKE_FAILURE);
             return (-1);
         }

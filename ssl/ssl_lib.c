@@ -2899,26 +2899,33 @@ int ssl_init_wbio_buffer(SSL *s, int push)
 {
     BIO *bbio;
 
-    if (s->bbio == NULL) {
+    if (s->bbio == NULL) 
+	{
         bbio = BIO_new(BIO_f_buffer());
         if (bbio == NULL)
             return (0);
         s->bbio = bbio;
-    } else {
+    } 
+	else
+	{
         bbio = s->bbio;
         if (s->bbio == s->wbio)
             s->wbio = BIO_pop(s->wbio);
     }
     (void)BIO_reset(bbio);
 /*      if (!BIO_set_write_buffer_size(bbio,16*1024)) */
-    if (!BIO_set_read_buffer_size(bbio, 1)) {
+    if (!BIO_set_read_buffer_size(bbio, 1))
+	{
         SSLerr(SSL_F_SSL_INIT_WBIO_BUFFER, ERR_R_BUF_LIB);
         return (0);
     }
-    if (push) {
+    if (push) 
+	{
         if (s->wbio != bbio)
             s->wbio = BIO_push(bbio, s->wbio);
-    } else {
+    } 
+	else 
+	{
         if (s->wbio == bbio)
             s->wbio = BIO_pop(bbio);
     }
@@ -3050,8 +3057,7 @@ int SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile, const char *
 }
 #endif
 
-void SSL_set_info_callback(SSL *ssl,
-                           void (*cb) (const SSL *ssl, int type, int val))
+void SSL_set_info_callback(SSL *ssl, void (*cb) (const SSL *ssl, int type, int val))
 {
     ssl->info_callback = cb;
 }
@@ -3060,9 +3066,8 @@ void SSL_set_info_callback(SSL *ssl,
  * One compiler (Diab DCC) doesn't like argument names in returned function
  * pointer.
  */
-void (*SSL_get_info_callback(const SSL *ssl)) (const SSL * /* ssl */ ,
-                                               int /* type */ ,
-                                               int /* val */ ) {
+void (*SSL_get_info_callback(const SSL *ssl)) (const SSL * /* ssl */ , int /* type */ , int /* val */ ) 
+{
     return ssl->info_callback;
 }
 

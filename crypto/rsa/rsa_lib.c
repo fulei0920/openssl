@@ -89,7 +89,8 @@ void RSA_set_default_method(const RSA_METHOD *meth)
 
 const RSA_METHOD *RSA_get_default_method(void)
 {
-    if (default_RSA_meth == NULL) {
+    if (default_RSA_meth == NULL)
+	{
 #ifdef OPENSSL_FIPS
         if (FIPS_mode())
             return FIPS_rsa_pkcs1_ssleay();
@@ -139,7 +140,8 @@ RSA *RSA_new_method(ENGINE *engine)
     RSA *ret;
 
     ret = (RSA *)OPENSSL_malloc(sizeof(RSA));
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         RSAerr(RSA_F_RSA_NEW_METHOD, ERR_R_MALLOC_FAILURE);
         return NULL;
     }
@@ -184,7 +186,8 @@ RSA *RSA_new_method(ENGINE *engine)
     ret->mt_blinding = NULL;
     ret->bignum_data = NULL;
     ret->flags = ret->meth->flags & ~RSA_FLAG_NON_FIPS_ALLOW;
-    if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_RSA, ret, &ret->ex_data)) {
+    if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_RSA, ret, &ret->ex_data)) 
+	{
 #ifndef OPENSSL_NO_ENGINE
         if (ret->engine)
             ENGINE_finish(ret->engine);

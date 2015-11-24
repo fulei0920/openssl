@@ -122,8 +122,10 @@ static int sock_free(BIO *a)
 {
     if (a == NULL)
         return (0);
-    if (a->shutdown) {
-        if (a->init) {
+    if (a->shutdown) 
+	{
+        if (a->init)
+		{
             SHUTDOWN2(a->num);
         }
         a->init = 0;

@@ -72,7 +72,8 @@ BUF_MEM *BUF_MEM_new(void)
     BUF_MEM *ret;
 
     ret = OPENSSL_malloc(sizeof(BUF_MEM));
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         BUFerr(BUF_F_BUF_MEM_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
@@ -99,17 +100,20 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
     char *ret;
     size_t n;
 
-    if (str->length >= len) {
+    if (str->length >= len)
+	{
         str->length = len;
         return (len);
     }
-    if (str->max >= len) {
+    if (str->max >= len) 
+	{
         memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
         return (len);
     }
     /* This limit is sufficient to ensure (len+3)/3*4 < 2**31 */
-    if (len > LIMIT_BEFORE_EXPANSION) {
+    if (len > LIMIT_BEFORE_EXPANSION)
+	{
         BUFerr(BUF_F_BUF_MEM_GROW, ERR_R_MALLOC_FAILURE);
         return 0;
     }
@@ -118,10 +122,13 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
         ret = OPENSSL_malloc(n);
     else
         ret = OPENSSL_realloc(str->data, n);
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         BUFerr(BUF_F_BUF_MEM_GROW, ERR_R_MALLOC_FAILURE);
         len = 0;
-    } else {
+    } 
+	else 
+	{
         str->data = ret;
         str->max = n;
         memset(&str->data[str->length], 0, len - str->length);

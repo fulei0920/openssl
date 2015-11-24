@@ -138,9 +138,7 @@ static const SSL_METHOD *ssl2_get_server_method(int ver)
         return (NULL);
 }
 
-IMPLEMENT_ssl2_meth_func(SSLv2_server_method,
-                         ssl2_accept,
-                         ssl_undefined_function, ssl2_get_server_method)
+IMPLEMENT_ssl2_meth_func(SSLv2_server_method, ssl2_accept, ssl_undefined_function, ssl2_get_server_method)
 
 int ssl2_accept(SSL *s)
 {
@@ -165,7 +163,8 @@ int ssl2_accept(SSL *s)
     if (!SSL_in_init(s) || SSL_in_before(s))
         SSL_clear(s);
 
-    if (s->cert == NULL) {
+    if (s->cert == NULL) 
+	{
         SSLerr(SSL_F_SSL2_ACCEPT, SSL_R_NO_CERTIFICATE_SET);
         return (-1);
     }

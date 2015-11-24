@@ -416,9 +416,11 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
     long n;
     int i, al;
 
-    if (s->s3->tmp.reuse_message) {
+    if (s->s3->tmp.reuse_message) 
+	{
         s->s3->tmp.reuse_message = 0;
-        if ((mt >= 0) && (s->s3->tmp.message_type != mt)) {
+        if ((mt >= 0) && (s->s3->tmp.message_type != mt)) 
+		{
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_SSL3_GET_MESSAGE, SSL_R_UNEXPECTED_MESSAGE);
             goto f_err;
@@ -432,15 +434,17 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 
     p = (unsigned char *)s->init_buf->data;
 
-    if (s->state == st1) {      /* s->init_num < 4 */
+    if (s->state == st1)	  /* s->init_num < 4 */
+	{    
         int skip_message;
 
-        do {
-            while (s->init_num < 4) {
-                i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE,
-                                              &p[s->init_num],
-                                              4 - s->init_num, 0);
-                if (i <= 0) {
+        do 
+		{
+            while (s->init_num < 4) 
+			{
+                i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE, &p[s->init_num], 4 - s->init_num, 0);
+                if (i <= 0) 
+				{
                     s->rwstate = SSL_READING;
                     *ok = 0;
                     return i;
@@ -514,7 +518,8 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
     /* next state (stn) */
     p = s->init_msg;
     n = s->s3->tmp.message_size - s->init_num;
-    while (n > 0) {
+    while (n > 0) 
+	{
         i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE, &p[s->init_num],
                                       n, 0);
         if (i <= 0) {
@@ -680,7 +685,8 @@ static void *freelist_extract(SSL_CTX *ctx, int for_read, int sz)
     list = for_read ? ctx->rbuf_freelist : ctx->wbuf_freelist;
     if (list != NULL && sz == (int)list->chunklen)
         ent = list->head;
-    if (ent != NULL) {
+    if (ent != NULL) 
+	{
         list->head = ent->next;
         result = ent;
         if (--list->len == 0)
@@ -699,9 +705,9 @@ static void freelist_insert(SSL_CTX *ctx, int for_read, size_t sz, void *mem)
 
     CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
     list = for_read ? ctx->rbuf_freelist : ctx->wbuf_freelist;
-    if (list != NULL &&
-        (sz == list->chunklen || list->chunklen == 0) &&
-        list->len < ctx->freelist_max_len && sz >= sizeof(*ent)) {
+    if (list != NULL && (sz == list->chunklen || list->chunklen == 0) &&
+        list->len < ctx->freelist_max_len && sz >= sizeof(*ent))
+    {
         list->chunklen = sz;
         ent = mem;
         ent->next = list->head;
@@ -733,10 +739,11 @@ int ssl3_setup_read_buffer(SSL *s)
     align = (-SSL3_RT_HEADER_LENGTH) & (SSL3_ALIGN_PAYLOAD - 1);
 #endif
 
-    if (s->s3->rbuf.buf == NULL) {
-        len = SSL3_RT_MAX_PLAIN_LENGTH
-            + SSL3_RT_MAX_ENCRYPTED_OVERHEAD + headerlen + align;
-        if (s->options & SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER) {
+    if (s->s3->rbuf.buf == NULL) 
+	{
+        len = SSL3_RT_MAX_PLAIN_LENGTH + SSL3_RT_MAX_ENCRYPTED_OVERHEAD + headerlen + align;
+        if (s->options & SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER)
+		{
             s->s3->init_extra = 1;
             len += SSL3_RT_MAX_EXTRA;
         }

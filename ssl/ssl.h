@@ -426,8 +426,7 @@ struct ssl_method_st
     int (*ssl_shutdown) (SSL *s);
     int (*ssl_renegotiate) (SSL *s);
     int (*ssl_renegotiate_check) (SSL *s);
-    long (*ssl_get_message) (SSL *s, int st1, int stn, int mt, long
-                             max, int *ok);
+    long (*ssl_get_message) (SSL *s, int st1, int stn, int mt, long max, int *ok);
     int (*ssl_read_bytes) (SSL *s, int type, unsigned char *buf, int len,
                            int peek);
     int (*ssl_write_bytes) (SSL *s, int type, const void *buf_, int len);
@@ -473,9 +472,9 @@ struct ssl_method_st
  * Look in ssl/ssl_asn1.c for more details
  * I'm using EXPLICIT tags so I can read the damn things using asn1parse :-).
  */
-struct ssl_session_st {
-    int ssl_version;            /* what ssl version session info is being
-                                 * kept in here? */
+struct ssl_session_st 
+{
+    int ssl_version;            /* what ssl version session info is being kept in here? */
     /* only really used in SSLv2 */
     unsigned int key_arg_length;
     unsigned char key_arg[SSL_MAX_KEY_ARG_LENGTH];
@@ -828,7 +827,7 @@ struct ssl_ctx_st
     STACK_OF(SSL_CIPHER) *cipher_list;
     STACK_OF(SSL_CIPHER) *cipher_list_by_id;		/* same as above but sorted for lookup */
     struct x509_store_st *cert_store;	 			/* X509_STORE */
-    LHASH_OF(SSL_SESSION) *sessions;
+    LHASH_OF(SSL_SESSION) *sessions;				/* ´æ´¢ËùÓÐsession*/
     /*
      * Most session-ids that will be cached, default is
      * SSL_SESSION_CACHE_MAX_SIZE_DEFAULT. 0 is unlimited.
@@ -1287,11 +1286,8 @@ struct ssl_st
     int new_session;
     /* don't send shutdown packets */
     int quiet_shutdown;
-    /* we have shut things down, 0x01 sent, 0x02 for received */
-    int shutdown;
-    
+    int shutdown;				 /* we have shut things down, 0x01 sent, 0x02 for received */
     int state;					/* where we are */
-   
     int rstate;					/* where we are when reading */
     BUF_MEM *init_buf;          /* buffer used during init */
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
@@ -1339,7 +1335,7 @@ struct ssl_st
     /* session info */
     /* client cert? */
     /* This is used to hold the server certificate used */
-    struct cert_st /* CERT */ *cert;
+    struct cert_st  *cert;	/* CERT */
     /*
      * the session_id_context is used to ensure sessions are only reused in
      * the appropriate context

@@ -635,10 +635,12 @@ typedef struct ssl3_comp_st {
 # endif
 
 # ifndef OPENSSL_NO_BUF_FREELISTS
-typedef struct ssl3_buf_freelist_st {
-    size_t chunklen;
-    unsigned int len;
-    struct ssl3_buf_freelist_entry_st *head;
+/*相同块大小的内存节点链表*/
+typedef struct ssl3_buf_freelist_st 
+{
+    size_t chunklen;		/*块大小*/
+    unsigned int len;		/*链表节点个数*/
+    struct ssl3_buf_freelist_entry_st *head;  /*指向链表头节点*/
 } SSL3_BUF_FREELIST;
 
 typedef struct ssl3_buf_freelist_entry_st 

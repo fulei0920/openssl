@@ -331,7 +331,7 @@ struct bio_st
     int shutdown;
     int flags;                  /* extra storage */
     int retry_reason;
-    int num;
+    int num;					/*socket-- fd*/
     void *ptr;
     struct bio_st *next_bio;    /* used by filter BIOs */
     struct bio_st *prev_bio;    /* used by filter BIOs */

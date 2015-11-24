@@ -230,7 +230,8 @@ int main(int argc, char *argv[])
 
     plen = sizeof(ptext_ex) - 1;
 
-    for (v = 0; v < 6; v++) {
+    for (v = 0; v < 6; v++) 
+	{
         key = RSA_new();
         switch (v % 3) {
         case 0:

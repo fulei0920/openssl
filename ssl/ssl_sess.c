@@ -846,10 +846,13 @@ static int remove_session_lock(SSL_CTX *ctx, SSL_SESSION *c, int lck)
     SSL_SESSION *r;
     int ret = 0;
 
-    if ((c != NULL) && (c->session_id_length != 0)) {
+    if ((c != NULL) && (c->session_id_length != 0)) 
+	{
         if (lck)
             CRYPTO_w_lock(CRYPTO_LOCK_SSL_CTX);
-        if ((r = lh_SSL_SESSION_retrieve(ctx->sessions, c)) == c) {
+		
+        if ((r = lh_SSL_SESSION_retrieve(ctx->sessions, c)) == c) 
+		{
             ret = 1;
             r = lh_SSL_SESSION_delete(ctx->sessions, c);
             SSL_SESSION_list_remove(ctx, c);
@@ -858,7 +861,8 @@ static int remove_session_lock(SSL_CTX *ctx, SSL_SESSION *c, int lck)
         if (lck)
             CRYPTO_w_unlock(CRYPTO_LOCK_SSL_CTX);
 
-        if (ret) {
+        if (ret) 
+		{
             r->not_resumable = 1;
             if (ctx->remove_session_cb != NULL)
                 ctx->remove_session_cb(ctx, r);
@@ -1170,22 +1174,31 @@ static void SSL_SESSION_list_remove(SSL_CTX *ctx, SSL_SESSION *s)
     if ((s->next == NULL) || (s->prev == NULL))
         return;
 
-    if (s->next == (SSL_SESSION *)&(ctx->session_cache_tail)) {
+    if (s->next == (SSL_SESSION *)&(ctx->session_cache_tail))
+	{
         /* last element in list */
-        if (s->prev == (SSL_SESSION *)&(ctx->session_cache_head)) {
+        if (s->prev == (SSL_SESSION *)&(ctx->session_cache_head)) 
+		{
             /* only one element in list */
             ctx->session_cache_head = NULL;
             ctx->session_cache_tail = NULL;
-        } else {
+        } 
+		else
+		{
             ctx->session_cache_tail = s->prev;
             s->prev->next = (SSL_SESSION *)&(ctx->session_cache_tail);
         }
-    } else {
-        if (s->prev == (SSL_SESSION *)&(ctx->session_cache_head)) {
+    } 
+	else
+	{
+        if (s->prev == (SSL_SESSION *)&(ctx->session_cache_head)) 
+		{
             /* first element in list */
             ctx->session_cache_head = s->next;
             s->next->prev = (SSL_SESSION *)&(ctx->session_cache_head);
-        } else {
+        } 
+		else 
+		{
             /* middle of list */
             s->next->prev = s->prev;
             s->prev->next = s->next;
@@ -1212,9 +1225,7 @@ static void SSL_SESSION_list_add(SSL_CTX *ctx, SSL_SESSION *s)
     }
 }
 
-void SSL_CTX_sess_set_new_cb(SSL_CTX *ctx,
-                             int (*cb) (struct ssl_st *ssl,
-                                        SSL_SESSION *sess))
+void SSL_CTX_sess_set_new_cb(SSL_CTX *ctx, int (*cb) (struct ssl_st *ssl, SSL_SESSION *sess))
 {
     ctx->new_session_cb = cb;
 }
@@ -1248,8 +1259,7 @@ SSL_SESSION *(*SSL_CTX_sess_get_get_cb(SSL_CTX *ctx)) (SSL *ssl,
     return ctx->get_session_cb;
 }
 
-void SSL_CTX_set_info_callback(SSL_CTX *ctx,
-                               void (*cb) (const SSL *ssl, int type, int val))
+void SSL_CTX_set_info_callback(SSL_CTX *ctx, void (*cb) (const SSL *ssl, int type, int val))
 {
     ctx->info_callback = cb;
 }

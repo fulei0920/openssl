@@ -139,9 +139,7 @@ static const SSL_METHOD *ssl23_get_client_method(int ver)
         return (NULL);
 }
 
-IMPLEMENT_ssl23_meth_func(SSLv23_client_method,
-                          ssl_undefined_function,
-                          ssl23_connect, ssl23_get_client_method)
+IMPLEMENT_ssl23_meth_func(SSLv23_client_method, ssl_undefined_function, ssl23_connect, ssl23_get_client_method)
 
 int ssl23_connect(SSL *s)
 {
@@ -164,7 +162,8 @@ int ssl23_connect(SSL *s)
     if (!SSL_in_init(s) || SSL_in_before(s))
         SSL_clear(s);
 
-    for (;;) {
+    for (;;)
+	{
         state = s->state;
 
         switch (s->state) {

@@ -231,7 +231,8 @@ int ssl3_accept(SSL *s)
     if (!SSL_in_init(s) || SSL_in_before(s))
         SSL_clear(s);
 
-    if (s->cert == NULL) {
+    if (s->cert == NULL)
+	{
         SSLerr(SSL_F_SSL3_ACCEPT, SSL_R_NO_CERTIFICATE_SET);
         return (-1);
     }
@@ -241,13 +242,15 @@ int ssl3_accept(SSL *s)
      * don't await it anymore, because Heartbeats don't make sense during
      * handshakes anyway.
      */
-    if (s->tlsext_hb_pending) {
+    if (s->tlsext_hb_pending) 
+	{
         s->tlsext_hb_pending = 0;
         s->tlsext_hb_seq++;
     }
 #endif
 
-    for (;;) {
+    for (;;) 
+	{
         state = s->state;
 
         switch (s->state) {
@@ -264,7 +267,8 @@ int ssl3_accept(SSL *s)
             if (cb != NULL)
                 cb(s, SSL_CB_HANDSHAKE_START, 1);
 
-            if ((s->version >> 8) != 3) {
+            if ((s->version >> 8) != 3) 
+			{
                 SSLerr(SSL_F_SSL3_ACCEPT, ERR_R_INTERNAL_ERROR);
                 s->state = SSL_ST_ERR;
                 return -1;
@@ -360,7 +364,8 @@ int ssl3_accept(SSL *s)
         case SSL3_ST_SR_CLNT_HELLO_C:
 
             s->shutdown = 0;
-            if (s->rwstate != SSL_X509_LOOKUP) {
+            if (s->rwstate != SSL_X509_LOOKUP) 
+			{
                 ret = ssl3_get_client_hello(s);
                 if (ret <= 0)
                     goto end;
@@ -983,15 +988,12 @@ int ssl3_get_client_hello(SSL *s)
      * switching should be handled by a different method. If we are SSLv3, we
      * will respond with SSLv3, even if prompted with TLSv1.
      */
-    if (s->state == SSL3_ST_SR_CLNT_HELLO_A) {
+    if (s->state == SSL3_ST_SR_CLNT_HELLO_A) 
+	{
         s->state = SSL3_ST_SR_CLNT_HELLO_B;
     }
     s->first_packet = 1;
-    n = s->method->ssl_get_message(s,
-                                   SSL3_ST_SR_CLNT_HELLO_B,
-                                   SSL3_ST_SR_CLNT_HELLO_C,
-                                   SSL3_MT_CLIENT_HELLO,
-                                   SSL3_RT_MAX_PLAIN_LENGTH, &ok);
+    n = s->method->ssl_get_message(s, SSL3_ST_SR_CLNT_HELLO_B, SSL3_ST_SR_CLNT_HELLO_C, SSL3_MT_CLIENT_HELLO, SSL3_RT_MAX_PLAIN_LENGTH, &ok);
 
     if (!ok)
         return ((int)n);
@@ -999,10 +1001,10 @@ int ssl3_get_client_hello(SSL *s)
     d = p = (unsigned char *)s->init_msg;
 
     /*
-     * 2 bytes for client version, SSL3_RANDOM_SIZE bytes for random, 1 byte
-     * for session id length
+     * 2 bytes for client version, SSL3_RANDOM_SIZE bytes for random, 1 byte for session id length
      */
-    if (n < 2 + SSL3_RANDOM_SIZE + 1) {
+    if (n < 2 + SSL3_RANDOM_SIZE + 1) 
+	{
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_TOO_SHORT);
         goto f_err;
@@ -1077,8 +1079,8 @@ int ssl3_get_client_hello(SSL *s)
      * unset): for servers, this essentially just means that the
      * SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION setting will be ignored.
      */
-    if ((s->new_session
-         && (s->options & SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION))) {
+    if ((s->new_session && (s->options & SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION))) 
+	{
         if (!ssl_get_new_session(s, 1))
             goto err;
     } else {
