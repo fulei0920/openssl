@@ -61,6 +61,7 @@
 #include <openssl/lhash.h>
 #include "ssl_locl.h"
 
+/*初始化ssl库--注册可用的密码和消息摘要算法*/
 int SSL_library_init(void)
 {
 

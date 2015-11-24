@@ -938,11 +938,11 @@ struct ssl_ctx_st
                           const void *buf, size_t len, SSL *ssl, void *arg);
     void *msg_callback_arg;
 
-    int verify_mode;
+    int verify_mode;  		/*验证方式*/
     unsigned int sid_ctx_length;
     unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
-    /* called 'verify_callback' in the SSL */
-    int (*default_verify_callback) (int ok, X509_STORE_CTX *ctx);
+    
+    int (*default_verify_callback) (int ok, X509_STORE_CTX *ctx); /* called 'verify_callback' in the SSL */
 
     /* Default generate session ID callback. */
     GEN_SESSION_CB generate_session_id;
@@ -1255,17 +1255,12 @@ struct ssl_st
      * is so data can be read and written to different handlers
      */
 #  ifndef OPENSSL_NO_BIO
-    /* used by SSL_read */
-    BIO *rbio;
-    /* used by SSL_write */
-    BIO *wbio;
-    /* used during session-id reuse to concatenate messages */
-    BIO *bbio;
+    BIO *rbio;		 /* used by SSL_read */
+    BIO *wbio;		/* used by SSL_write */
+    BIO *bbio;		/* used during session-id reuse to concatenate messages */
 #  else
-    /* used by SSL_read */
-    char *rbio;
-    /* used by SSL_write */
-    char *wbio;
+    char *rbio;		 /* used by SSL_read */
+    char *wbio;		/* used by SSL_write */
     char *bbio;
 #  endif
     /*
@@ -1293,14 +1288,10 @@ struct ssl_st
      * SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION is set
      */
     int new_session;
-    /* don't send shutdown packets */
-    int quiet_shutdown;
-    /* we have shut things down, 0x01 sent, 0x02 for received */
-    int shutdown;
-    /* where we are */
-    int state;
-    /* where we are when reading */
-    int rstate;
+    int quiet_shutdown;			/* don't send shutdown packets */
+    int shutdown;				/* we have shut things down, 0x01 sent, 0x02 for received */
+    int state;					/* where we are */
+    int rstate;					/* where we are when reading */
     BUF_MEM *init_buf;          /* buffer used during init */
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
     int init_num;               /* amount read/written */
@@ -1314,8 +1305,7 @@ struct ssl_st
     int read_ahead;             /* Read as many input bytes as possible (for non-blocking reads) */
 	
     /* callback that allows applications to peek at protocol messages */
-    void (*msg_callback) (int write_p, int version, int content_type,
-                          const void *buf, size_t len, SSL *ssl, void *arg);
+    void (*msg_callback) (int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg);
     void *msg_callback_arg;
     int hit;                    /* reusing a previous session */
     X509_VERIFY_PARAM *param;
@@ -1583,8 +1573,8 @@ size_t SSL_get_peer_finished(const SSL *s, void *buf, size_t count);
  * use either SSL_VERIFY_NONE or SSL_VERIFY_PEER, the last 2 options are
  * 'ored' with SSL_VERIFY_PEER if they are desired
  */
-# define SSL_VERIFY_NONE                 0x00
-# define SSL_VERIFY_PEER                 0x01
+# define SSL_VERIFY_NONE                 0x00  	/*表示不验证*/
+# define SSL_VERIFY_PEER                 0x01	/*用于客户端时要求服务器必须提供证书，用于服务器时，服务器会发出证书请求消息要求客户端提供证书(但客户端也可不提供)*/
 # define SSL_VERIFY_FAIL_IF_NO_PEER_CERT 0x02
 # define SSL_VERIFY_CLIENT_ONCE          0x04
 
@@ -2012,8 +2002,16 @@ const char *SSL_get_version(const SSL *s);
 int SSL_CTX_set_ssl_version(SSL_CTX *ctx, const SSL_METHOD *meth);
 
 # ifndef OPENSSL_NO_SSL2
+/*
+支持sslv2协议的连接方法
+用该放建立的SSL结构(代表SSL连接)只能理解sslv2协议
+既可用于服务端又可用于客户端
+通过在连接前对SSL结构使用 void SSL_set_connect_state(SSL *ssl) 或 void SSL_set_accept_state(SSL *ssl)来指定是作为客户还是服务器
+*/
 const SSL_METHOD *SSLv2_method(void); /* SSLv2 */
+/*用于服务端*/
 const SSL_METHOD *SSLv2_server_method(void); /* SSLv2 */
+/*用于客户端*/
 const SSL_METHOD *SSLv2_client_method(void); /* SSLv2 */
 # endif
 

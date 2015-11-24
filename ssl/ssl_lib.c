@@ -785,7 +785,8 @@ int SSL_get_verify_depth(const SSL *s)
     return X509_VERIFY_PARAM_get_depth(s->param);
 }
 
-int (*SSL_get_verify_callback(const SSL *s)) (int, X509_STORE_CTX *) {
+int (*SSL_get_verify_callback(const SSL *s)) (int, X509_STORE_CTX *) 
+{
     return (s->verify_callback);
 }
 
@@ -799,12 +800,12 @@ int SSL_CTX_get_verify_depth(const SSL_CTX *ctx)
     return X509_VERIFY_PARAM_get_depth(ctx->param);
 }
 
-int (*SSL_CTX_get_verify_callback(const SSL_CTX *ctx)) (int, X509_STORE_CTX *) {
+int (*SSL_CTX_get_verify_callback(const SSL_CTX *ctx)) (int, X509_STORE_CTX *) 
+{
     return (ctx->default_verify_callback);
 }
 
-void SSL_set_verify(SSL *s, int mode,
-                    int (*callback) (int ok, X509_STORE_CTX *ctx))
+void SSL_set_verify(SSL *s, int mode, int (*callback) (int ok, X509_STORE_CTX *ctx))
 {
     s->verify_mode = mode;
     if (callback != NULL)
@@ -1719,6 +1720,10 @@ static int ssl_session_cmp(const SSL_SESSION *a, const SSL_SESSION *b)
 static IMPLEMENT_LHASH_HASH_FN(ssl_session, SSL_SESSION)
 static IMPLEMENT_LHASH_COMP_FN(ssl_session, SSL_SESSION)
 
+/*
+创建SSL_CTX结构，
+参数meth是所用的连接方法
+*/
 SSL_CTX *SSL_CTX_new(const SSL_METHOD *meth)
 {
     SSL_CTX *ret = NULL;
@@ -2045,8 +2050,12 @@ void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx,
     ctx->app_verify_arg = arg;
 }
 
-void SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
-                        int (*cb) (int, X509_STORE_CTX *))
+/*
+用于设置验证方式
+mode -- SSL_VERIFY_NONE, SSL_VERIFY_PEER
+
+*/
+void SSL_CTX_set_verify(SSL_CTX *ctx, int mode, int (*cb) (int, X509_STORE_CTX *))
 {
     ctx->verify_mode = mode;
     ctx->default_verify_callback = cb;
