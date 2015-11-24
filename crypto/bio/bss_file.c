@@ -167,12 +167,17 @@ static FILE *file_fopen(const char *filename, const char *mode)
     return (file);
 }
 
+
+/*
+根据文件路劲和文件打开模式，创建并初始化一个文件类型的BIO
+*/
 BIO *BIO_new_file(const char *filename, const char *mode)
 {
     BIO  *ret;
     FILE *file = file_fopen(filename, mode);
 
-    if (file == NULL) {
+    if (file == NULL)
+	{
         SYSerr(SYS_F_FOPEN, get_last_sys_error());
         ERR_add_error_data(5, "fopen('", filename, "','", mode, "')");
         if (errno == ENOENT)
@@ -181,17 +186,20 @@ BIO *BIO_new_file(const char *filename, const char *mode)
             BIOerr(BIO_F_BIO_NEW_FILE, ERR_R_SYS_LIB);
         return (NULL);
     }
-    if ((ret = BIO_new(BIO_s_file())) == NULL) {
+    if ((ret = BIO_new(BIO_s_file())) == NULL) 
+	{
         fclose(file);
         return (NULL);
     }
 
-    BIO_clear_flags(ret, BIO_FLAGS_UPLINK); /* we did fopen -> we disengage
-                                             * UPLINK */
+    BIO_clear_flags(ret, BIO_FLAGS_UPLINK); /* we did fopen -> we disengage UPLINK */
     BIO_set_fp(ret, file, BIO_CLOSE);
     return (ret);
 }
 
+/*
+根据文件流描述符，创建并初始化一个文件类型的BIO
+*/
 BIO *BIO_new_fp(FILE *stream, int close_flag)
 {
     BIO *ret;

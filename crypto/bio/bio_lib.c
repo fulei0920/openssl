@@ -64,7 +64,7 @@
 #include <openssl/stack.h>
 
 
-/*创建BIO*/
+/*创建并初始化BIO*/
 BIO *BIO_new(BIO_METHOD *method)
 {
     BIO *ret = NULL;
@@ -356,15 +356,15 @@ long BIO_ctrl(BIO *b, int cmd, long larg, void *parg)
     if (b == NULL)
         return (0);
 
-    if ((b->method == NULL) || (b->method->ctrl == NULL)) {
+    if ((b->method == NULL) || (b->method->ctrl == NULL)) 
+	{
         BIOerr(BIO_F_BIO_CTRL, BIO_R_UNSUPPORTED_METHOD);
         return (-2);
     }
 
     cb = b->callback;
 
-    if ((cb != NULL) &&
-        ((ret = cb(b, BIO_CB_CTRL, parg, cmd, larg, 1L)) <= 0))
+    if ((cb != NULL) && ((ret = cb(b, BIO_CB_CTRL, parg, cmd, larg, 1L)) <= 0))
         return (ret);
 
     ret = b->method->ctrl(b, cmd, larg, parg);
@@ -513,7 +513,8 @@ void BIO_free_all(BIO *bio)
     BIO *b;
     int ref;
 
-    while (bio != NULL) {
+    while (bio != NULL) 
+	{
         b = bio;
         ref = b->references;
         bio = bio->next_bio;

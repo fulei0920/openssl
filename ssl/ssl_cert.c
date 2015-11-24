@@ -382,12 +382,15 @@ int ssl_cert_inst(CERT **o)
      * in SSL_CTX_new).
      */
 
-    if (o == NULL) {
+    if (o == NULL) 
+	{
         SSLerr(SSL_F_SSL_CERT_INST, ERR_R_PASSED_NULL_PARAMETER);
         return (0);
     }
-    if (*o == NULL) {
-        if ((*o = ssl_cert_new()) == NULL) {
+    if (*o == NULL) 
+	{
+        if ((*o = ssl_cert_new()) == NULL) 
+		{
             SSLerr(SSL_F_SSL_CERT_INST, ERR_R_MALLOC_FAILURE);
             return (0);
         }

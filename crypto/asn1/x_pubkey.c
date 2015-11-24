@@ -131,7 +131,8 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
     if (key == NULL)
         goto error;
 
-    if (key->pkey != NULL) {
+    if (key->pkey != NULL) 
+	{
         CRYPTO_add(&key->pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
         return key->pkey;
     }
@@ -139,7 +140,8 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
     if (key->public_key == NULL)
         goto error;
 
-    if ((ret = EVP_PKEY_new()) == NULL) {
+    if ((ret = EVP_PKEY_new()) == NULL) 
+	{
         X509err(X509_F_X509_PUBKEY_GET, ERR_R_MALLOC_FAILURE);
         goto error;
     }

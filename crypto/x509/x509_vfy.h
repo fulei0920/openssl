@@ -162,7 +162,6 @@ typedef struct x509_lookup_method_st {
  * including an X509_VERIFY_PARAM structure in related structures the
  * parameters used can be customized
  */
-
 typedef struct X509_VERIFY_PARAM_st 
 {
     char *name;
@@ -178,8 +177,8 @@ typedef struct X509_VERIFY_PARAM_st
 DECLARE_STACK_OF(X509_VERIFY_PARAM)
 
 /*
- * This is used to hold everything.  It is used for all certificate
- * validation.  Once we have a certificate chain, the 'verify' function is
+ * This is used to hold everything.  It is used for all certificate validation.  
+ * Once we have a certificate chain, the 'verify' function is
  * then called to actually check the cert chain.
  */
 struct x509_store_st 
@@ -219,7 +218,8 @@ int X509_STORE_set_depth(X509_STORE *store, int depth);
 # define X509_STORE_set_verify_func(ctx,func)    ((ctx)->verify=(func))
 
 /* This is the functions plus an instance of the local variables. */
-struct x509_lookup_st {
+struct x509_lookup_st 
+{
     int init;                   /* have we been started */
     int skip;                   /* don't use us. */
     X509_LOOKUP_METHOD *method; /* the functions */

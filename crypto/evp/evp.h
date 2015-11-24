@@ -125,13 +125,18 @@ extern "C" {
  * Type needs to be a bit field Sub-type needs to be for variations on the
  * method, as in, can it do arbitrary encryption....
  */
-struct evp_pkey_st {
+/*
+±Ì æ√‹‘ø(π´‘ø/ÀΩ‘ø)
+*/
+struct evp_pkey_st
+{
     int type;
     int save_type;
     int references;
     const EVP_PKEY_ASN1_METHOD *ameth;
     ENGINE *engine;
-    union {
+    union 
+	{
         char *ptr;
 # ifndef OPENSSL_NO_RSA
         struct rsa_st *rsa;     /* RSA */

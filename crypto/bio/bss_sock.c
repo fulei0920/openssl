@@ -79,7 +79,8 @@ static int sock_new(BIO *h);
 static int sock_free(BIO *data);
 int BIO_sock_should_retry(int s);
 
-static BIO_METHOD methods_sockp = {
+static BIO_METHOD methods_sockp = 
+{
     BIO_TYPE_SOCKET,
     "socket",
     sock_write,
@@ -135,11 +136,13 @@ static int sock_read(BIO *b, char *out, int outl)
 {
     int ret = 0;
 
-    if (out != NULL) {
+    if (out != NULL)
+	{
         clear_socket_error();
         ret = readsocket(b->num, out, outl);
         BIO_clear_retry_flags(b);
-        if (ret <= 0) {
+        if (ret <= 0) 
+		{
             if (BIO_sock_should_retry(ret))
                 BIO_set_retry_read(b);
         }
@@ -166,7 +169,8 @@ static long sock_ctrl(BIO *b, int cmd, long num, void *ptr)
     long ret = 1;
     int *ip;
 
-    switch (cmd) {
+    switch (cmd)
+	{
     case BIO_C_SET_FD:
         sock_free(b);
         b->num = *((int *)ptr);
@@ -174,12 +178,14 @@ static long sock_ctrl(BIO *b, int cmd, long num, void *ptr)
         b->init = 1;
         break;
     case BIO_C_GET_FD:
-        if (b->init) {
+        if (b->init) 
+		{
             ip = (int *)ptr;
             if (ip != NULL)
                 *ip = b->num;
             ret = b->num;
-        } else
+        } 
+		else
             ret = -1;
         break;
     case BIO_CTRL_GET_CLOSE:

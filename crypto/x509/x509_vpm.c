@@ -253,6 +253,10 @@ int X509_VERIFY_PARAM_set_trust(X509_VERIFY_PARAM *param, int trust)
     return X509_TRUST_set(&param->trust, trust);
 }
 
+
+/*
+设置验证用户证书的最大的上级数
+*/
 void X509_VERIFY_PARAM_set_depth(X509_VERIFY_PARAM *param, int depth)
 {
     param->depth = depth;

@@ -3616,7 +3616,8 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 
         /* A Thawte special :-) */
     case SSL_CTRL_EXTRA_CHAIN_CERT:
-        if (ctx->extra_certs == NULL) {
+        if (ctx->extra_certs == NULL) 
+		{
             if ((ctx->extra_certs = sk_X509_new_null()) == NULL)
                 return (0);
         }
