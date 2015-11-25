@@ -72,12 +72,11 @@ int RSA_size(const RSA *r)
     return (BN_num_bytes(r->n));
 }
 
-int RSA_public_encrypt(int flen, const unsigned char *from, unsigned char *to,
-                       RSA *rsa, int padding)
+int RSA_public_encrypt(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
 {
 #ifdef OPENSSL_FIPS
-    if (FIPS_mode() && !(rsa->meth->flags & RSA_FLAG_FIPS_METHOD)
-        && !(rsa->flags & RSA_FLAG_NON_FIPS_ALLOW)) {
+    if (FIPS_mode() && !(rsa->meth->flags & RSA_FLAG_FIPS_METHOD) && !(rsa->flags & RSA_FLAG_NON_FIPS_ALLOW))
+  	{
         RSAerr(RSA_F_RSA_PUBLIC_ENCRYPT, RSA_R_NON_FIPS_RSA_METHOD);
         return -1;
     }

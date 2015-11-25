@@ -276,8 +276,8 @@ extern "C" {
 
 # define BN_DEFAULT_BITS 1280
 
-# define BN_FLG_MALLOCED         0x01
-# define BN_FLG_STATIC_DATA      0x02
+# define BN_FLG_MALLOCED         0x01	/*内存时动态分配的*/
+# define BN_FLG_STATIC_DATA      0x02  	/*内存时静态分配的*/
 
 /*
  * avoid leaking exponent information through timing,
@@ -327,9 +327,9 @@ typedef struct bn_recp_ctx_st BN_RECP_CTX;
 typedef struct bn_gencb_st BN_GENCB;
 # endif
 
-struct bignum_st {
-    BN_ULONG *d;                /* Pointer to an array of 'BN_BITS2' bit
-                                 * chunks. */
+struct bignum_st 
+{
+    BN_ULONG *d;                /* Pointer to an array of 'BN_BITS2' bit chunks. */
     int top;                    /* Index of last used d +1. */
     /* The next are internal book keeping for bn_expand. */
     int dmax;                   /* Size of the d array. */
@@ -338,7 +338,8 @@ struct bignum_st {
 };
 
 /* Used for montgomery multiplication */
-struct bn_mont_ctx_st {
+struct bn_mont_ctx_st 
+{
     int ri;                     /* number of bits in R */
     BIGNUM RR;                  /* used to convert to montgomery form */
     BIGNUM N;                   /* The modulus */

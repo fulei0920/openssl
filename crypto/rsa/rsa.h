@@ -82,29 +82,19 @@ extern "C" {
 /* typedef struct rsa_st RSA; */
 /* typedef struct rsa_meth_st RSA_METHOD; */
 
-struct rsa_meth_st {
+struct rsa_meth_st 
+{
     const char *name;
-    int (*rsa_pub_enc) (int flen, const unsigned char *from,
-                        unsigned char *to, RSA *rsa, int padding);
-    int (*rsa_pub_dec) (int flen, const unsigned char *from,
-                        unsigned char *to, RSA *rsa, int padding);
-    int (*rsa_priv_enc) (int flen, const unsigned char *from,
-                         unsigned char *to, RSA *rsa, int padding);
-    int (*rsa_priv_dec) (int flen, const unsigned char *from,
-                         unsigned char *to, RSA *rsa, int padding);
-    /* Can be null */
-    int (*rsa_mod_exp) (BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);
-    /* Can be null */
-    int (*bn_mod_exp) (BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
-                       const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);
-    /* called at new */
-    int (*init) (RSA *rsa);
-    /* called at free */
-    int (*finish) (RSA *rsa);
-    /* RSA_METHOD_FLAG_* things */
-    int flags;
-    /* may be needed! */
-    char *app_data;
+    int (*rsa_pub_enc) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+    int (*rsa_pub_dec) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+    int (*rsa_priv_enc) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+    int (*rsa_priv_dec) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+    int (*rsa_mod_exp) (BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);  /* Can be null */
+    int (*bn_mod_exp) (BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);  /* Can be null */
+    int (*init) (RSA *rsa); /* called at new */
+    int (*finish) (RSA *rsa);  /* called at free */
+    int flags; /* RSA_METHOD_FLAG_* things */
+    char *app_data;  /* may be needed! */
     /*
      * New sign and verify functions: some libraries don't allow arbitrary
      * data to be signed/verified: this allows them to be used. Note: for
@@ -113,8 +103,7 @@ struct rsa_meth_st {
      * for backwards compatibility this functionality is only enabled if the
      * RSA_FLAG_SIGN_VER option is set in 'flags'.
      */
-    int (*rsa_sign) (int type,
-                     const unsigned char *m, unsigned int m_length,
+    int (*rsa_sign) (int type, const unsigned char *m, unsigned int m_length,
                      unsigned char *sigret, unsigned int *siglen,
                      const RSA *rsa);
     int (*rsa_verify) (int dtype, const unsigned char *m,

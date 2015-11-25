@@ -293,16 +293,19 @@ static BN_ULONG *bn_expand_internal(const BIGNUM *b, int words)
 
     bn_check_top(b);
 
-    if (words > (INT_MAX / (4 * BN_BITS2))) {
+    if (words > (INT_MAX / (4 * BN_BITS2))) 
+	{
         BNerr(BN_F_BN_EXPAND_INTERNAL, BN_R_BIGNUM_TOO_LONG);
         return NULL;
     }
-    if (BN_get_flags(b, BN_FLG_STATIC_DATA)) {
+    if (BN_get_flags(b, BN_FLG_STATIC_DATA)) 
+	{
         BNerr(BN_F_BN_EXPAND_INTERNAL, BN_R_EXPAND_ON_STATIC_BIGNUM_DATA);
         return (NULL);
     }
     a = A = (BN_ULONG *)OPENSSL_malloc(sizeof(BN_ULONG) * words);
-    if (A == NULL) {
+    if (A == NULL) 
+	{
         BNerr(BN_F_BN_EXPAND_INTERNAL, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
@@ -319,7 +322,8 @@ static BN_ULONG *bn_expand_internal(const BIGNUM *b, int words)
 #if 1
     B = b->d;
     /* Check if the previous number needs to be copied */
-    if (B != NULL) {
+    if (B != NULL)
+	{
         for (i = b->top >> 2; i > 0; i--, A += 4, B += 4) {
             /*
              * The fact that the loop is unrolled
@@ -428,7 +432,8 @@ BIGNUM *bn_expand2(BIGNUM *b, int words)
 {
     bn_check_top(b);
 
-    if (words > b->dmax) {
+    if (words > b->dmax) 
+	{
         BN_ULONG *a = bn_expand_internal(b, words);
         if (!a)
             return NULL;
