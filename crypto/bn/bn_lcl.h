@@ -317,6 +317,9 @@ unsigned __int64 _umul128(unsigned __int64 a, unsigned __int64 b,
 # endif
 
 # ifdef BN_LLONG
+/*
+实现乘累加运算 -- (c, r) = a * w + r + c
+*/
 #  define mul_add(r,a,w,c) { \
         BN_ULLONG t; \
         t=(BN_ULLONG)w * (a) + (r) + (c); \

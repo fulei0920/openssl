@@ -117,8 +117,7 @@
 
 #ifndef RSA_NULL
 
-static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
-                                  unsigned char *to, RSA *rsa, int padding);
+static int RSA_eay_public_encrypt(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
 static int RSA_eay_private_encrypt(int flen, const unsigned char *from,
                                    unsigned char *to, RSA *rsa, int padding);
 static int RSA_eay_public_decrypt(int flen, const unsigned char *from,
@@ -137,8 +136,7 @@ static RSA_METHOD rsa_pkcs1_eay_meth =
     RSA_eay_private_encrypt,    /* signing */
     RSA_eay_private_decrypt,
     RSA_eay_mod_exp,
-    BN_mod_exp_mont,            /* XXX probably we should not use Montgomery
-                                 * if e == 3 */
+    BN_mod_exp_mont,            /* XXX probably we should not use Montgomery if e == 3 */
     RSA_eay_init,
     RSA_eay_finish,
     0,                          /* flags */
@@ -153,20 +151,21 @@ const RSA_METHOD *RSA_PKCS1_SSLeay(void)
     return (&rsa_pkcs1_eay_meth);
 }
 
-static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
-                                  unsigned char *to, RSA *rsa, int padding)
+static int RSA_eay_public_encrypt(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
 {
     BIGNUM *f, *ret;
     int i, j, k, num = 0, r = -1;
     unsigned char *buf = NULL;
     BN_CTX *ctx = NULL;
 
-    if (BN_num_bits(rsa->n) > OPENSSL_RSA_MAX_MODULUS_BITS) {
+    if (BN_num_bits(rsa->n) > OPENSSL_RSA_MAX_MODULUS_BITS) 
+	{
         RSAerr(RSA_F_RSA_EAY_PUBLIC_ENCRYPT, RSA_R_MODULUS_TOO_LARGE);
         return -1;
     }
 
-    if (BN_ucmp(rsa->n, rsa->e) <= 0) {
+    if (BN_ucmp(rsa->n, rsa->e) <= 0)
+	{
         RSAerr(RSA_F_RSA_EAY_PUBLIC_ENCRYPT, RSA_R_BAD_E_VALUE);
         return -1;
     }
@@ -228,13 +227,11 @@ static int RSA_eay_public_encrypt(int flen, const unsigned char *from,
             (&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
             goto err;
 
-    if (!rsa->meth->bn_mod_exp(ret, f, rsa->e, rsa->n, ctx,
-                               rsa->_method_mod_n))
+    if (!rsa->meth->bn_mod_exp(ret, f, rsa->e, rsa->n, ctx, rsa->_method_mod_n))
         goto err;
 
     /*
-     * put in leading 0 bytes if the number is less than the length of the
-     * modulus
+     * put in leading 0 bytes if the number is less than the length of the modulus
      */
     j = BN_num_bytes(ret);
     i = BN_bn2bin(ret, &(to[num - j]));

@@ -382,8 +382,7 @@ int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
     return (ret);
 }
 
-int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
-                    const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
+int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *in_mont)
 {
     int i, j, bits, ret = 0, wstart, wend, window, wvalue;
     int start = 1;
@@ -393,7 +392,8 @@ int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p,
     BIGNUM *val[TABLE_SIZE];
     BN_MONT_CTX *mont = NULL;
 
-    if (BN_get_flags(p, BN_FLG_CONSTTIME) != 0) {
+    if (BN_get_flags(p, BN_FLG_CONSTTIME) != 0) 
+	{
         return BN_mod_exp_mont_consttime(rr, a, p, m, ctx, in_mont);
     }
 

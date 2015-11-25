@@ -68,8 +68,15 @@
 
 #if defined(BN_LLONG) || defined(BN_UMULT_HIGH)
 
-BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num,
-                          BN_ULONG w)
+/*
+实现将一个大数ap与字w乘累加，得到的结果保存到大数rp，进位保存到从c1中 -- (c1, rp) = ap * w + rp + c1
+num -- 表示大数占用BN_ULONG的个数，也就是BIGNUM中的top成员
+rp -- 表示输出结果的指针
+ap -- 表示输入大数的指针
+w -- 表示输入word
+cl -- 表示输出进位
+*/
+BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num, BN_ULONG w)
 {
     BN_ULONG c1 = 0;
 
@@ -78,7 +85,8 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num,
         return (c1);
 
 # ifndef OPENSSL_SMALL_FOOTPRINT
-    while (num & ~3) {
+    while (num & ~3)
+	{
         mul_add(rp[0], ap[0], w, c1);
         mul_add(rp[1], ap[1], w, c1);
         mul_add(rp[2], ap[2], w, c1);
@@ -88,7 +96,8 @@ BN_ULONG bn_mul_add_words(BN_ULONG *rp, const BN_ULONG *ap, int num,
         num -= 4;
     }
 # endif
-    while (num) {
+    while (num) 
+	{
         mul_add(rp[0], ap[0], w, c1);
         ap++;
         rp++;
@@ -422,8 +431,16 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
 }
 #endif                          /* !BN_LLONG */
 
-BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
-                      int n)
+
+/*
+实现两个大数a和b的减法运算，其中c是借位 -- (r, c) = a - b
+n -- 表示大数占用BN_ULONG的个数，也就是BIGNUM中的top成员
+a -- 表示输入被减数
+b -- 表示输入减数
+c -- 表示输出借位
+
+*/
+BN_ULONG bn_sub_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 {
     BN_ULONG t1, t2;
     int c = 0;
@@ -1054,12 +1071,16 @@ int bn_mul_mont(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp,
     for (i = 0; i <= num; i++)
         tp[i] = 0;
 
-    for (i = 0; i < num; i++) {
+	
+    for (i = 0; i < num; i++) 
+	{
+		/* t=a*b */
         c0 = bn_mul_add_words(tp, ap, num, bp[i]);
         c1 = (tp[num] + c0) & BN_MASK2;
         tp[num] = c1;
         tp[num + 1] = (c1 < c0 ? 1 : 0);
-
+		
+		/* u = (t + (t*n0 mod r) * n) / r */
         c0 = bn_mul_add_words(tp, np, num, tp[0] * n0);
         c1 = (tp[num] + c0) & BN_MASK2;
         tp[num] = c1;
@@ -1068,6 +1089,7 @@ int bn_mul_mont(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp,
             tp[j] = tp[j + 1];
     }
 
+	/* return u>=n ? u-n : u */
     if (tp[num] != 0 || tp[num - 1] >= np[num - 1]) {
         c0 = bn_sub_words(rp, tp, np, num);
         if (tp[num] != 0 || c0 == 0) {
