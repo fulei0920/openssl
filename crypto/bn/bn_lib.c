@@ -269,7 +269,8 @@ BIGNUM *BN_new(void)
 {
     BIGNUM *ret;
 
-    if ((ret = (BIGNUM *)OPENSSL_malloc(sizeof(BIGNUM))) == NULL) {
+    if ((ret = (BIGNUM *)OPENSSL_malloc(sizeof(BIGNUM))) == NULL) 
+	{
         BNerr(BN_F_BN_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }

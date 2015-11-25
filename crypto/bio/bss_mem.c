@@ -68,7 +68,8 @@ static int mem_gets(BIO *h, char *str, int size);
 static long mem_ctrl(BIO *h, int cmd, long arg1, void *arg2);
 static int mem_new(BIO *h);
 static int mem_free(BIO *data);
-static BIO_METHOD mem_method = {
+static BIO_METHOD mem_method = 
+{
     BIO_TYPE_MEM,
     "memory buffer",
     mem_write,

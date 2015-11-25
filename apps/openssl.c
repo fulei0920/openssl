@@ -278,8 +278,7 @@ int main(int Argc, char *ARGV[])
          */
         Argv = (char **)_Argv;
     }
-#endif                          /* defined( OPENSSL_SYS_VMS) &&
-                                 * (__INITIAL_POINTER_SIZE == 64) */
+#endif                          /* defined( OPENSSL_SYS_VMS) && (__INITIAL_POINTER_SIZE == 64) */
 
     arg.data = NULL;
     arg.count = 0;

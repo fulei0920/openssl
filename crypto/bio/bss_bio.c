@@ -104,7 +104,8 @@ static int bio_puts(BIO *bio, const char *str);
 static int bio_make_pair(BIO *bio1, BIO *bio2);
 static void bio_destroy_pair(BIO *bio);
 
-static BIO_METHOD methods_biop = {
+static BIO_METHOD methods_biop = 
+{
     BIO_TYPE_BIO,
     "BIO pair",
     bio_write,

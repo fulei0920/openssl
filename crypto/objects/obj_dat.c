@@ -680,7 +680,8 @@ int OBJ_sn2nid(const char *s)
     const unsigned int *op;
 
     o.sn = s;
-    if (added != NULL) {
+    if (added != NULL) 
+	{
         ad.type = ADDED_SNAME;
         ad.obj = &o;
         adp = lh_ADDED_OBJ_retrieve(added, &ad);
@@ -693,16 +694,13 @@ int OBJ_sn2nid(const char *s)
     return (nid_objs[*op].nid);
 }
 
-const void *OBJ_bsearch_(const void *key, const void *base, int num, int size,
-                         int (*cmp) (const void *, const void *))
+const void *OBJ_bsearch_(const void *key, const void *base, int num, int size, int (*cmp) (const void *, const void *))
 {
     return OBJ_bsearch_ex_(key, base, num, size, cmp, 0);
 }
 
-const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num,
-                            int size,
-                            int (*cmp) (const void *, const void *),
-                            int flags)
+
+const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num, int size, int (*cmp) (const void *, const void *), int flags)
 {
     const char *base = base_;
     int l, h, i = 0, c = 0;
@@ -712,7 +710,8 @@ const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num,
         return (NULL);
     l = 0;
     h = num;
-    while (l < h) {
+    while (l < h) 
+	{
         i = (l + h) / 2;
         p = &(base[i * size]);
         c = (*cmp) (key, p);
@@ -729,8 +728,10 @@ const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num,
      * don't have perl (yet), we revert to a *LINEAR* search when the object
      * wasn't found in the binary search.
      */
-    if (c != 0) {
-        for (i = 0; i < num; ++i) {
+    if (c != 0) 
+	{
+        for (i = 0; i < num; ++i) 
+		{
             p = &(base[i * size]);
             c = (*cmp) (key, p);
             if (c == 0 || (c < 0 && (flags & OBJ_BSEARCH_VALUE_ON_NOMATCH)))
@@ -739,8 +740,11 @@ const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num,
     }
 #endif
     if (c != 0 && !(flags & OBJ_BSEARCH_VALUE_ON_NOMATCH))
-        p = NULL;
-    else if (c == 0 && (flags & OBJ_BSEARCH_FIRST_VALUE_ON_MATCH)) {
+    {
+		p = NULL;
+	}
+    else if (c == 0 && (flags & OBJ_BSEARCH_FIRST_VALUE_ON_MATCH)) 
+	{
         while (i > 0 && (*cmp) (key, &(base[(i - 1) * size])) == 0)
             i--;
         p = &(base[i * size]);

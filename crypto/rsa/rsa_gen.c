@@ -73,8 +73,7 @@ extern int FIPS_rsa_x931_generate_key_ex(RSA *rsa, int bits, BIGNUM *e,
                                          BN_GENCB *cb);
 #endif
 
-static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value,
-                              BN_GENCB *cb);
+static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb);
 
 /*
  * NB: this wrapper would normally be placed in rsa_lib.c and the static
@@ -83,6 +82,9 @@ static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value,
  * that wasn't previously linking object code related to key-generation won't
  * have to now just because key-generation is part of RSA_METHOD.
  */
+/*
+Éú³ÉRSAÃÜÔ¿
+*/
 int RSA_generate_key_ex(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb)
 {
 #ifdef OPENSSL_FIPS
@@ -101,8 +103,7 @@ int RSA_generate_key_ex(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb)
     return rsa_builtin_keygen(rsa, bits, e_value, cb);
 }
 
-static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value,
-                              BN_GENCB *cb)
+static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb)
 {
     BIGNUM *r0 = NULL, *r1 = NULL, *r2 = NULL, *r3 = NULL, *tmp;
     BIGNUM local_r0, local_d, local_p;
@@ -145,7 +146,8 @@ static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value,
     BN_copy(rsa->e, e_value);
 
     /* generate p and q */
-    for (;;) {
+    for (;;)
+	{
         if (!BN_generate_prime_ex(rsa->p, bitsp, 0, NULL, NULL, cb))
             goto err;
         if (!BN_sub(r2, rsa->p, BN_value_one()))

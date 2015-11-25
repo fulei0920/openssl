@@ -1386,8 +1386,8 @@ struct ssl_st
     /* for server side, keep the list of CA_dn we can use */
     STACK_OF(X509_NAME) *client_CA;
     int references;
-    /* protocol behaviour */
-    unsigned long options;
+    
+    unsigned long options;	/* protocol behaviour */
     /* API behaviour */
     unsigned long mode;
     long max_cert_list;
@@ -1397,8 +1397,7 @@ struct ssl_st
     unsigned int max_send_fragment;
 #  ifndef OPENSSL_NO_TLSEXT
     /* TLS extension debug callback */
-    void (*tlsext_debug_cb) (SSL *s, int client_server, int type,
-                             unsigned char *data, int len, void *arg);
+    void (*tlsext_debug_cb) (SSL *s, int client_server, int type, unsigned char *data, int len, void *arg);
     void *tlsext_debug_arg;
     char *tlsext_hostname;
     /*-

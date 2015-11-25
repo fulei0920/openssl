@@ -673,7 +673,8 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
 
         if ((i == (int)n) ||
             (type == SSL3_RT_APPLICATION_DATA &&
-             (s->mode & SSL_MODE_ENABLE_PARTIAL_WRITE))) {
+             (s->mode & SSL_MODE_ENABLE_PARTIAL_WRITE))) 
+        {
             /*
              * next chunk of data should get another prepended empty fragment
              * in ciphersuites with known-IV weakness:

@@ -140,6 +140,7 @@ struct rsa_st
     const RSA_METHOD *meth;
     /* functional reference if 'meth' is ENGINE-provided */
     ENGINE *engine;
+	/*{n,e} 表示公钥，{n, d}表示私钥*/
     BIGNUM *n;
     BIGNUM *e;
     BIGNUM *d;

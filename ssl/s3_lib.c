@@ -3195,16 +3195,19 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
         {
             EC_KEY *ecdh = NULL;
 
-            if (parg == NULL) {
+            if (parg == NULL) 
+			{
                 SSLerr(SSL_F_SSL3_CTRL, ERR_R_PASSED_NULL_PARAMETER);
                 return (ret);
             }
-            if (!EC_KEY_up_ref((EC_KEY *)parg)) {
+            if (!EC_KEY_up_ref((EC_KEY *)parg)) 
+			{
                 SSLerr(SSL_F_SSL3_CTRL, ERR_R_ECDH_LIB);
                 return (ret);
             }
             ecdh = (EC_KEY *)parg;
-            if (!(s->options & SSL_OP_SINGLE_ECDH_USE)) {
+            if (!(s->options & SSL_OP_SINGLE_ECDH_USE))
+			{
                 if (!EC_KEY_generate_key(ecdh)) {
                     EC_KEY_free(ecdh);
                     SSLerr(SSL_F_SSL3_CTRL, ERR_R_ECDH_LIB);
@@ -3512,24 +3515,29 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
         {
             EC_KEY *ecdh = NULL;
 
-            if (parg == NULL) {
+            if (parg == NULL)
+			{
                 SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_ECDH_LIB);
                 return 0;
             }
             ecdh = EC_KEY_dup((EC_KEY *)parg);
-            if (ecdh == NULL) {
+            if (ecdh == NULL) 
+			{
                 SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_EC_LIB);
                 return 0;
             }
-            if (!(ctx->options & SSL_OP_SINGLE_ECDH_USE)) {
-                if (!EC_KEY_generate_key(ecdh)) {
+            if (!(ctx->options & SSL_OP_SINGLE_ECDH_USE))
+			{
+                if (!EC_KEY_generate_key(ecdh)) 
+				{
                     EC_KEY_free(ecdh);
                     SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_ECDH_LIB);
                     return 0;
                 }
             }
 
-            if (cert->ecdh_tmp != NULL) {
+            if (cert->ecdh_tmp != NULL) 
+			{
                 EC_KEY_free(cert->ecdh_tmp);
             }
             cert->ecdh_tmp = ecdh;
@@ -4233,8 +4241,7 @@ int ssl3_write(SSL *s, const void *buf, int len)
         ret = s->s3->delay_buf_pop_ret;
         s->s3->delay_buf_pop_ret = 0;
     } else {
-        ret = s->method->ssl_write_bytes(s, SSL3_RT_APPLICATION_DATA,
-                                         buf, len);
+        ret = s->method->ssl_write_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len);
         if (ret <= 0)
             return (ret);
     }

@@ -998,10 +998,9 @@ EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
             pkey = NULL;
     }
 #endif
-    else if (format == FORMAT_PEM) {
-        pkey = PEM_read_bio_PUBKEY(key, NULL,
-                                   (pem_password_cb *)password_callback,
-                                   &cb_data);
+    else if (format == FORMAT_PEM) 
+	{
+        pkey = PEM_read_bio_PUBKEY(key, NULL, (pem_password_cb *)password_callback, &cb_data);
     }
 #if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_RSA)
     else if (format == FORMAT_NETSCAPE || format == FORMAT_IISSGC)

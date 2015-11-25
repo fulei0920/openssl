@@ -703,13 +703,13 @@ int SSL_set_fd(SSL *s, int fd)
     BIO *bio = NULL;
 
     bio = BIO_new(BIO_s_socket());
-
     if (bio == NULL)
 	{
         SSLerr(SSL_F_SSL_SET_FD, ERR_R_BUF_LIB);
         goto err;
     }
     BIO_set_fd(bio, fd, BIO_NOCLOSE);
+	
     SSL_set_bio(s, bio, bio);
     ret = 1;
  err:
@@ -2477,17 +2477,17 @@ void ssl_update_cache(SSL *s, int mode)
         return;
 
     i = s->session_ctx->session_cache_mode;
-    if ((i & mode) && (!s->hit)
-        && ((i & SSL_SESS_CACHE_NO_INTERNAL_STORE)
-            || SSL_CTX_add_session(s->session_ctx, s->session))
-        && (s->session_ctx->new_session_cb != NULL)) {
+    if ((i & mode) && (!s->hit) && ((i & SSL_SESS_CACHE_NO_INTERNAL_STORE) || SSL_CTX_add_session(s->session_ctx, s->session)) 
+            && (s->session_ctx->new_session_cb != NULL)) 
+    {
         CRYPTO_add(&s->session->references, 1, CRYPTO_LOCK_SSL_SESSION);
         if (!s->session_ctx->new_session_cb(s, s->session))
             SSL_SESSION_free(s->session);
     }
 
     /* auto flush every 255 connections */
-    if ((!(i & SSL_SESS_CACHE_NO_AUTO_CLEAR)) && ((i & mode) == mode)) {
+    if ((!(i & SSL_SESS_CACHE_NO_AUTO_CLEAR)) && ((i & mode) == mode))
+	{
         if ((((mode & SSL_SESS_CACHE_CLIENT)
               ? s->session_ctx->stats.sess_connect_good
               : s->session_ctx->stats.sess_accept_good) & 0xff) == 0xff) {
@@ -2503,16 +2503,20 @@ const SSL_METHOD *SSL_get_ssl_method(SSL *s)
 
 int SSL_set_ssl_method(SSL *s, const SSL_METHOD *meth)
 {
-    int conn = -1;
+    int conn = -1;  
     int ret = 1;
 
-    if (s->method != meth) {
+    if (s->method != meth)
+	{
         if (s->handshake_func != NULL)
-            conn = (s->handshake_func == s->method->ssl_connect);
+            conn = (s->handshake_func == s->method->ssl_connect);  /*判断是客户端还是服务器*/
 
         if (s->method->version == meth->version)
-            s->method = meth;
-        else {
+        {
+			s->method = meth;
+		}
+        else 
+		{
             s->method->ssl_free(s);
             s->method = meth;
             ret = s->method->ssl_new(s);

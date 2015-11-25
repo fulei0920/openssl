@@ -790,7 +790,8 @@ int SSL_CTX_add_session(SSL_CTX *ctx, SSL_SESSION *c)
      * case, s == c should hold (then we did not really modify
      * ctx->sessions), or we're in trouble.
      */
-    if (s != NULL && s != c) {
+    if (s != NULL && s != c) 
+	{
         /* We *are* in trouble ... */
         SSL_SESSION_list_remove(ctx, s);
         SSL_SESSION_free(s);
@@ -807,7 +808,8 @@ int SSL_CTX_add_session(SSL_CTX *ctx, SSL_SESSION *c)
     if (s == NULL)
         SSL_SESSION_list_add(ctx, c);
 
-    if (s != NULL) {
+    if (s != NULL) 
+	{
         /*
          * existing cache entry -- decrement previously incremented reference
          * count because it already takes into account the cache
@@ -815,16 +817,19 @@ int SSL_CTX_add_session(SSL_CTX *ctx, SSL_SESSION *c)
 
         SSL_SESSION_free(s);    /* s == c */
         ret = 0;
-    } else {
+    }
+	else 
+	{
         /*
          * new cache entry -- remove old ones if cache has become too large
          */
 
         ret = 1;
 
-        if (SSL_CTX_sess_get_cache_size(ctx) > 0) {
-            while (SSL_CTX_sess_number(ctx) >
-                   SSL_CTX_sess_get_cache_size(ctx)) {
+        if (SSL_CTX_sess_get_cache_size(ctx) > 0)
+		{
+            while (SSL_CTX_sess_number(ctx) > SSL_CTX_sess_get_cache_size(ctx)) 
+            {
                 if (!remove_session_lock(ctx, ctx->session_cache_tail, 0))
                     break;
                 else
@@ -887,7 +892,8 @@ void SSL_SESSION_free(SSL_SESSION *ss)
     if (i > 0)
         return;
 #ifdef REF_CHECK
-    if (i < 0) {
+    if (i < 0) 
+	{
         fprintf(stderr, "SSL_SESSION_free, bad reference count\n");
         abort();                /* ok */
     }
@@ -1212,12 +1218,16 @@ static void SSL_SESSION_list_add(SSL_CTX *ctx, SSL_SESSION *s)
     if ((s->next != NULL) && (s->prev != NULL))
         SSL_SESSION_list_remove(ctx, s);
 
-    if (ctx->session_cache_head == NULL) {
+    if (ctx->session_cache_head == NULL)  
+	{
+		/* list is empty */
         ctx->session_cache_head = s;
         ctx->session_cache_tail = s;
         s->prev = (SSL_SESSION *)&(ctx->session_cache_head);
         s->next = (SSL_SESSION *)&(ctx->session_cache_tail);
-    } else {
+    }
+	else 
+	{
         s->next = ctx->session_cache_head;
         s->next->prev = s;
         s->prev = (SSL_SESSION *)&(ctx->session_cache_head);

@@ -72,7 +72,8 @@ static long ssl_ctrl(BIO *h, int cmd, long arg1, void *arg2);
 static int ssl_new(BIO *h);
 static int ssl_free(BIO *data);
 static long ssl_callback_ctrl(BIO *h, int cmd, bio_info_cb *fp);
-typedef struct bio_ssl_st {
+typedef struct bio_ssl_st 
+{
     SSL *ssl;                   /* The ssl handle :-) */
     /* re-negotiate every time the total number of bytes is this size */
     int num_renegotiates;
@@ -82,7 +83,8 @@ typedef struct bio_ssl_st {
     unsigned long last_time;
 } BIO_SSL;
 
-static BIO_METHOD methods_sslp = {
+static BIO_METHOD methods_sslp = 
+{
     BIO_TYPE_SSL, "ssl",
     ssl_write,
     ssl_read,
@@ -104,7 +106,8 @@ static int ssl_new(BIO *bi)
     BIO_SSL *bs;
 
     bs = (BIO_SSL *)OPENSSL_malloc(sizeof(BIO_SSL));
-    if (bs == NULL) {
+    if (bs == NULL) 
+	{
         BIOerr(BIO_F_SSL_NEW, ERR_R_MALLOC_FAILURE);
         return (0);
     }
@@ -124,7 +127,8 @@ static int ssl_free(BIO *a)
     bs = (BIO_SSL *)a->ptr;
     if (bs->ssl != NULL)
         SSL_shutdown(bs->ssl);
-    if (a->shutdown) {
+    if (a->shutdown) 
+	{
         if (a->init && (bs->ssl != NULL))
             SSL_free(bs->ssl);
         a->init = 0;
@@ -237,7 +241,8 @@ static int ssl_write(BIO *b, const char *out, int outl)
      */
     ret = SSL_write(ssl, out, outl);
 
-    switch (SSL_get_error(ssl, ret)) {
+    switch (SSL_get_error(ssl, ret)) 
+	{
     case SSL_ERROR_NONE:
         if (ret <= 0)
             break;
@@ -338,7 +343,8 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
         ret = bs->num_renegotiates;
         break;
     case BIO_C_SET_SSL:
-        if (ssl != NULL) {
+        if (ssl != NULL) 
+		{
             ssl_free(b);
             if (!ssl_new(b))
                 return 0;
@@ -347,7 +353,8 @@ static long ssl_ctrl(BIO *b, int cmd, long num, void *ptr)
         ssl = (SSL *)ptr;
         ((BIO_SSL *)b->ptr)->ssl = ssl;
         bio = SSL_get_rbio(ssl);
-        if (bio != NULL) {
+        if (bio != NULL) 
+		{
             if (b->next_bio != NULL)
                 BIO_push(bio, b->next_bio);
             b->next_bio = bio;

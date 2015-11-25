@@ -370,9 +370,8 @@ void ssl_cert_free(CERT *c)
     OPENSSL_free(c);
 }
 
-int ssl_cert_inst(CERT **o)
-{
-    /*
+
+/*
      * Create a CERT if there isn't already one (which cannot really happen,
      * as it is initially created in SSL_CTX_new; but the earlier code
      * usually allows for that one being non-existant, so we follow that
@@ -380,8 +379,9 @@ int ssl_cert_inst(CERT **o)
      * -- but I'm not sure that *all* of the existing code could cope with
      * s->cert being NULL, otherwise we could do without the initialization
      * in SSL_CTX_new).
-     */
-
+*/
+int ssl_cert_inst(CERT **o)
+{
     if (o == NULL) 
 	{
         SSLerr(SSL_F_SSL_CERT_INST, ERR_R_PASSED_NULL_PARAMETER);

@@ -70,8 +70,7 @@ static void *dummy = &dummy;
 
 #else
 
-RSA *RSA_generate_key(int bits, unsigned long e_value,
-                      void (*callback) (int, int, void *), void *cb_arg)
+RSA *RSA_generate_key(int bits, unsigned long e_value, void (*callback) (int, int, void *), void *cb_arg)
 {
     BN_GENCB cb;
     int i;

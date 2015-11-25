@@ -78,8 +78,15 @@ const char STACK_version[] = "Stack" OPENSSL_VERSION_PTEXT;
 
 #include <errno.h>
 
-int (*sk_set_cmp_func(_STACK *sk, int (*c) (const void *, const void *)))
- (const void *, const void *) {
+
+/*
+设置堆栈存放数据的比较函数
+由于堆栈不知道用户存放的是什么
+数据，所以，比较函数必须由用户自己实现
+*/
+
+int (*sk_set_cmp_func(_STACK *sk, int (*c) (const void *, const void *)))(const void *, const void *)
+{
     int (*old) (const void *, const void *) = sk->comp;
 
     if (sk->comp != c)
@@ -148,17 +155,20 @@ int sk_insert(_STACK *st, void *data, int loc)
 
     if (st == NULL)
         return 0;
-    if (st->num_alloc <= st->num + 1) {
-        s = OPENSSL_realloc((char *)st->data,
-                            (unsigned int)sizeof(char *) * st->num_alloc * 2);
+    if (st->num_alloc <= st->num + 1)
+	{
+        s = OPENSSL_realloc((char *)st->data, (unsigned int)sizeof(char *) * st->num_alloc * 2);
         if (s == NULL)
             return (0);
         st->data = s;
         st->num_alloc *= 2;
     }
     if ((loc >= (int)st->num) || (loc < 0))
-        st->data[st->num] = data;
-    else {
+    {
+		st->data[st->num] = data;
+	} 
+    else 
+	{
         int i;
         char **f, **t;
 
@@ -168,8 +178,7 @@ int sk_insert(_STACK *st, void *data, int loc)
             t[i] = f[i];
 
 #ifdef undef                    /* no memmove on sunos :-( */
-        memmove(&(st->data[loc + 1]),
-                &(st->data[loc]), sizeof(char *) * (st->num - loc));
+        memmove(&(st->data[loc + 1]), &(st->data[loc]), sizeof(char *) * (st->num - loc));
 #endif
         st->data[loc] = data;
     }
@@ -210,6 +219,12 @@ void *sk_delete(_STACK *st, int loc)
     return (ret);
 }
 
+
+/*
+根据数据地址来查找它在堆栈中的位置。当堆栈设置了比较函数时，它首先对
+堆栈进行排序，然后通过二分法进行查找。如果堆栈没有设置比较函数，它只是简
+单的比较数据地址来查找.
+*/
 static int internal_find(_STACK *st, void *data, int ret_val_options)
 {
     const void *const *r;
@@ -218,7 +233,8 @@ static int internal_find(_STACK *st, void *data, int ret_val_options)
     if (st == NULL)
         return -1;
 
-    if (st->comp == NULL) {
+    if (st->comp == NULL) 
+	{
         for (i = 0; i < st->num; i++)
             if (st->data[i] == data)
                 return (i);
@@ -227,8 +243,7 @@ static int internal_find(_STACK *st, void *data, int ret_val_options)
     sk_sort(st);
     if (data == NULL)
         return (-1);
-    r = OBJ_bsearch_ex_(&data, st->data, st->num, sizeof(void *), st->comp,
-                        ret_val_options);
+    r = OBJ_bsearch_ex_(&data, st->data, st->num, sizeof(void *), st->comp, ret_val_options);
     if (r == NULL)
         return (-1);
     return (int)((char **)r - st->data);
@@ -282,6 +297,9 @@ void sk_zero(_STACK *st)
     st->num = 0;
 }
 
+/*
+释放堆栈内存放的数据以及堆栈本身
+*/
 void sk_pop_free(_STACK *st, void (*func) (void *))
 {
     int i;
@@ -294,6 +312,9 @@ void sk_pop_free(_STACK *st, void (*func) (void *))
     sk_free(st);
 }
 
+/*
+释放堆栈本身所用的内存，而不会释放数据内存
+*/
 void sk_free(_STACK *st)
 {
     if (st == NULL)
@@ -324,9 +345,15 @@ void *sk_set(_STACK *st, int i, void *value)
     return (st->data[i] = value);
 }
 
+
+/* 
+对堆栈数据排序。它首先根据 sorted 来判断是否已经排序，
+如果未排序则调用了标准 C 函数 qsort 进行快速排序
+*/
 void sk_sort(_STACK *st)
 {
-    if (st && !st->sorted) {
+    if (st && !st->sorted) 
+	{
         int (*comp_func) (const void *, const void *);
 
         /*

@@ -276,7 +276,8 @@ int EVP_PKEY_set1_RSA(EVP_PKEY *pkey, RSA *key)
 
 RSA *EVP_PKEY_get1_RSA(EVP_PKEY *pkey)
 {
-    if (pkey->type != EVP_PKEY_RSA) {
+    if (pkey->type != EVP_PKEY_RSA)
+	{
         EVPerr(EVP_F_EVP_PKEY_GET1_RSA, EVP_R_EXPECTING_AN_RSA_KEY);
         return NULL;
     }
@@ -317,7 +318,8 @@ int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey, EC_KEY *key)
 
 EC_KEY *EVP_PKEY_get1_EC_KEY(EVP_PKEY *pkey)
 {
-    if (pkey->type != EVP_PKEY_EC) {
+    if (pkey->type != EVP_PKEY_EC) 
+	{
         EVPerr(EVP_F_EVP_PKEY_GET1_EC_KEY, EVP_R_EXPECTING_A_EC_KEY);
         return NULL;
     }

@@ -211,7 +211,8 @@ extern BIO *bio_err;
 #  define openssl_fdset(a,b) FD_SET(a, b)
 # endif
 
-typedef struct args_st {
+typedef struct args_st 
+{
     char **data;
     int count;
 } ARGS;

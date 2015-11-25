@@ -112,8 +112,7 @@ int X509_LOOKUP_shutdown(X509_LOOKUP *ctx)
         return 1;
 }
 
-int X509_LOOKUP_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc, long argl,
-                     char **ret)
+int X509_LOOKUP_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc, long argl, char **ret)
 {
     if (ctx->method == NULL)
         return -1;

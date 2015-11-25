@@ -90,8 +90,10 @@ static int fd_new(BIO *h);
 static int fd_free(BIO *data);
 int BIO_fd_should_retry(int s);
 
-static BIO_METHOD methods_fdp = {
-    BIO_TYPE_FD, "file descriptor",
+static BIO_METHOD methods_fdp = 
+{
+    BIO_TYPE_FD, 
+	"file descriptor",
     fd_write,
     fd_read,
     fd_puts,
@@ -130,8 +132,10 @@ static int fd_free(BIO *a)
 {
     if (a == NULL)
         return (0);
-    if (a->shutdown) {
-        if (a->init) {
+    if (a->shutdown)
+	{
+        if (a->init) 
+		{
             UP_close(a->num);
         }
         a->init = 0;
@@ -148,7 +152,8 @@ static int fd_read(BIO *b, char *out, int outl)
         clear_sys_error();
         ret = UP_read(b->num, out, outl);
         BIO_clear_retry_flags(b);
-        if (ret <= 0) {
+        if (ret <= 0) 
+		{
             if (BIO_fd_should_retry(ret))
                 BIO_set_retry_read(b);
         }
@@ -162,7 +167,8 @@ static int fd_write(BIO *b, const char *in, int inl)
     clear_sys_error();
     ret = UP_write(b->num, in, inl);
     BIO_clear_retry_flags(b);
-    if (ret <= 0) {
+    if (ret <= 0) 
+	{
         if (BIO_fd_should_retry(ret))
             BIO_set_retry_write(b);
     }
@@ -249,11 +255,11 @@ int BIO_fd_should_retry(int i)
 {
     int err;
 
-    if ((i == 0) || (i == -1)) {
+    if ((i == 0) || (i == -1)) 
+	{
         err = get_last_sys_error();
 
-# if defined(OPENSSL_SYS_WINDOWS) && 0/* more microsoft stupidity? perhaps
-                                       * not? Ben 4/1/99 */
+# if defined(OPENSSL_SYS_WINDOWS) && 0/* more microsoft stupidity? perhaps not? Ben 4/1/99 */
         if ((i == -1) && (err == 0))
             return (1);
 # endif
@@ -265,7 +271,8 @@ int BIO_fd_should_retry(int i)
 
 int BIO_fd_non_fatal_error(int err)
 {
-    switch (err) {
+    switch (err) 
+	{
 
 # ifdef EWOULDBLOCK
 #  ifdef WSAEWOULDBLOCK

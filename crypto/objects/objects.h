@@ -973,8 +973,8 @@
 
 # define OBJ_NAME_ALIAS                  0x8000
 
-# define OBJ_BSEARCH_VALUE_ON_NOMATCH            0x01
-# define OBJ_BSEARCH_FIRST_VALUE_ON_MATCH        0x02
+# define OBJ_BSEARCH_VALUE_ON_NOMATCH            0x01	/*查找不到返回最后不匹配的*/
+# define OBJ_BSEARCH_FIRST_VALUE_ON_MATCH        0x02   /*查找得到返回列表最前面的一个匹配的*/
 
 
 #ifdef  __cplusplus

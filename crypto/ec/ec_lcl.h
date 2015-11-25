@@ -254,7 +254,8 @@ struct ec_group_st {
                            BN_CTX *);
 } /* EC_GROUP */ ;
 
-struct ec_key_st {
+struct ec_key_st 
+{
     int version;
     EC_GROUP *group;
     EC_POINT *pub_key;

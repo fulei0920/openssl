@@ -70,6 +70,9 @@
 
 static int dsa_builtin_keygen(DSA *dsa);
 
+/*
+Éú³ÉDSAÃÜÔ¿
+*/
 int DSA_generate_key(DSA *dsa)
 {
 # ifdef OPENSSL_FIPS

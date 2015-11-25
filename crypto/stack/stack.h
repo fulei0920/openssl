@@ -65,11 +65,11 @@ extern "C" {
 
 typedef struct stack_st 
 {
-    int num;
-    char **data;
-    int sorted;
+    int num;		/*堆栈中存放数据的个数*/
+    char **data;	/*用于存放数据地址，每个数据地址存放在 data[0]到 data[num-1]中*/
+    int sorted;		/*堆栈是否已排序，如果排序则值为 1，否则为 0; 堆栈是否已排序，如果排序则值为 1，否则为 0*/
     int num_alloc;
-    int (*comp) (const void *, const void *);
+    int (*comp) (const void *, const void *);  /*堆栈内存放数据的比较函数地址，此函数用于排序和查找操作*/
 } _STACK;                       /* Use STACK_OF(...) instead */
 
 # define M_sk_num(sk)            ((sk) ? (sk)->num:-1)

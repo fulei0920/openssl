@@ -148,16 +148,23 @@ RSA *RSA_new_method(ENGINE *engine)
 
     ret->meth = RSA_get_default_method();
 #ifndef OPENSSL_NO_ENGINE
-    if (engine) {
-        if (!ENGINE_init(engine)) {
+    if (engine) 
+	{
+        if (!ENGINE_init(engine)) 
+		{
             RSAerr(RSA_F_RSA_NEW_METHOD, ERR_R_ENGINE_LIB);
             OPENSSL_free(ret);
             return NULL;
         }
         ret->engine = engine;
-    } else
-        ret->engine = ENGINE_get_default_RSA();
-    if (ret->engine) {
+    }
+	else
+	{
+		ret->engine = ENGINE_get_default_RSA();
+	}
+        
+    if (ret->engine) 
+	{
         ret->meth = ENGINE_get_RSA(ret->engine);
         if (!ret->meth) {
             RSAerr(RSA_F_RSA_NEW_METHOD, ERR_R_ENGINE_LIB);

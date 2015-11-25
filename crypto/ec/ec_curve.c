@@ -2582,12 +2582,17 @@ EC_GROUP *EC_GROUP_new_by_curve_name(int nid)
         return NULL;
 
     for (i = 0; i < curve_list_length; i++)
-        if (curve_list[i].nid == nid) {
+    {
+        if (curve_list[i].nid == nid) 
+		{
             ret = ec_group_new_from_data(curve_list[i]);
             break;
         }
+	}
 
-    if (ret == NULL) {
+
+    if (ret == NULL) 
+	{
         ECerr(EC_F_EC_GROUP_NEW_BY_CURVE_NAME, EC_R_UNKNOWN_GROUP);
         return NULL;
     }

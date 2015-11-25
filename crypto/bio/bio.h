@@ -310,16 +310,18 @@ typedef void bio_info_cb (struct bio_st *, int, const char *, int, long,
 
 typedef struct bio_method_st 
 {
-    int type;
-    const char *name;
-    int (*bwrite) (BIO *, const char *, int);
-    int (*bread) (BIO *, char *, int);
-    int (*bputs) (BIO *, const char *);
-    int (*bgets) (BIO *, char *, int);
-    long (*ctrl) (BIO *, int, long, void *);
-    int (*create) (BIO *);
-    int (*destroy) (BIO *);
-    long (*callback_ctrl) (BIO *, int, bio_info_cb *);
+    int type;	/*具体 BIO 类型*/
+    const char *name;	/*具体 BIO 的名字*/
+    int (*bwrite) (BIO *, const char *, int); 	/*具体 BIO 写操作回调函数*/
+    int (*bread) (BIO *, char *, int);		/*具体 BIO 读操作回调函数*/
+    int (*bputs) (BIO *, const char *);		/*具体 BIO 中写入字符串回调函数*/
+    int (*bgets) (BIO *, char *, int);		/*具体 BIO 中读取字符串函数*/
+    long (*ctrl) (BIO *, int, long, void *);	/*具体 BIO 的控制回调函数*/
+    int (*create) (BIO *);		/*具体 BIO 生成回调函数*/
+    int (*destroy) (BIO *);		/*具体 BIO 销毁回调函数*/
+	/*具体 BIO 控制回调函数，与 ctrl 回调函数不一样，该函数可由调用
+	者（而不是实现者）来实现，然后通过 BIO_set_callback 等函数来设置*/
+    long (*callback_ctrl) (BIO *, int, bio_info_cb *); 
 } BIO_METHOD;
 
 struct bio_st 
@@ -327,18 +329,27 @@ struct bio_st
     BIO_METHOD *method;
     long (*callback) (struct bio_st *, int, const char *, int, long, long);  /* bio, mode, argp, argi, argl, ret */
     char *cb_arg;               /* first argument for the callback */
-    int init;
-    int shutdown;
+	/*具体句柄初始化标记，初始化后为 1。
+	比如文件 BIO 中，通过 BIO_set_fp关联一个文件指针时，该标记则置 1； 
+	socket BIO 中通过 BIO_set_fd 关联一个链接时设置该标记为 1。*/
+    int init;					/* 表示是否关联到某个实际的I/O对象*/
+	/*BIO 关闭标记，当该值不为 0 时，释放资源；改值可以通过控制函数来设置。*/
+    int shutdown;				/* 释放该对象时关闭对应I/O对象*/
+	/*有些 BIO 实现需要它来控制各个函数的行为。比如文件 BIO 默认该值
+	为 BIO_FLAGS_UPLINK，这时文件读操作调用 UP_fread 函数而不是调用 fread 函数。*/
     int flags;                  /* extra storage */
+	/*重试原因，主要用在 socket 和 ssl BIO 的异步阻塞。比如 socket
+	bio 中，遇到 WSAEWOULDBLOCK 错误时， openssl 告诉用户的操作需要重试。*/
     int retry_reason;
-    int num;					/*socket-- fd*/
-    void *ptr;
+    int num;					/*该值因具体 BIO 而异，比如 socket BIO 中 num 用来存放套接字。*/
+    void *ptr;					/*该值因具体 BIO 而异，比如文件 BIO 中它用来存放文件句柄*/
+	/*下一个 BIO 地址， BIO 数据可以从一个 BIO 传送到另一个 BIO，该值指明了下一个 BIO 的地址*/
     struct bio_st *next_bio;    /* used by filter BIOs */
     struct bio_st *prev_bio;    /* used by filter BIOs */
     int references;				/*引用计数*/
-    unsigned long num_read;
-    unsigned long num_write;
-    CRYPTO_EX_DATA ex_data;
+    unsigned long num_read;		/*统计所有读的字节数*/
+    unsigned long num_write;	/*统计所有写的字节数*/
+    CRYPTO_EX_DATA ex_data;		/*用于存放额外数据*/
 };
 
 DECLARE_STACK_OF(BIO)

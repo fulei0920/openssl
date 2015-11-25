@@ -84,7 +84,7 @@ extern "C" {
  * if the caller has prompted the user for a path to a driver library so the
  * filename should be interpreted as-is.
  */
-# define DSO_FLAG_NO_NAME_TRANSLATION            0x01
+# define DSO_FLAG_NO_NAME_TRANSLATION            0x01  /*加载的文件名与指定的文件名一致，不加后缀.dll(windows)或.so(linux 或 unix)。*/
 /*
  * An extra flag to give if only the extension should be added as
  * translation.  This is obviously only of importance on Unix and other
@@ -92,20 +92,21 @@ extern "C" {
  * something, like 'lib', and ignored everywhere else. This flag is also
  * ignored if DSO_FLAG_NO_NAME_TRANSLATION is used at the same time.
  */
-# define DSO_FLAG_NAME_TRANSLATION_EXT_ONLY      0x02
+# define DSO_FLAG_NAME_TRANSLATION_EXT_ONLY      0x02  /*加载的文件名会加上 lib 串，比如用户加载 eay32,真正加载时会加载 libeay32(适用于
+linux 或 unix)。*/
 
 /*
  * The following flag controls the translation of symbol names to upper case.
  * This is currently only being implemented for OpenVMS.
  */
-# define DSO_FLAG_UPCASE_SYMBOL                  0x10
+# define DSO_FLAG_UPCASE_SYMBOL                  0x10		/*适用于 OpenVMS。*/
 
 /*
  * This flag loads the library with public symbols. Meaning: The exported
  * symbols of this library are public to all libraries loaded after this
  * library. At the moment only implemented in unix.
  */
-# define DSO_FLAG_GLOBAL_SYMBOLS                 0x20
+# define DSO_FLAG_GLOBAL_SYMBOLS                 0x20    /*适用于 unix,当在 unix 下调用加载函数 dlopen 时,参数会被或上 RTLD_GLOBAL。*/
 
 typedef void (*DSO_FUNC_TYPE) (void);
 
@@ -137,7 +138,8 @@ typedef char *(*DSO_NAME_CONVERTER_FUNC)(DSO *, const char *);
  */
 typedef char *(*DSO_MERGER_FUNC)(DSO *, const char *, const char *);
 
-typedef struct dso_meth_st {
+typedef struct dso_meth_st 
+{
     const char *name;
     /*
      * Loads a shared library, NB: new DSO_METHODs must ensure that a
@@ -191,28 +193,29 @@ typedef struct dso_meth_st {
 /**********************************************************************/
 /* The low-level handle type used to refer to a loaded shared library */
 
-struct dso_st {
-    DSO_METHOD *meth;
+struct dso_st 
+{
+    DSO_METHOD *meth;  /*指出了操作系统相关的动态库操作函数*/
     /*
      * Standard dlopen uses a (void *). Win32 uses a HANDLE. VMS doesn't use
      * anything but will need to cache the filename for use in the dso_bind
      * handler. All in all, let each method control its own destiny.
      * "Handles" and such go in a STACK.
      */
-    STACK_OF(void) *meth_data;
-    int references;
-    int flags;
+    STACK_OF(void) *meth_data;	/*堆栈中存放了加载动态库后的句柄*/
+    int references;		/*引用计数， DSO_new 的时候置 1， DSO_up_ref 时加 1,DSO_free 时减 1*/
+    int flags;		/*与加载动态库时加载的文件名以及加载方式有关，用于 DSO_ctrl 函数。*/
     /*
      * For use by applications etc ... use this for your bits'n'pieces, don't
      * touch meth_data!
      */
-    CRYPTO_EX_DATA ex_data;
+    CRYPTO_EX_DATA ex_data;		/*扩展数据，没有使用*/
     /*
      * If this callback function pointer is set to non-NULL, then it will be
      * used in DSO_load() in place of meth->dso_name_converter. NB: This
      * should normally set using DSO_set_name_converter().
      */
-    DSO_NAME_CONVERTER_FUNC name_converter;
+    DSO_NAME_CONVERTER_FUNC name_converter;  /*指明了具体系统需要调用的名字计算函数*/
     /*
      * If this callback function pointer is set to non-NULL, then it will be
      * used in DSO_load() in place of meth->dso_merger. NB: This should
@@ -235,7 +238,7 @@ struct dso_st {
      * loaded library or not, and (b) the filename with which it was actually
      * loaded.
      */
-    char *loaded_filename;
+    char *loaded_filename;  /*指明了加载动态库的全名*/
 };
 
 DSO *DSO_new(void);
@@ -269,6 +272,11 @@ int DSO_set_filename(DSO *dso, const char *filename);
  * that caller-created DSO_METHODs can do the same thing. A non-NULL return
  * value will need to be OPENSSL_free()'d.
  */
+/*
+当加载动态库时会调用 DSO_convert_filename 函数来确定所加
+载的文件。而 DSO_convert_filename 函数会调用各个系统自己的 convert 函数来获取这个文
+件名。
+*/
 char *DSO_convert_filename(DSO *dso, const char *filename);
 /*
  * This function will invoke the DSO's merger callback to merge two file

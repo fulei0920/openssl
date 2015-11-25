@@ -230,8 +230,10 @@ static int MS_CALLBACK file_free(BIO *a)
 {
     if (a == NULL)
         return (0);
-    if (a->shutdown) {
-        if ((a->init) && (a->ptr != NULL)) {
+    if (a->shutdown) 
+	{
+        if ((a->init) && (a->ptr != NULL))
+		{
             if (a->flags & BIO_FLAGS_UPLINK)
                 UP_fclose(a->ptr);
             else
@@ -254,9 +256,8 @@ static int MS_CALLBACK file_read(BIO *b, char *out, int outl)
             ret = UP_fread(out, 1, (int)outl, b->ptr);
         else
             ret = fread(out, 1, (int)outl, (FILE *)b->ptr);
-        if (ret == 0
-            && (b->flags & BIO_FLAGS_UPLINK) ? UP_ferror((FILE *)b->ptr) :
-            ferror((FILE *)b->ptr)) {
+        if (ret == 0 && (b->flags & BIO_FLAGS_UPLINK) ? UP_ferror((FILE *)b->ptr) : ferror((FILE *)b->ptr))
+		{
             SYSerr(SYS_F_FREAD, get_last_sys_error());
             BIOerr(BIO_F_FILE_READ, ERR_R_SYS_LIB);
             ret = -1;
@@ -269,7 +270,8 @@ static int MS_CALLBACK file_write(BIO *b, const char *in, int inl)
 {
     int ret = 0;
 
-    if (b->init && (in != NULL)) {
+    if (b->init && (in != NULL)) 
+	{
         if (b->flags & BIO_FLAGS_UPLINK)
             ret = UP_fwrite(in, (int)inl, 1, b->ptr);
         else
@@ -293,7 +295,8 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
     FILE **fpp;
     char p[4];
 
-    switch (cmd) {
+    switch (cmd) 
+	{
     case BIO_C_FILE_SEEK:
     case BIO_CTRL_RESET:
         if (b->flags & BIO_FLAGS_UPLINK)
@@ -374,18 +377,21 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
     case BIO_C_SET_FILENAME:
         file_free(b);
         b->shutdown = (int)num & BIO_CLOSE;
-        if (num & BIO_FP_APPEND) {
+        if (num & BIO_FP_APPEND)
+		{
             if (num & BIO_FP_READ)
                 BUF_strlcpy(p, "a+", sizeof p);
             else
                 BUF_strlcpy(p, "a", sizeof p);
-        } else if ((num & BIO_FP_READ) && (num & BIO_FP_WRITE))
+        } 
+		else if ((num & BIO_FP_READ) && (num & BIO_FP_WRITE))
             BUF_strlcpy(p, "r+", sizeof p);
         else if (num & BIO_FP_WRITE)
             BUF_strlcpy(p, "w", sizeof p);
         else if (num & BIO_FP_READ)
             BUF_strlcpy(p, "r", sizeof p);
-        else {
+        else 
+		{
             BIOerr(BIO_F_FILE_CTRL, BIO_R_BAD_FOPEN_MODE);
             ret = 0;
             break;
@@ -403,7 +409,8 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
             strcat(p, "t");
 #  endif
         fp = file_fopen(ptr, p);
-        if (fp == NULL) {
+        if (fp == NULL) 
+		{
             SYSerr(SYS_F_FOPEN, get_last_sys_error());
             ERR_add_error_data(5, "fopen('", ptr, "','", p, "')");
             BIOerr(BIO_F_FILE_CTRL, ERR_R_SYS_LIB);
@@ -412,12 +419,12 @@ static long MS_CALLBACK file_ctrl(BIO *b, int cmd, long num, void *ptr)
         }
         b->ptr = fp;
         b->init = 1;
-        BIO_clear_flags(b, BIO_FLAGS_UPLINK); /* we did fopen -> we disengage
-                                               * UPLINK */
+        BIO_clear_flags(b, BIO_FLAGS_UPLINK); /* we did fopen -> we disengage UPLINK */
         break;
     case BIO_C_GET_FILE_PTR:
         /* the ptr parameter is actually a FILE ** in this case. */
-        if (ptr != NULL) {
+        if (ptr != NULL) 
+		{
             fpp = (FILE **)ptr;
             *fpp = (FILE *)b->ptr;
         }
@@ -454,10 +461,13 @@ static int MS_CALLBACK file_gets(BIO *bp, char *buf, int size)
     int ret = 0;
 
     buf[0] = '\0';
-    if (bp->flags & BIO_FLAGS_UPLINK) {
+    if (bp->flags & BIO_FLAGS_UPLINK) 
+	{
         if (!UP_fgets(buf, size, bp->ptr))
             goto err;
-    } else {
+    } 
+	else 
+	{
         if (!fgets(buf, size, (FILE *)bp->ptr))
             goto err;
     }

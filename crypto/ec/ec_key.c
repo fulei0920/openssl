@@ -73,7 +73,8 @@ EC_KEY *EC_KEY_new(void)
     EC_KEY *ret;
 
     ret = (EC_KEY *)OPENSSL_malloc(sizeof(EC_KEY));
-    if (ret == NULL) {
+    if (ret == NULL)
+	{
         ECerr(EC_F_EC_KEY_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
@@ -96,7 +97,8 @@ EC_KEY *EC_KEY_new_by_curve_name(int nid)
     if (ret == NULL)
         return NULL;
     ret->group = EC_GROUP_new_by_curve_name(nid);
-    if (ret->group == NULL) {
+    if (ret->group == NULL) 
+	{
         EC_KEY_free(ret);
         return NULL;
     }
@@ -205,7 +207,8 @@ EC_KEY *EC_KEY_dup(const EC_KEY *ec_key)
     EC_KEY *ret = EC_KEY_new();
     if (ret == NULL)
         return NULL;
-    if (EC_KEY_copy(ret, ec_key) == NULL) {
+    if (EC_KEY_copy(ret, ec_key) == NULL) 
+	{
         EC_KEY_free(ret);
         return NULL;
     }
@@ -219,7 +222,8 @@ int EC_KEY_up_ref(EC_KEY *r)
     REF_PRINT("EC_KEY", r);
 #endif
 #ifdef REF_CHECK
-    if (i < 2) {
+    if (i < 2) 
+	{
         fprintf(stderr, "EC_KEY_up, bad reference count\n");
         abort();
     }
@@ -227,6 +231,7 @@ int EC_KEY_up_ref(EC_KEY *r)
     return ((i > 1) ? 1 : 0);
 }
 
+/*生成一个新的ECDH密钥对*/
 int EC_KEY_generate_key(EC_KEY *eckey)
 {
     int ok = 0;

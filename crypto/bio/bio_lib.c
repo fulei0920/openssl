@@ -166,14 +166,12 @@ void BIO_set_flags(BIO *b, int flags)
     b->flags |= flags;
 }
 
-long (*BIO_get_callback(const BIO *b)) (struct bio_st *, int, const char *,
-                                        int, long, long) {
+long (*BIO_get_callback(const BIO *b)) (struct bio_st *, int, const char *, int, long, long)
+{
     return b->callback;
 }
 
-void BIO_set_callback(BIO *b,
-                      long (*cb) (struct bio_st *, int, const char *, int,
-                                  long, long))
+void BIO_set_callback(BIO *b, long (*cb) (struct bio_st *, int, const char *, int, long, long))
 {
     b->callback = cb;
 }
@@ -203,17 +201,18 @@ int BIO_read(BIO *b, void *out, int outl)
     int i;
     long (*cb) (BIO *, int, const char *, int, long, long);
 
-    if ((b == NULL) || (b->method == NULL) || (b->method->bread == NULL)) {
+    if ((b == NULL) || (b->method == NULL) || (b->method->bread == NULL)) 
+	{
         BIOerr(BIO_F_BIO_READ, BIO_R_UNSUPPORTED_METHOD);
         return (-2);
     }
 
     cb = b->callback;
-    if ((cb != NULL) &&
-        ((i = (int)cb(b, BIO_CB_READ, out, outl, 0L, 1L)) <= 0))
+    if ((cb != NULL) && ((i = (int)cb(b, BIO_CB_READ, out, outl, 0L, 1L)) <= 0))
         return (i);
 
-    if (!b->init) {
+    if (!b->init) 
+	{
         BIOerr(BIO_F_BIO_READ, BIO_R_UNINITIALIZED);
         return (-2);
     }
@@ -237,16 +236,17 @@ int BIO_write(BIO *b, const void *in, int inl)
         return (0);
 
     cb = b->callback;
-    if ((b->method == NULL) || (b->method->bwrite == NULL)) {
+    if ((b->method == NULL) || (b->method->bwrite == NULL))
+	{
         BIOerr(BIO_F_BIO_WRITE, BIO_R_UNSUPPORTED_METHOD);
         return (-2);
     }
 
-    if ((cb != NULL) &&
-        ((i = (int)cb(b, BIO_CB_WRITE, in, inl, 0L, 1L)) <= 0))
+    if ((cb != NULL) && ((i = (int)cb(b, BIO_CB_WRITE, in, inl, 0L, 1L)) <= 0))
         return (i);
 
-    if (!b->init) {
+    if (!b->init) 
+	{
         BIOerr(BIO_F_BIO_WRITE, BIO_R_UNINITIALIZED);
         return (-2);
     }
@@ -266,7 +266,8 @@ int BIO_puts(BIO *b, const char *in)
     int i;
     long (*cb) (BIO *, int, const char *, int, long, long);
 
-    if ((b == NULL) || (b->method == NULL) || (b->method->bputs == NULL)) {
+    if ((b == NULL) || (b->method == NULL) || (b->method->bputs == NULL)) 
+	{
         BIOerr(BIO_F_BIO_PUTS, BIO_R_UNSUPPORTED_METHOD);
         return (-2);
     }
@@ -276,7 +277,8 @@ int BIO_puts(BIO *b, const char *in)
     if ((cb != NULL) && ((i = (int)cb(b, BIO_CB_PUTS, in, 0, 0L, 1L)) <= 0))
         return (i);
 
-    if (!b->init) {
+    if (!b->init) 
+	{
         BIOerr(BIO_F_BIO_PUTS, BIO_R_UNINITIALIZED);
         return (-2);
     }
@@ -325,8 +327,11 @@ int BIO_indent(BIO *b, int indent, int max)
     if (indent > max)
         indent = max;
     while (indent--)
+    {
         if (BIO_puts(b, " ") != 1)
             return 0;
+	}
+
     return 1;
 }
 
@@ -374,9 +379,7 @@ long BIO_ctrl(BIO *b, int cmd, long larg, void *parg)
     return (ret);
 }
 
-long BIO_callback_ctrl(BIO *b, int cmd,
-                       void (*fp) (struct bio_st *, int, const char *, int,
-                                   long, long))
+long BIO_callback_ctrl(BIO *b, int cmd, void (*fp) (struct bio_st *, int, const char *, int, long, long))
 {
     long ret;
     long (*cb) (BIO *, int, const char *, int, long, long);
@@ -384,7 +387,8 @@ long BIO_callback_ctrl(BIO *b, int cmd,
     if (b == NULL)
         return (0);
 
-    if ((b->method == NULL) || (b->method->callback_ctrl == NULL)) {
+    if ((b->method == NULL) || (b->method->callback_ctrl == NULL)) 
+	{
         BIOerr(BIO_F_BIO_CALLBACK_CTRL, BIO_R_UNSUPPORTED_METHOD);
         return (-2);
     }

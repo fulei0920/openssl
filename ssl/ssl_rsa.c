@@ -595,7 +595,7 @@ int SSL_CTX_use_RSAPrivateKey_ASN1(SSL_CTX *ctx, const unsigned char *d,
 #endif                          /* !OPENSSL_NO_RSA */
 
 /*
-用于加载自己的私钥
+用于加载自己证书的私钥
 */
 int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey)
 {
@@ -614,7 +614,7 @@ int SSL_CTX_use_PrivateKey(SSL_CTX *ctx, EVP_PKEY *pkey)
 
 #ifndef OPENSSL_NO_STDIO
 /*
-用于从文件中加载自己的私钥
+用于从文件中加载自己的证书的私钥
 file -- 指向私钥文件
 type -- 指定私钥文件的编码类型(SSL_FILETYPE_PEM/ SSL_FILETYPE_PEM)
 返回值 -- 成功返回1， 失败返回0

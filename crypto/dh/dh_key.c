@@ -70,6 +70,9 @@ static int dh_bn_mod_exp(const DH *dh, BIGNUM *r,
 static int dh_init(DH *dh);
 static int dh_finish(DH *dh);
 
+/*
+生成一个新的DH密钥对
+*/
 int DH_generate_key(DH *dh)
 {
 #ifdef OPENSSL_FIPS
