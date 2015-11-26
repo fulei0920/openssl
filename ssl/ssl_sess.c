@@ -194,7 +194,8 @@ SSL_SESSION *SSL_SESSION_new(void)
     SSL_SESSION *ss;
 
     ss = (SSL_SESSION *)OPENSSL_malloc(sizeof(SSL_SESSION));
-    if (ss == NULL) {
+    if (ss == NULL) 
+	{
         SSLerr(SSL_F_SSL_SESSION_NEW, ERR_R_MALLOC_FAILURE);
         return (0);
     }
@@ -377,8 +378,7 @@ unsigned int SSL_SESSION_get_compress_id(const SSL_SESSION *s)
  */
 
 #define MAX_SESS_ID_ATTEMPTS 10
-static int def_generate_session_id(const SSL *ssl, unsigned char *id,
-                                   unsigned int *id_len)
+static int def_generate_session_id(const SSL *ssl, unsigned char *id, unsigned int *id_len)
 {
     unsigned int retry = 0;
     do
@@ -400,6 +400,10 @@ static int def_generate_session_id(const SSL *ssl, unsigned char *id,
     return 0;
 }
 
+
+/*
+返回值 -- 成功返回1， 失败返回0
+*/
 int ssl_get_new_session(SSL *s, int session)
 {
     /* This gets used by clients and servers. */
@@ -408,21 +412,25 @@ int ssl_get_new_session(SSL *s, int session)
     SSL_SESSION *ss = NULL;
     GEN_SESSION_CB cb = def_generate_session_id;
 
+	/*分配一个新session*/
     if ((ss = SSL_SESSION_new()) == NULL)
         return (0);
 
+	/*设置timeout时间*/
     /* If the context has a default timeout, use it */
     if (s->session_ctx->session_timeout == 0)
         ss->timeout = SSL_get_default_timeout(s);
     else
         ss->timeout = s->session_ctx->session_timeout;
-
-    if (s->session != NULL) {
+	/*释放之前的session*/
+    if (s->session != NULL)
+	{
         SSL_SESSION_free(s->session);
         s->session = NULL;
     }
 
-    if (session) {
+    if (session)
+	{
         if (s->version == SSL2_VERSION) {
             ss->ssl_version = SSL2_VERSION;
             ss->session_id_length = SSL2_SSL_SESSION_ID_LENGTH;
@@ -552,17 +560,22 @@ int ssl_get_new_session(SSL *s, int session)
         }
 # endif
 #endif
-    } else {
+    } 
+	else 
+	{
         ss->session_id_length = 0;
     }
 
-    if (s->sid_ctx_length > sizeof ss->sid_ctx) {
+	/*复制sid_ctx*/
+    if (s->sid_ctx_length > sizeof ss->sid_ctx) 
+	{
         SSLerr(SSL_F_SSL_GET_NEW_SESSION, ERR_R_INTERNAL_ERROR);
         SSL_SESSION_free(ss);
         return 0;
     }
     memcpy(ss->sid_ctx, s->sid_ctx, s->sid_ctx_length);
     ss->sid_ctx_length = s->sid_ctx_length;
+	
     s->session = ss;
     ss->ssl_version = s->version;
     ss->verify_result = X509_V_OK;

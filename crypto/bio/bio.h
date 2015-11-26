@@ -229,8 +229,7 @@ extern "C" {
 # define BIO_FLAGS_BASE64_NO_NL  0x100
 
 /*
- * This is used with memory BIOs: it means we shouldn't free up or change the
- * data in any way.
+ * This is used with memory BIOs: it means we shouldn't free up or change the data in any way.
  */
 # define BIO_FLAGS_MEM_RDONLY    0x200
 

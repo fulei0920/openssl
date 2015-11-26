@@ -79,7 +79,8 @@ char *BUF_strndup(const char *str, size_t siz)
         return NULL;
 
     ret = OPENSSL_malloc(siz + 1);
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         BUFerr(BUF_F_BUF_STRNDUP, ERR_R_MALLOC_FAILURE);
         return NULL;
     }

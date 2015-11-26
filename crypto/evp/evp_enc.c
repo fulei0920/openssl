@@ -91,21 +91,22 @@ EVP_CIPHER_CTX *EVP_CIPHER_CTX_new(void)
     return ctx;
 }
 
-int EVP_CipherInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
-                   const unsigned char *key, const unsigned char *iv, int enc)
+int EVP_CipherInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, const unsigned char *key, const unsigned char *iv, int enc)
 {
     if (cipher)
         EVP_CIPHER_CTX_init(ctx);
     return EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, enc);
 }
 
-int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
-                      ENGINE *impl, const unsigned char *key,
+int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl, const unsigned char *key,
                       const unsigned char *iv, int enc)
 {
     if (enc == -1)
-        enc = ctx->encrypt;
-    else {
+	{
+		enc = ctx->encrypt;
+	}        
+    else
+	{
         if (enc)
             enc = 1;
         ctx->encrypt = enc;
@@ -123,13 +124,15 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
                                             ctx->cipher->nid))))
         goto skip_to_init;
 #endif
-    if (cipher) {
+    if (cipher) 
+	{
         /*
          * Ensure a context left lying around from last time is cleared (the
          * previous check attempted to avoid this if the same ENGINE and
          * EVP_CIPHER could be used).
          */
-        if (ctx->cipher) {
+        if (ctx->cipher)
+		{
             unsigned long flags = ctx->flags;
             EVP_CIPHER_CTX_cleanup(ctx);
             /* Restore encrypt and flags */
@@ -173,24 +176,32 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
             return FIPS_cipherinit(ctx, cipher, key, iv, enc);
 #endif
         ctx->cipher = cipher;
-        if (ctx->cipher->ctx_size) {
+        if (ctx->cipher->ctx_size)
+		{
             ctx->cipher_data = OPENSSL_malloc(ctx->cipher->ctx_size);
-            if (!ctx->cipher_data) {
+            if (!ctx->cipher_data) 
+			{
                 EVPerr(EVP_F_EVP_CIPHERINIT_EX, ERR_R_MALLOC_FAILURE);
                 return 0;
             }
-        } else {
+        } 
+		else 
+		{
             ctx->cipher_data = NULL;
         }
         ctx->key_len = cipher->key_len;
         ctx->flags = 0;
-        if (ctx->cipher->flags & EVP_CIPH_CTRL_INIT) {
-            if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_INIT, 0, NULL)) {
+        if (ctx->cipher->flags & EVP_CIPH_CTRL_INIT) 
+		{
+            if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_INIT, 0, NULL))
+			{
                 EVPerr(EVP_F_EVP_CIPHERINIT_EX, EVP_R_INITIALIZATION_ERROR);
                 return 0;
             }
         }
-    } else if (!ctx->cipher) {
+    } 
+	else if (!ctx->cipher) 
+   	{
         EVPerr(EVP_F_EVP_CIPHERINIT_EX, EVP_R_NO_CIPHER_SET);
         return 0;
     }
@@ -206,7 +217,8 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
                    || ctx->cipher->block_size == 8
                    || ctx->cipher->block_size == 16);
 
-    if (!(EVP_CIPHER_CTX_flags(ctx) & EVP_CIPH_CUSTOM_IV)) {
+    if (!(EVP_CIPHER_CTX_flags(ctx) & EVP_CIPH_CUSTOM_IV))
+	{
         switch (EVP_CIPHER_CTX_mode(ctx)) {
 
         case EVP_CIPH_STREAM_CIPHER:
@@ -542,7 +554,8 @@ void EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *ctx)
 int EVP_CIPHER_CTX_cleanup(EVP_CIPHER_CTX *c)
 {
 #ifndef OPENSSL_FIPS
-    if (c->cipher != NULL) {
+    if (c->cipher != NULL)
+	{
         if (c->cipher->cleanup && !c->cipher->cleanup(c))
             return 0;
         /* Cleanse cipher context data */
@@ -593,20 +606,22 @@ int EVP_CIPHER_CTX_set_padding(EVP_CIPHER_CTX *ctx, int pad)
 int EVP_CIPHER_CTX_ctrl(EVP_CIPHER_CTX *ctx, int type, int arg, void *ptr)
 {
     int ret;
-    if (!ctx->cipher) {
+    if (!ctx->cipher) 
+	{
         EVPerr(EVP_F_EVP_CIPHER_CTX_CTRL, EVP_R_NO_CIPHER_SET);
         return 0;
     }
 
-    if (!ctx->cipher->ctrl) {
+    if (!ctx->cipher->ctrl)
+	{
         EVPerr(EVP_F_EVP_CIPHER_CTX_CTRL, EVP_R_CTRL_NOT_IMPLEMENTED);
         return 0;
     }
 
     ret = ctx->cipher->ctrl(ctx, type, arg, ptr);
-    if (ret == -1) {
-        EVPerr(EVP_F_EVP_CIPHER_CTX_CTRL,
-               EVP_R_CTRL_OPERATION_NOT_IMPLEMENTED);
+    if (ret == -1) 
+	{
+        EVPerr(EVP_F_EVP_CIPHER_CTX_CTRL, EVP_R_CTRL_OPERATION_NOT_IMPLEMENTED);
         return 0;
     }
     return ret;

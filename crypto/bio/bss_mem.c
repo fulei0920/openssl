@@ -98,7 +98,8 @@ BIO *BIO_new_mem_buf(void *buf, int len)
     BUF_MEM *b;
     size_t sz;
 
-    if (!buf) {
+    if (!buf) 
+	{
         BIOerr(BIO_F_BIO_NEW_MEM_BUF, BIO_R_NULL_PARAMETER);
         return NULL;
     }
@@ -176,7 +177,8 @@ static int mem_write(BIO *b, const char *in, int inl)
     BUF_MEM *bm;
 
     bm = (BUF_MEM *)b->ptr;
-    if (in == NULL) {
+    if (in == NULL) 
+	{
         BIOerr(BIO_F_MEM_WRITE, BIO_R_NULL_PARAMETER);
         goto end;
     }

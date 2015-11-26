@@ -3751,7 +3751,8 @@ int ssl3_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
 {
     long l;
 
-    if (p != NULL) {
+    if (p != NULL) 
+	{
         l = c->id;
         if ((l & 0xff000000) != 0x03000000)
             return (0);

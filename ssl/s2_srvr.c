@@ -126,8 +126,7 @@ static int get_client_finished(SSL *s);
 static int server_verify(SSL *s);
 static int server_finish(SSL *s);
 static int request_certificate(SSL *s);
-static int ssl_rsa_private_decrypt(CERT *c, int len, unsigned char *from,
-                                   unsigned char *to, int padding);
+static int ssl_rsa_private_decrypt(CERT *c, int len, unsigned char *from, unsigned char *to, int padding);
 # define BREAK   break
 
 static const SSL_METHOD *ssl2_get_server_method(int ver)
@@ -383,7 +382,8 @@ static int get_client_master_key(SSL *s)
     size_t j;
 
     p = (unsigned char *)s->init_buf->data;
-    if (s->state == SSL2_ST_GET_CLIENT_MASTER_KEY_A) {
+    if (s->state == SSL2_ST_GET_CLIENT_MASTER_KEY_A) 
+	{
         i = ssl2_read(s, (char *)&(p[s->init_num]), 10 - s->init_num);
 
         if (i < (10 - s->init_num))
@@ -1123,8 +1123,7 @@ static int request_certificate(SSL *s)
     return (ret);
 }
 
-static int ssl_rsa_private_decrypt(CERT *c, int len, unsigned char *from,
-                                   unsigned char *to, int padding)
+static int ssl_rsa_private_decrypt(CERT *c, int len, unsigned char *from, unsigned char *to, int padding)
 {
     RSA *rsa;
     int i;

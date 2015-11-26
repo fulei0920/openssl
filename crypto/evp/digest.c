@@ -142,6 +142,9 @@ int EVP_DigestInit(EVP_MD_CTX *ctx, const EVP_MD *type)
     return EVP_DigestInit_ex(ctx, type, NULL);
 }
 
+/*
+设置具体的摘要算法
+*/
 int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 {
     EVP_MD_CTX_clear_flags(ctx, EVP_MD_CTX_FLAG_CLEANED);
@@ -154,8 +157,7 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
      */
     if (ctx->engine && ctx->digest && (!type ||
                                        (type
-                                        && (type->type ==
-                                            ctx->digest->type))))
+                                        && (type->type == ctx->digest->type))))
         goto skip_to_init;
     if (type) {
         /*
@@ -199,14 +201,17 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
         type = ctx->digest;
     }
 #endif
-    if (ctx->digest != type) {
+    if (ctx->digest != type) 
+	{
         if (ctx->digest && ctx->digest->ctx_size)
             OPENSSL_free(ctx->md_data);
         ctx->digest = type;
-        if (!(ctx->flags & EVP_MD_CTX_FLAG_NO_INIT) && type->ctx_size) {
+        if (!(ctx->flags & EVP_MD_CTX_FLAG_NO_INIT) && type->ctx_size) 
+		{
             ctx->update = type->update;
             ctx->md_data = OPENSSL_malloc(type->ctx_size);
-            if (ctx->md_data == NULL) {
+            if (ctx->md_data == NULL) 
+			{
                 EVPerr(EVP_F_EVP_DIGESTINIT_EX, ERR_R_MALLOC_FAILURE);
                 return 0;
             }
@@ -215,10 +220,10 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 #ifndef OPENSSL_NO_ENGINE
  skip_to_init:
 #endif
-    if (ctx->pctx) {
+    if (ctx->pctx) 
+	{
         int r;
-        r = EVP_PKEY_CTX_ctrl(ctx->pctx, -1, EVP_PKEY_OP_TYPE_SIG,
-                              EVP_PKEY_CTRL_DIGESTINIT, 0, ctx);
+        r = EVP_PKEY_CTX_ctrl(ctx->pctx, -1, EVP_PKEY_OP_TYPE_SIG, EVP_PKEY_CTRL_DIGESTINIT, 0, ctx);
         if (r <= 0 && (r != -2))
             return 0;
     }
@@ -226,6 +231,7 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
         return 1;
 #ifdef OPENSSL_FIPS
     if (FIPS_mode()) {
+	
         if (FIPS_digestinit(ctx, type))
             return 1;
         OPENSSL_free(ctx->md_data);
@@ -284,32 +290,42 @@ int EVP_MD_CTX_copy(EVP_MD_CTX *out, const EVP_MD_CTX *in)
 int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in)
 {
     unsigned char *tmp_buf;
-    if ((in == NULL) || (in->digest == NULL)) {
+    if ((in == NULL) || (in->digest == NULL))
+	{
         EVPerr(EVP_F_EVP_MD_CTX_COPY_EX, EVP_R_INPUT_NOT_INITIALIZED);
         return 0;
     }
 #ifndef OPENSSL_NO_ENGINE
     /* Make sure it's safe to copy a digest context using an ENGINE */
-    if (in->engine && !ENGINE_init(in->engine)) {
+    if (in->engine && !ENGINE_init(in->engine))
+	{
         EVPerr(EVP_F_EVP_MD_CTX_COPY_EX, ERR_R_ENGINE_LIB);
         return 0;
     }
 #endif
 
-    if (out->digest == in->digest) {
+    if (out->digest == in->digest) 
+	{
         tmp_buf = out->md_data;
         EVP_MD_CTX_set_flags(out, EVP_MD_CTX_FLAG_REUSE);
-    } else
-        tmp_buf = NULL;
+    } 
+	else
+	{
+		tmp_buf = NULL;
+	}
+        
     EVP_MD_CTX_cleanup(out);
     memcpy(out, in, sizeof *out);
 
-    if (in->md_data && out->digest->ctx_size) {
+    if (in->md_data && out->digest->ctx_size) 
+	{
         if (tmp_buf)
             out->md_data = tmp_buf;
-        else {
+        else 
+		{
             out->md_data = OPENSSL_malloc(out->digest->ctx_size);
-            if (!out->md_data) {
+            if (!out->md_data)
+			{
                 EVPerr(EVP_F_EVP_MD_CTX_COPY_EX, ERR_R_MALLOC_FAILURE);
                 return 0;
             }
@@ -319,9 +335,11 @@ int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in)
 
     out->update = in->update;
 
-    if (in->pctx) {
+    if (in->pctx)
+	{
         out->pctx = EVP_PKEY_CTX_dup(in->pctx);
-        if (!out->pctx) {
+        if (!out->pctx) 
+		{
             EVP_MD_CTX_cleanup(out);
             return 0;
         }
@@ -333,18 +351,24 @@ int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in)
     return 1;
 }
 
-int EVP_Digest(const void *data, size_t count,
-               unsigned char *md, unsigned int *size, const EVP_MD *type,
-               ENGINE *impl)
+
+/*
+计算数据的摘要信息
+data -- 原始数据
+count -- 原始数据大小 
+md -- 摘要结果
+size -- 摘要结果大小
+type -- 摘要算法
+impl -- 硬件引擎
+*/
+int EVP_Digest(const void *data, size_t count, unsigned char *md, unsigned int *size, const EVP_MD *type, ENGINE *impl)
 {
     EVP_MD_CTX ctx;
     int ret;
 
     EVP_MD_CTX_init(&ctx);
     EVP_MD_CTX_set_flags(&ctx, EVP_MD_CTX_FLAG_ONESHOT);
-    ret = EVP_DigestInit_ex(&ctx, type, impl)
-        && EVP_DigestUpdate(&ctx, data, count)
-        && EVP_DigestFinal_ex(&ctx, md, size);
+    ret = EVP_DigestInit_ex(&ctx, type, impl) && EVP_DigestUpdate(&ctx, data, count) && EVP_DigestFinal_ex(&ctx, md, size);
     EVP_MD_CTX_cleanup(&ctx);
 
     return ret;
@@ -366,11 +390,10 @@ int EVP_MD_CTX_cleanup(EVP_MD_CTX *ctx)
      * Don't assume ctx->md_data was cleaned in EVP_Digest_Final, because
      * sometimes only copies of the context are ever finalised.
      */
-    if (ctx->digest && ctx->digest->cleanup
-        && !EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_CLEANED))
+    if (ctx->digest && ctx->digest->cleanup && !EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_CLEANED))
         ctx->digest->cleanup(ctx);
-    if (ctx->digest && ctx->digest->ctx_size && ctx->md_data
-        && !EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_REUSE)) {
+    if (ctx->digest && ctx->digest->ctx_size && ctx->md_data && !EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_REUSE))
+    {
         OPENSSL_cleanse(ctx->md_data, ctx->digest->ctx_size);
         OPENSSL_free(ctx->md_data);
     }

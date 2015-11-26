@@ -601,7 +601,8 @@ static int get_ip(const char *str, unsigned char ip[4])
 int BIO_get_accept_socket(char *host, int bind_mode)
 {
     int ret = 0;
-    union {
+    union
+	{
         struct sockaddr sa;
         struct sockaddr_in sa_in;
 # if OPENSSL_USE_IPV6
@@ -624,17 +625,20 @@ int BIO_get_accept_socket(char *host, int bind_mode)
 
     h = p = NULL;
     h = str;
-    for (e = str; *e; e++) {
-        if (*e == ':') {
+    for (e = str; *e; e++) 
+	{
+        if (*e == ':') 
+		{
             p = e;
-        } else if (*e == '/') {
+        }
+		else if (*e == '/')
+       	{
             *e = '\0';
             break;
         }
     }
     if (p)
-        *p++ = '\0';            /* points at last ':', '::port' is special
-                                 * [see below] */
+        *p++ = '\0';            /* points at last ':', '::port' is special [see below] */
     else
         p = h, h = NULL;
 
@@ -805,7 +809,8 @@ int BIO_accept(int sock, char **addr)
     unsigned short port;
     char *p;
 
-    struct {
+    struct 
+	{
         /*
          * As for following union. Trouble is that there are platforms
          * that have socklen_t and there are platforms that don't, on
@@ -827,11 +832,13 @@ int BIO_accept(int sock, char **addr)
          * size_t* is HP-UX, where stack grows towards higher address.
          * <appro>
          */
-        union {
+        union
+       	{
             size_t s;
             int i;
         } len;
-        union {
+        union
+		{
             struct sockaddr sa;
             struct sockaddr_in sa_in;
 # if OPENSSL_USE_IPV6
@@ -844,12 +851,14 @@ int BIO_accept(int sock, char **addr)
     sa.len.i = sizeof(sa.from);
     memset(&sa.from, 0, sizeof(sa.from));
     ret = accept(sock, &sa.from.sa, (void *)&sa.len);
-    if (sizeof(sa.len.i) != sizeof(sa.len.s) && sa.len.i == 0) {
+    if (sizeof(sa.len.i) != sizeof(sa.len.s) && sa.len.i == 0) 
+	{
         OPENSSL_assert(sa.len.s <= sizeof(sa.from));
         sa.len.i = (int)sa.len.s;
         /* use sa.len.i from this point */
     }
-    if (ret == INVALID_SOCKET) {
+    if (ret == INVALID_SOCKET) 
+	{
         if (BIO_sock_should_retry(ret))
             return -2;
         SYSerr(SYS_F_ACCEPT, get_last_socket_error());
@@ -909,8 +918,10 @@ int BIO_accept(int sock, char **addr)
         goto end;
     l = ntohl(sa.from.sa_in.sin_addr.s_addr);
     port = ntohs(sa.from.sa_in.sin_port);
-    if (*addr == NULL) {
-        if ((p = OPENSSL_malloc(24)) == NULL) {
+    if (*addr == NULL) 
+	{
+        if ((p = OPENSSL_malloc(24)) == NULL) 
+		{
             BIOerr(BIO_F_BIO_ACCEPT, ERR_R_MALLOC_FAILURE);
             goto end;
         }

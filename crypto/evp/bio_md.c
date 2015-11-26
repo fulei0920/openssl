@@ -77,7 +77,8 @@ static int md_new(BIO *h);
 static int md_free(BIO *data);
 static long md_callback_ctrl(BIO *h, int cmd, bio_info_cb *fp);
 
-static BIO_METHOD methods_md = {
+static BIO_METHOD methods_md = 
+{
     BIO_TYPE_MD, "message digest",
     md_write,
     md_read,
@@ -155,16 +156,19 @@ static int md_write(BIO *b, const char *in, int inl)
 
     if ((ctx != NULL) && (b->next_bio != NULL))
         ret = BIO_write(b->next_bio, in, inl);
-    if (b->init) {
-        if (ret > 0) {
-            if (!EVP_DigestUpdate(ctx, (const unsigned char *)in,
-                                  (unsigned int)ret)) {
+    if (b->init) 
+	{
+        if (ret > 0) 
+		{
+            if (!EVP_DigestUpdate(ctx, (const unsigned char *)in, (unsigned int)ret)) 
+			{
                 BIO_clear_retry_flags(b);
                 return 0;
             }
         }
     }
-    if (b->next_bio != NULL) {
+    if (b->next_bio != NULL) 
+	{
         BIO_clear_retry_flags(b);
         BIO_copy_next_retry(b);
     }

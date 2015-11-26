@@ -95,6 +95,11 @@ void BUF_MEM_free(BUF_MEM *a)
     OPENSSL_free(a);
 }
 
+
+/*
+扩展BUF_MEM的内存大小到指定大小，并将新扩展部分清0
+返回值 -- 成功返回len，失败返回0
+*/
 int BUF_MEM_grow(BUF_MEM *str, size_t len)
 {
     char *ret;
@@ -137,23 +142,31 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
     return (len);
 }
 
+
+/*
+扩展BUF_MEM的内存
+
+*/
 int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
 {
     char *ret;
     size_t n;
 
-    if (str->length >= len) {
+    if (str->length >= len) 
+	{
         memset(&str->data[len], 0, str->length - len);
         str->length = len;
         return (len);
     }
-    if (str->max >= len) {
+    if (str->max >= len) 
+	{
         memset(&str->data[str->length], 0, len - str->length);
         str->length = len;
         return (len);
     }
     /* This limit is sufficient to ensure (len+3)/3*4 < 2**31 */
-    if (len > LIMIT_BEFORE_EXPANSION) {
+    if (len > LIMIT_BEFORE_EXPANSION)
+	{
         BUFerr(BUF_F_BUF_MEM_GROW_CLEAN, ERR_R_MALLOC_FAILURE);
         return 0;
     }
@@ -162,10 +175,13 @@ int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
         ret = OPENSSL_malloc(n);
     else
         ret = OPENSSL_realloc_clean(str->data, str->max, n);
-    if (ret == NULL) {
+    if (ret == NULL)
+	{
         BUFerr(BUF_F_BUF_MEM_GROW_CLEAN, ERR_R_MALLOC_FAILURE);
         len = 0;
-    } else {
+    } 
+	else 
+	{
         str->data = ret;
         str->max = n;
         memset(&str->data[str->length], 0, len - str->length);

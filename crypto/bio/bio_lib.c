@@ -421,7 +421,11 @@ size_t BIO_ctrl_wpending(BIO *bio)
     return BIO_ctrl(bio, BIO_CTRL_WPENDING, 0, NULL);
 }
 
-/* put the 'bio' on the end of b's list of operators */
+
+/*
+将'bio'放到'b'的链表的最后
+返回值 -- 成功返回'b', 失败返回'bio'
+*/
 BIO *BIO_push(BIO *b, BIO *bio)
 {
     BIO *lb;
