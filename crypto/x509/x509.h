@@ -140,15 +140,18 @@ typedef struct X509_objects_st {
     int (*i2a) (void);
 } X509_OBJECTS;
 
-struct X509_algor_st {
-    ASN1_OBJECT *algorithm;
-    ASN1_TYPE *parameter;
+/*表示算法*/
+struct X509_algor_st 
+{
+    ASN1_OBJECT *algorithm; /*表明了是何种算法*/
+    ASN1_TYPE *parameter;	/*代表该算法需要的参数,ASN1_TYPE 类型可以存放任意数据*/
 } /* X509_ALGOR */ ;
 
 DECLARE_ASN1_SET_OF(X509_ALGOR)
 
 typedef STACK_OF(X509_ALGOR) X509_ALGORS;
 
+/*该数据结构用来表示有效时间*/
 typedef struct X509_val_st {
     ASN1_TIME *notBefore;
     ASN1_TIME *notAfter;

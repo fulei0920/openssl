@@ -85,7 +85,8 @@ static int final(EVP_MD_CTX *ctx, unsigned char *md)
     return RIPEMD160_Final(md, ctx->md_data);
 }
 
-static const EVP_MD ripemd160_md = {
+static const EVP_MD ripemd160_md = 
+{
     NID_ripemd160,
     NID_ripemd160WithRSA,
     RIPEMD160_DIGEST_LENGTH,

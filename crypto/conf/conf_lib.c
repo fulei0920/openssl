@@ -154,8 +154,8 @@ STACK_OF(CONF_VALUE) *CONF_get_section(LHASH_OF(CONF_VALUE) *conf,
     }
 }
 
-char *CONF_get_string(LHASH_OF(CONF_VALUE) *conf, const char *group,
-                      const char *name)
+/*给定段即属性值，得到对应的值的字符串信息*/
+char *CONF_get_string(LHASH_OF(CONF_VALUE) *conf, const char *group, const char *name)
 {
     if (conf == NULL) {
         return NCONF_get_string(NULL, group, name);
@@ -187,6 +187,7 @@ long CONF_get_number(LHASH_OF(CONF_VALUE) *conf, const char *group,
     return result;
 }
 
+/*释放空间，以及释放存储在散列表中的元素*/
 void CONF_free(LHASH_OF(CONF_VALUE) *conf)
 {
     CONF ctmp;
@@ -224,7 +225,7 @@ int CONF_dump_bio(LHASH_OF(CONF_VALUE) *conf, BIO *out)
  * These functions are also written in terms of the bridge functions used by
  * the "CONF classic" functions, for consistency.
  */
-
+/*生成一个 CONF 结构*/
 CONF *NCONF_new(CONF_METHOD *meth)
 {
     CONF *ret;
@@ -233,7 +234,8 @@ CONF *NCONF_new(CONF_METHOD *meth)
         meth = NCONF_default();
 
     ret = meth->create(meth);
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         CONFerr(CONF_F_NCONF_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
@@ -255,9 +257,11 @@ void NCONF_free_data(CONF *conf)
     conf->meth->destroy_data(conf);
 }
 
+/*该函数根据输入配置文件名，读取信息存入散列表，如果有错， eline 为错误行。*/
 int NCONF_load(CONF *conf, const char *file, long *eline)
 {
-    if (conf == NULL) {
+    if (conf == NULL)
+	{
         CONFerr(CONF_F_NCONF_LOAD, CONF_R_NO_CONF);
         return 0;
     }
@@ -266,6 +270,7 @@ int NCONF_load(CONF *conf, const char *file, long *eline)
 }
 
 #ifndef OPENSSL_NO_FP_API
+/*根据 bio 或者文件句柄读取配置信息并存入散列表。*/
 int NCONF_load_fp(CONF *conf, FILE *fp, long *eline)
 {
     BIO *btmp;
@@ -282,7 +287,8 @@ int NCONF_load_fp(CONF *conf, FILE *fp, long *eline)
 
 int NCONF_load_bio(CONF *conf, BIO *bp, long *eline)
 {
-    if (conf == NULL) {
+    if (conf == NULL) 
+	{
         CONFerr(CONF_F_NCONF_LOAD_BIO, CONF_R_NO_CONF);
         return 0;
     }
@@ -290,14 +296,18 @@ int NCONF_load_bio(CONF *conf, BIO *bp, long *eline)
     return conf->meth->load_bio(conf, bp, eline);
 }
 
+/*给定段信息，得到散列表中的所有对应值。用于获取配置文件中指定某个段下
+的所有信息,这些信息存放在 CONF_VALUE 的堆栈中。*/
 STACK_OF(CONF_VALUE) *NCONF_get_section(const CONF *conf, const char *section)
 {
-    if (conf == NULL) {
+    if (conf == NULL) 
+	{
         CONFerr(CONF_F_NCONF_GET_SECTION, CONF_R_NO_CONF);
         return NULL;
     }
 
-    if (section == NULL) {
+    if (section == NULL)
+	{
         CONFerr(CONF_F_NCONF_GET_SECTION, CONF_R_NO_SECTION);
         return NULL;
     }
@@ -305,6 +315,7 @@ STACK_OF(CONF_VALUE) *NCONF_get_section(const CONF *conf, const char *section)
     return _CONF_get_section_values(conf, section);
 }
 
+/**/
 char *NCONF_get_string(const CONF *conf, const char *group, const char *name)
 {
     char *s = _CONF_get_string(conf, group, name);

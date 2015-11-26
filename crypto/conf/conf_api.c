@@ -70,11 +70,9 @@
 #include <openssl/conf_api.h>
 #include "e_os.h"
 
-static void value_free_hash_doall_arg(CONF_VALUE *a,
-                                      LHASH_OF(CONF_VALUE) *conf);
+static void value_free_hash_doall_arg(CONF_VALUE *a, LHASH_OF(CONF_VALUE) *conf);
 static void value_free_stack_doall(CONF_VALUE *a);
-static IMPLEMENT_LHASH_DOALL_ARG_FN(value_free_hash, CONF_VALUE,
-                                    LHASH_OF(CONF_VALUE))
+static IMPLEMENT_LHASH_DOALL_ARG_FN(value_free_hash, CONF_VALUE, LHASH_OF(CONF_VALUE))
 static IMPLEMENT_LHASH_DOALL_FN(value_free_stack, CONF_VALUE)
 
 /* Up until OpenSSL 0.9.5a, this was get_section */
@@ -91,8 +89,7 @@ CONF_VALUE *_CONF_get_section(const CONF *conf, const char *section)
 }
 
 /* Up until OpenSSL 0.9.5a, this was CONF_get_section */
-STACK_OF(CONF_VALUE) *_CONF_get_section_values(const CONF *conf,
-                                               const char *section)
+STACK_OF(CONF_VALUE) *_CONF_get_section_values(const CONF *conf, const char *section)
 {
     CONF_VALUE *v;
 
@@ -125,8 +122,7 @@ int _CONF_add_string(CONF *conf, CONF_VALUE *section, CONF_VALUE *value)
     return 1;
 }
 
-char *_CONF_get_string(const CONF *conf, const char *section,
-                       const char *name)
+char *_CONF_get_string(const CONF *conf, const char *section, const char *name)
 {
     CONF_VALUE *v, vv;
     char *p;

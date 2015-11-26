@@ -65,14 +65,14 @@
 # include <openssl/fips.h>
 #endif
 
-int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, int len,
-                 const EVP_MD *md, ENGINE *impl)
+int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, int len, const EVP_MD *md, ENGINE *impl)
 {
     int i, j, reset = 0;
     unsigned char pad[HMAC_MAX_MD_CBLOCK];
 
 #ifdef OPENSSL_FIPS
-    if (FIPS_mode()) {
+    if (FIPS_mode()) 
+	{
         /* If we have an ENGINE need to allow non FIPS */
         if ((impl || ctx->i_ctx.engine)
             && !(ctx->i_ctx.flags & EVP_CIPH_FLAG_NON_FIPS_ALLOW)) {
@@ -91,39 +91,47 @@ int HMAC_Init_ex(HMAC_CTX *ctx, const void *key, int len,
     if (md != NULL && md != ctx->md && (key == NULL || len < 0))
         return 0;
 
-    if (md != NULL) {
+    if (md != NULL) 
+	{
         reset = 1;
         ctx->md = md;
-    } else if (ctx->md) {
+    }
+	else if (ctx->md)
+    {
         md = ctx->md;
-    } else {
+    } 
+	else 
+	{
         return 0;
     }
 
-    if (key != NULL) {
+    if (key != NULL)
+	{
         reset = 1;
         j = EVP_MD_block_size(md);
         OPENSSL_assert(j <= (int)sizeof(ctx->key));
-        if (j < len) {
+        if (j < len) 
+		{
             if (!EVP_DigestInit_ex(&ctx->md_ctx, md, impl))
                 goto err;
             if (!EVP_DigestUpdate(&ctx->md_ctx, key, len))
                 goto err;
-            if (!EVP_DigestFinal_ex(&(ctx->md_ctx), ctx->key,
-                                    &ctx->key_length))
+            if (!EVP_DigestFinal_ex(&(ctx->md_ctx), ctx->key, &ctx->key_length))
                 goto err;
-        } else {
+        } 
+		else 
+		{
             if (len < 0 || len > (int)sizeof(ctx->key))
                 return 0;
             memcpy(ctx->key, key, len);
             ctx->key_length = len;
         }
         if (ctx->key_length != HMAC_MAX_MD_CBLOCK)
-            memset(&ctx->key[ctx->key_length], 0,
-                   HMAC_MAX_MD_CBLOCK - ctx->key_length);
+            memset(&ctx->key[ctx->key_length], 0, HMAC_MAX_MD_CBLOCK - ctx->key_length);
     }
 
-    if (reset) {
+    if (reset) 
+	{
         for (i = 0; i < HMAC_MAX_MD_CBLOCK; i++)
             pad[i] = 0x36 ^ ctx->key[i];
         if (!EVP_DigestInit_ex(&ctx->i_ctx, md, impl))
@@ -227,6 +235,17 @@ void HMAC_CTX_cleanup(HMAC_CTX *ctx)
     memset(ctx, 0, sizeof *ctx);
 }
 
+
+/*
+evp_md -- 指明HMAC使用的摘要算法
+key -- 秘密密钥指针地址
+key_len -- 秘密密钥的长度
+d -- 需要做HMAC运算的数据指针地址
+n -- 为d的长度
+md -- 用于存放HMAC的值
+md_len -- 为HMAC值的长度
+
+*/
 unsigned char *HMAC(const EVP_MD *evp_md, const void *key, int key_len,
                     const unsigned char *d, size_t n, unsigned char *md,
                     unsigned int *md_len)
