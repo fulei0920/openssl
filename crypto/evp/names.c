@@ -62,6 +62,9 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
+/*
+返回值 -- 成功返回1， 失败返回0
+*/
 int EVP_add_cipher(const EVP_CIPHER *c)
 {
     int r;

@@ -160,9 +160,10 @@ extern "C" {
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
-typedef struct ssl2_state_st {
-    int three_byte_header;
-    int clear_text;             /* clear text */
+typedef struct ssl2_state_st 
+{
+    int three_byte_header;		/* 表明MAC是3个字节还是2个字节*/
+    int clear_text;             /* 表明是否是明文*/
     int escape;                 /* not used in SSLv2 */
     int ssl2_rollback;          /* used if SSLv23 rolled back to SSLv2 */
     /*
@@ -175,22 +176,21 @@ typedef struct ssl2_state_st {
     int wpend_len;              /* number of bytes passwd to write */
     int wpend_ret;              /* number of bytes to return to caller */
     /* buffer raw data */
-    int rbuf_left;
-    int rbuf_offs;
-    unsigned char *rbuf;
-    unsigned char *wbuf;
-    unsigned char *write_ptr;   /* used to point to the start due to 2/3 byte
-                                 * header. */
-    unsigned int padding;
-    unsigned int rlength;       /* passed to ssl2_enc */
+    int rbuf_left;				/*rbuf中剩余未处理的数据字节数*/
+    int rbuf_offs;				/*rbuf中剩余未处理的数据的起始偏移位置*/
+    unsigned char *rbuf;		/*读数据缓存区 -- 需要读的数据先被读到rbuf中。。。，然后才被上层读取*/	
+    unsigned char *wbuf;		/*写数据缓存区 -- 需要写的上层数据将被按报文格式要求组织到wbuf中，然后才被发送*/
+    unsigned char *write_ptr;   /* used to point to the start due to 2/3 byte header. */
+    unsigned int padding;		/* PADDING-DATA长度*/
+    unsigned int rlength;       /* passed to ssl2_enc */ /*数据长度(不包括记录头)*/
     int ract_data_length;       /* Set when things are encrypted. */
     unsigned int wlength;       /* passed to ssl2_enc */
     int wact_data_length;       /* Set when things are decrypted. */
-    unsigned char *ract_data;
-    unsigned char *wact_data;
-    unsigned char *mac_data;
+    unsigned char *ract_data;	/*指向读ACTUAL-DATA起始位置 -- 用于控制对wbuf和rbuf的读写*/
+    unsigned char *wact_data;	/*指向写ACTUAL-DATA起始位置*/
+    unsigned char *mac_data;	/*指向MAC-DATA起始位置*/
     unsigned char *read_key;
-    unsigned char *write_key;
+    unsigned char *write_key;	/*指向对称加密密钥???*/
     /* Stuff specifically to do with this SSL session */
     unsigned int challenge_length;
     unsigned char challenge[SSL2_MAX_CHALLENGE_LENGTH];
@@ -200,7 +200,8 @@ typedef struct ssl2_state_st {
     unsigned char key_material[SSL2_MAX_KEY_MATERIAL_LENGTH * 2];
     unsigned long read_sequence;
     unsigned long write_sequence;
-    struct {
+    struct 
+	{
         unsigned int conn_id_length;
         unsigned int cert_type;
         unsigned int cert_length;

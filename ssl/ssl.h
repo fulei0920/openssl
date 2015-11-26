@@ -392,23 +392,23 @@ typedef int (*tls_session_secret_cb_fn) (SSL *s, void *secret,
 # ifndef OPENSSL_NO_SSL_INTERN
 
 /* used to hold info on the particular ciphers used */
-struct ssl_cipher_st {
+struct ssl_cipher_st 
+{
     int valid;
     const char *name;           /* text name */
     unsigned long id;           /* id, 4 bytes, first is version */
     /*
-     * changed in 0.9.9: these four used to be portions of a single value
-     * 'algorithms'
+     * changed in 0.9.9: these four used to be portions of a single value 'algorithms'
      */
-    unsigned long algorithm_mkey; /* key exchange algorithm */
-    unsigned long algorithm_auth; /* server authentication */
-    unsigned long algorithm_enc; /* symmetric encryption */
-    unsigned long algorithm_mac; /* symmetric authentication */
-    unsigned long algorithm_ssl; /* (major) protocol version */
-    unsigned long algo_strength; /* strength and export flags */
-    unsigned long algorithm2;   /* Extra flags */
-    int strength_bits;          /* Number of bits really used */
-    int alg_bits;               /* Number of bits for algorithm */
+    unsigned long algorithm_mkey; 	/* key exchange algorithm */
+    unsigned long algorithm_auth; 	/* server authentication */
+    unsigned long algorithm_enc; 	/* symmetric encryption */
+    unsigned long algorithm_mac; 	/* symmetric authentication */
+    unsigned long algorithm_ssl; 	/* (major) protocol version */
+    unsigned long algo_strength; 	/* strength and export flags */
+    unsigned long algorithm2;   	/* Extra flags */
+    int strength_bits;          	/* Number of bits really used */
+    int alg_bits;               	/* Number of bits for algorithm */
 };
 
 /* Used to hold functions for SSLv2 or SSLv3/TLSv1 functions */
@@ -801,8 +801,7 @@ int SRP_generate_client_master_secret(SSL *s, unsigned char *master_key);
  * in this case. It is also an error for the callback to set the size to
  * zero.
  */
-typedef int (*GEN_SESSION_CB) (const SSL *ssl, unsigned char *id,
-                               unsigned int *id_len);
+typedef int (*GEN_SESSION_CB) (const SSL *ssl, unsigned char *id, unsigned int *id_len);
 
 typedef struct ssl_comp_st SSL_COMP;
 
@@ -1291,10 +1290,10 @@ struct ssl_st
     int rstate;					/* where we are when reading */
     BUF_MEM *init_buf;          /* buffer used during init */
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
-    int init_num;               /* amount read/written */
-    int init_off;               /* amount read/written */
-    /* used internally to point at a raw packet */
-    unsigned char *packet;
+    int init_num;               /* amount read/written */	/*数据的字节数多少*/
+    int init_off;               /* amount read/written */  	/*数据的起始偏移位置*/
+    
+    unsigned char *packet;		/* used internally to point at a raw packet */
     unsigned int packet_length;
     struct ssl2_state_st *s2;   /* SSLv2 variables */
     struct ssl3_state_st *s3;   /* SSLv3 variables */
@@ -1318,14 +1317,14 @@ struct ssl_st
      * be 'copied' into these ones
      */
     int mac_flags;
-    EVP_CIPHER_CTX *enc_read_ctx; /* cryptographic state */
-    EVP_MD_CTX *read_hash;      /* used for mac generation */
+    EVP_CIPHER_CTX *enc_read_ctx; 	/* cryptographic state */			/*接收对称性加密算法*/
+    EVP_MD_CTX *read_hash;      	/* used for mac generation */
 #  ifndef OPENSSL_NO_COMP
     COMP_CTX *expand;           /* uncompress */
 #  else
     char *expand;
 #  endif
-    EVP_CIPHER_CTX *enc_write_ctx; 	/* cryptographic state */
+    EVP_CIPHER_CTX *enc_write_ctx; 	/* cryptographic state */  			/*发送对称性加密算法*/
     EVP_MD_CTX *write_hash;     /* used for mac generation */
 #  ifndef OPENSSL_NO_COMP
     COMP_CTX *compress;         /* compression */

@@ -445,7 +445,8 @@ int ssl2_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
 {
     long l;
 
-    if (p != NULL) {
+    if (p != NULL) 
+	{
         l = c->id;
         if ((l & 0xff000000) != 0x02000000 && l != SSL3_CK_FALLBACK_SCSV)
             return (0);

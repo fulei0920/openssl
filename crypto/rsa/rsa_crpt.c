@@ -97,8 +97,7 @@ int RSA_private_encrypt(int flen, const unsigned char *from,
     return (rsa->meth->rsa_priv_enc(flen, from, to, rsa, padding));
 }
 
-int RSA_private_decrypt(int flen, const unsigned char *from,
-                        unsigned char *to, RSA *rsa, int padding)
+int RSA_private_decrypt(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
 {
 #ifdef OPENSSL_FIPS
     if (FIPS_mode() && !(rsa->meth->flags & RSA_FLAG_FIPS_METHOD)

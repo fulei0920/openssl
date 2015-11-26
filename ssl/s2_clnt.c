@@ -125,8 +125,7 @@ static int client_hello(SSL *s);
 static int client_master_key(SSL *s);
 static int client_finished(SSL *s);
 static int client_certificate(SSL *s);
-static int ssl_rsa_public_encrypt(SESS_CERT *sc, int len, unsigned char *from,
-                                  unsigned char *to, int padding);
+static int ssl_rsa_public_encrypt(SESS_CERT *sc, int len, unsigned char *from, unsigned char *to, int padding);
 # define BREAK   break
 
 static const SSL_METHOD *ssl2_get_client_method(int ver)
@@ -139,6 +138,10 @@ static const SSL_METHOD *ssl2_get_client_method(int ver)
 
 IMPLEMENT_ssl2_meth_func(SSLv2_client_method, ssl_undefined_function, ssl2_connect, ssl2_get_client_method)
 
+
+/*
+返回值 -- 成功返回1，失败返回0
+*/
 int ssl2_connect(SSL *s)
 {
     unsigned long l = (unsigned long)time(NULL);
@@ -161,10 +164,12 @@ int ssl2_connect(SSL *s)
     if (!SSL_in_init(s) || SSL_in_before(s))
         SSL_clear(s);
 
-    for (;;) {
+    for (;;) 
+	{
         state = s->state;
 
-        switch (s->state) {
+        switch (s->state) 
+		{
         case SSL_ST_BEFORE:
         case SSL_ST_CONNECT:
         case SSL_ST_BEFORE | SSL_ST_CONNECT:
@@ -177,12 +182,15 @@ int ssl2_connect(SSL *s)
             s->version = SSL2_VERSION;
             s->type = SSL_ST_CONNECT;
 
+			/*为init_buf分配内存*/
             buf = s->init_buf;
-            if ((buf == NULL) && ((buf = BUF_MEM_new()) == NULL)) {
+            if ((buf == NULL) && ((buf = BUF_MEM_new()) == NULL)) 
+			{
                 ret = -1;
                 goto end;
             }
-            if (!BUF_MEM_grow(buf, SSL2_MAX_RECORD_LENGTH_3_BYTE_HEADER)) {
+            if (!BUF_MEM_grow(buf, SSL2_MAX_RECORD_LENGTH_3_BYTE_HEADER)) 
+			{
                 if (buf == s->init_buf)
                     buf = NULL;
                 ret = -1;
@@ -234,7 +242,8 @@ int ssl2_connect(SSL *s)
              * Ok, we now have all the stuff needed to start encrypting, so
              * lets fire it up :-)
              */
-            if (!ssl2_enc_init(s, 1)) {
+            if (!ssl2_enc_init(s, 1)) 
+			{
                 ret = -1;
                 goto end;
             }
@@ -538,9 +547,12 @@ static int client_hello(SSL *s)
     int i, n, j;
 
     buf = (unsigned char *)s->init_buf->data;
-    if (s->state == SSL2_ST_SEND_CLIENT_HELLO_A) {
-        if ((s->session == NULL) || (s->session->ssl_version != s->version)) {
-            if (!ssl_get_new_session(s, 0)) {
+    if (s->state == SSL2_ST_SEND_CLIENT_HELLO_A) 
+	{
+        if ((s->session == NULL) || (s->session->ssl_version != s->version)) 
+		{
+            if (!ssl_get_new_session(s, 0)) 
+			{
                 ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
                 return (-1);
             }
@@ -556,21 +568,23 @@ static int client_hello(SSL *s)
         n = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), d, 0);
         d += n;
 
-        if (n == 0) {
+        if (n == 0) 
+		{
             SSLerr(SSL_F_CLIENT_HELLO, SSL_R_NO_CIPHERS_AVAILABLE);
             return (-1);
         }
 
         s2n(n, p);              /* cipher spec num bytes */
 
-        if ((s->session->session_id_length > 0) &&
-            (s->session->session_id_length <=
-             SSL2_MAX_SSL_SESSION_ID_LENGTH)) {
+        if ((s->session->session_id_length > 0) && (s->session->session_id_length <= SSL2_MAX_SSL_SESSION_ID_LENGTH)) 
+        {
             i = s->session->session_id_length;
             s2n(i, p);          /* session id length */
             memcpy(d, s->session->session_id, (unsigned int)i);
             d += i;
-        } else {
+        } 
+		else
+		{
             s2n(0, p);
         }
 
@@ -602,7 +616,8 @@ static int client_master_key(SSL *s)
     const EVP_MD *md;
 
     buf = (unsigned char *)s->init_buf->data;
-    if (s->state == SSL2_ST_SEND_CLIENT_MASTER_KEY_A) {
+    if (s->state == SSL2_ST_SEND_CLIENT_MASTER_KEY_A) 
+	{
 
         if (!ssl_cipher_get_evp(s->session, &c, &md, NULL, NULL, NULL)) {
             ssl2_return_error(s, SSL2_PE_NO_CIPHER);
@@ -662,12 +677,9 @@ static int client_master_key(SSL *s)
         memcpy(d, sess->master_key, (unsigned int)clear);
         d += clear;
 
-        enc = ssl_rsa_public_encrypt(sess->sess_cert, enc,
-                                     &(sess->master_key[clear]), d,
-                                     (s->
-                                      s2->ssl2_rollback) ? RSA_SSLV23_PADDING
-                                     : RSA_PKCS1_PADDING);
-        if (enc <= 0) {
+        enc = ssl_rsa_public_encrypt(sess->sess_cert, enc, &(sess->master_key[clear]), d, (s->s2->ssl2_rollback) ? RSA_SSLV23_PADDING : RSA_PKCS1_PADDING);
+        if (enc <= 0) 
+		{
             ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
             SSLerr(SSL_F_CLIENT_MASTER_KEY, SSL_R_PUBLIC_KEY_ENCRYPT_ERROR);
             return (-1);
@@ -1059,18 +1071,22 @@ int ssl2_set_certificate(SSL *s, int type, int len, const unsigned char *data)
     return (ret);
 }
 
-static int ssl_rsa_public_encrypt(SESS_CERT *sc, int len, unsigned char *from,
-                                  unsigned char *to, int padding)
+
+/*
+从证书中获取公钥对信息进行rsa加密
+*/
+static int ssl_rsa_public_encrypt(SESS_CERT *sc, int len, unsigned char *from, unsigned char *to, int padding)
 {
     EVP_PKEY *pkey = NULL;
     int i = -1;
 
-    if ((sc == NULL) || (sc->peer_key->x509 == NULL) ||
-        ((pkey = X509_get_pubkey(sc->peer_key->x509)) == NULL)) {
+    if ((sc == NULL) || (sc->peer_key->x509 == NULL) || ((pkey = X509_get_pubkey(sc->peer_key->x509)) == NULL)) 
+   	{
         SSLerr(SSL_F_SSL_RSA_PUBLIC_ENCRYPT, SSL_R_NO_PUBLICKEY);
         return (-1);
     }
-    if (pkey->type != EVP_PKEY_RSA) {
+    if (pkey->type != EVP_PKEY_RSA)
+	{
         SSLerr(SSL_F_SSL_RSA_PUBLIC_ENCRYPT, SSL_R_PUBLIC_KEY_IS_NOT_RSA);
         goto end;
     }

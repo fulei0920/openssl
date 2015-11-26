@@ -570,7 +570,8 @@ int ssl23_get_client_hello(SSL *s)
          * stuff.
          */
 
-        if (s->s2 == NULL) {
+        if (s->s2 == NULL) 
+		{
             if (!ssl2_new(s))
                 goto err;
         } else

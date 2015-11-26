@@ -126,7 +126,7 @@ extern "C" {
  * method, as in, can it do arbitrary encryption....
  */
 /*
-表示密钥(公钥/私钥)
+用来存放非对称密钥信息
 */
 struct evp_pkey_st
 {
@@ -152,7 +152,7 @@ struct evp_pkey_st
 # endif
     } pkey;
     int save_parameters;
-    STACK_OF(X509_ATTRIBUTE) *attributes; /* [ 0 ] */
+    STACK_OF(X509_ATTRIBUTE) *attributes; /* [ 0 ] */  /*堆栈用来存放密钥属性*/
 } /* EVP_PKEY */ ;
 
 # define EVP_PKEY_MO_SIGN        0x0001
@@ -161,20 +161,25 @@ struct evp_pkey_st
 # define EVP_PKEY_MO_DECRYPT     0x0008
 
 # ifndef EVP_MD
+
+/*该结构用来存放摘要算法信息、非对称算法类型以及各种计算函数*/
 struct env_md_st 
 {
-    int type;
-    int pkey_type;
-    int md_size;
-    unsigned long flags;
-    int (*init) (EVP_MD_CTX *ctx);
-    int (*update) (EVP_MD_CTX *ctx, const void *data, size_t count);
-    int (*final) (EVP_MD_CTX *ctx, unsigned char *md);
-    int (*copy) (EVP_MD_CTX *to, const EVP_MD_CTX *from);
-    int (*cleanup) (EVP_MD_CTX *ctx);
+    int type;		/*摘要类型，一般是摘要算法 NID*/
+    int pkey_type;	/*公钥类型，一般是签名算法 NID*/
+    int md_size;	/*摘要值大小，为字节数*/
+    unsigned long flags;	/*用于设置标记*/
+    int (*init) (EVP_MD_CTX *ctx);	/*摘要算法初始化函数*/
+    int (*update) (EVP_MD_CTX *ctx, const void *data, size_t count);  /*多次摘要函数*/
+    int (*final) (EVP_MD_CTX *ctx, unsigned char *md);		/*摘要完结函数*/
+    int (*copy) (EVP_MD_CTX *to, const EVP_MD_CTX *from);	/*摘要上下文结构复制函数*/
+    int (*cleanup) (EVP_MD_CTX *ctx);	/*清除摘要上下文函数*/
     /* FIXME: prototype these some day */
+
+	/*签名函数，其中 key 为非对称密钥结构地址*/
     int (*sign) (int type, const unsigned char *m, unsigned int m_length, unsigned char *sigret, unsigned int *siglen, void *key);
-    int (*verify) (int type, const unsigned char *m, unsigned int m_length, const unsigned char *sigbuf, unsigned int siglen, void *key);
+	/*摘要函数，其中 key 为非对称密钥结构地址*/
+	int (*verify) (int type, const unsigned char *m, unsigned int m_length, const unsigned char *sigbuf, unsigned int siglen, void *key);
     int required_pkey_type[5];  /* EVP_PKEY_xxx */
     int block_size;
     int ctx_size;               /* how big does the ctx->md_data need to be */
@@ -266,24 +271,22 @@ typedef int evp_verify_method(int type, const unsigned char *m,
 
 # endif                         /* !EVP_MD */
 
-struct env_md_ctx_st {
+
+/*摘要算法接口*/
+struct env_md_ctx_st 
+{
     const EVP_MD *digest;
-    ENGINE *engine;             /* functional reference if 'digest' is
-                                 * ENGINE-provided */
+    ENGINE *engine;             /* functional reference if 'digest' is  ENGINE-provided */
     unsigned long flags;
-    void *md_data;
-    /* Public key context for sign/verify */
-    EVP_PKEY_CTX *pctx;
-    /* Update function: usually copied from EVP_MD */
-    int (*update) (EVP_MD_CTX *ctx, const void *data, size_t count);
+    void *md_data;				/*指向具体摘要算法使用的私有数据*/
+    EVP_PKEY_CTX *pctx;			/* Public key context for sign/verify */
+    int (*update) (EVP_MD_CTX *ctx, const void *data, size_t count); /* Update function: usually copied from EVP_MD */
 } /* EVP_MD_CTX */ ;
 
 /* values for EVP_MD_CTX flags */
 
-# define EVP_MD_CTX_FLAG_ONESHOT         0x0001/* digest update will be
-                                                * called once only */
-# define EVP_MD_CTX_FLAG_CLEANED         0x0002/* context has already been
-                                                * cleaned */
+# define EVP_MD_CTX_FLAG_ONESHOT         0x0001/* digest update will be called once only */
+# define EVP_MD_CTX_FLAG_CLEANED         0x0002/* context has already been cleaned */
 # define EVP_MD_CTX_FLAG_REUSE           0x0004/* Don't free up ctx->md_data
                                                 * in EVP_MD_CTX_cleanup */
 /*
@@ -306,21 +309,30 @@ struct env_md_ctx_st {
 
 # define EVP_MD_CTX_FLAG_NO_INIT         0x0100/* Don't initialize md_data */
 
+
+/*
+该结构用来存放对称加密相关的信息以及算法。
+*/
 struct evp_cipher_st
 {
-    int nid;
-    int block_size;
-    int key_len;			/* Default value for variable length ciphers */
-    int iv_len;
-    unsigned long flags;  	/* Various flags */
+    int nid;			/*对称算法 nid*/
+    int block_size;		/*对称算法每次加解密的字节数*/
+    int key_len;			/* Default value for variable length ciphers */ /*对称算法的密钥长度字节数*/
+    int iv_len;			/*对称算法的填充长度*/
+    unsigned long flags;  	/* Various flags */  
+	/*初始化函数，用来初始化 ctx， key 为对称密钥值， iv 为初始化向量， enc用于指明是要加密还是解密，这些信息存放在 ctx 中*/
     int (*init) (EVP_CIPHER_CTX *ctx, const unsigned char *key, const unsigned char *iv, int enc); 	/* init key */
+	/*对称运算函数，用于加密或解密*/
     int (*do_cipher) (EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, size_t inl); /* encrypt/decrypt data */
+	/*清除上下文函数*/
     int (*cleanup) (EVP_CIPHER_CTX *);	/* cleanup ctx */
     int ctx_size;	 /* how big ctx->cipher_data needs to be */
+	/*设置上下文参数函数*/
     int (*set_asn1_parameters) (EVP_CIPHER_CTX *, ASN1_TYPE *);	/* Populate a ASN1_TYPE with parameters */
+	/*获取上下文参数函数*/
     int (*get_asn1_parameters) (EVP_CIPHER_CTX *, ASN1_TYPE *);	/* Get parameters from a ASN1_TYPE */
     int (*ctrl) (EVP_CIPHER_CTX *, int type, int arg, void *ptr);	/* Miscellaneous operations */
-    void *app_data;	/* Application data */
+    void *app_data;	/* 用于存放应用数据 Application data */
 } /* EVP_CIPHER */ ;
 
 /* Values for cipher flags */
@@ -414,15 +426,21 @@ typedef struct evp_cipher_info_st {
     const EVP_CIPHER *cipher;
     unsigned char iv[EVP_MAX_IV_LENGTH];
 } EVP_CIPHER_INFO;
-
-struct evp_cipher_ctx_st {
-    const EVP_CIPHER *cipher;
-    ENGINE *engine;             /* functional reference if 'cipher' is
-                                 * ENGINE-provided */
-    int encrypt;                /* encrypt or decrypt */
-    int buf_len;                /* number we have left */
-    unsigned char oiv[EVP_MAX_IV_LENGTH]; /* original iv */
-    unsigned char iv[EVP_MAX_IV_LENGTH]; /* working iv */
+/*
+对称算法上下文结构，此结构主要用来维护加解密状态，存放中间以及最后结果。因
+为加密或解密时，当数据很多时，可能会用到 Update 函数，并且每次加密或解密的
+输入数据长度任意的，并不一定是对称算法 block_size 的整数倍，所以需要用该结构
+来存放中间未加密的数据。
+*/
+struct evp_cipher_ctx_st 
+{
+    const EVP_CIPHER *cipher;		/*指明对称算法*/
+	/*硬件引擎*/
+    ENGINE *engine;             /* functional reference if 'cipher' is ENGINE-provided */
+    int encrypt;                /*是加密还是解密；非 0 为加密， 0 为解密*/
+    int buf_len;                /* number we have left */  /*指明还有多少数据未进行运算*/
+    unsigned char oiv[EVP_MAX_IV_LENGTH]; /* original iv *//*原始初始化向量*/
+    unsigned char iv[EVP_MAX_IV_LENGTH]; /* working iv */ /*当前的初始化向量*/
     unsigned char buf[EVP_MAX_BLOCK_LENGTH]; /* saved partial block */
     int num;                    /* used by cfb/ofb/ctr mode */
     void *app_data;             /* application stuff */
@@ -431,6 +449,7 @@ struct evp_cipher_ctx_st {
     void *cipher_data;          /* per EVP data */
     int final_used;
     int block_mask;
+	/*存放最终结果，一般与 Final 函数对应*/
     unsigned char final[EVP_MAX_BLOCK_LENGTH]; /* possible final block */
 } /* EVP_CIPHER_CTX */ ;
 

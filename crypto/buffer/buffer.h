@@ -76,9 +76,9 @@ extern "C" {
 
 struct buf_mem_st 
 {
-    size_t length;              /* current number of bytes */	/* size of buffer*/
+    size_t length;              /* current number of bytes */	
     char *data;					/* start address of buffer*/
-    size_t max;                 /* size of buffer */   /*true size of buffer*/
+    size_t max;                 /* size of buffer */  
 };
 
 BUF_MEM *BUF_MEM_new(void);

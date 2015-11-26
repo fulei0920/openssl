@@ -340,6 +340,10 @@ ASN1_OBJECT *OBJ_nid2obj(int n)
     }
 }
 
+
+/*
+将nid装换为对应简称名字
+*/
 const char *OBJ_nid2sn(int n)
 {
     ADDED_OBJ ad, *adp;

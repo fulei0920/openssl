@@ -208,8 +208,15 @@ int EVP_CIPHER_CTX_block_size(const EVP_CIPHER_CTX *ctx)
     return ctx->cipher->block_size;
 }
 
-int EVP_Cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-               const unsigned char *in, unsigned int inl)
+
+/*
+对数据进行对称性加密或解密
+ctx -- 加密方法
+out -- 输出数据起始位置
+in -- 输入数据起始位置
+inl -- 输入数据长度
+*/
+int EVP_Cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, unsigned int inl)
 {
     return ctx->cipher->do_cipher(ctx, out, in, inl);
 }

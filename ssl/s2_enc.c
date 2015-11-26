@@ -124,16 +124,24 @@ int ssl2_enc_init(SSL *s, int client)
  * It sets s->s2->padding and s->[rw]length if we are encrypting Returns 0 on
  * error and 1 on success
  */
+
+/*
+对数据进行对称性加密
+send -- 表明是发送还是接收
+*/
 int ssl2_enc(SSL *s, int send)
 {
     EVP_CIPHER_CTX *ds;
-    unsigned long l;
+    unsigned long l;  //mac_size + data_size + padding_size
     int bs;
 
-    if (send) {
+    if (send) 
+	{
         ds = s->enc_write_ctx;
         l = s->s2->wlength;
-    } else {
+    }
+	else 
+	{
         ds = s->enc_read_ctx;
         l = s->s2->rlength;
     }
@@ -144,8 +152,7 @@ int ssl2_enc(SSL *s, int send)
 
     bs = ds->cipher->block_size;
     /*
-     * This should be using (bs-1) and bs instead of 7 and 8, but what the
-     * hell.
+     * This should be using (bs-1) and bs instead of 7 and 8, but what the hell.
      */
     if (bs == 8)
         l = (l + 7) / 8 * 8;
@@ -156,6 +163,11 @@ int ssl2_enc(SSL *s, int send)
     return 1;
 }
 
+
+/*
+对数据进行MAC计算(摘要计算--维护数据的完整性)
+send -- 表明是发送还是接收
+*/
 void ssl2_mac(SSL *s, unsigned char *md, int send)
 {
     EVP_MD_CTX c;
@@ -163,12 +175,15 @@ void ssl2_mac(SSL *s, unsigned char *md, int send)
     unsigned long seq;
     unsigned int len;
 
-    if (send) {
+    if (send)
+	{
         seq = s->s2->write_sequence;
         sec = s->s2->write_key;
         len = s->s2->wact_data_length;
         act = s->s2->wact_data;
-    } else {
+    }
+	else 
+	{
         seq = s->s2->read_sequence;
         sec = s->s2->read_key;
         len = s->s2->ract_data_length;

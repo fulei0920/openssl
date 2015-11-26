@@ -1283,8 +1283,7 @@ STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL *s)
     return (NULL);
 }
 
-/** return a STACK of the ciphers available for the SSL and in order of
- * algorithm id */
+/** return a STACK of the ciphers available for the SSL and in order of algorithm id */
 STACK_OF(SSL_CIPHER) *ssl_get_ciphers_by_id(SSL *s)
 {
     if (s != NULL) {
@@ -1396,10 +1395,7 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
     return (buf);
 }
 
-int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
-                             unsigned char *p,
-                             int (*put_cb) (const SSL_CIPHER *,
-                                            unsigned char *))
+int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p, int (*put_cb) (const SSL_CIPHER *, unsigned char *))
 {
     int i, j = 0;
     SSL_CIPHER *c;
@@ -1414,37 +1410,35 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk,
     if (put_cb == NULL)
         put_cb = s->method->put_cipher_by_char;
 
-    for (i = 0; i < sk_SSL_CIPHER_num(sk); i++) {
+    for (i = 0; i < sk_SSL_CIPHER_num(sk); i++)
+	{
         c = sk_SSL_CIPHER_value(sk, i);
         /* Skip TLS v1.2 only ciphersuites if lower than v1.2 */
-        if ((c->algorithm_ssl & SSL_TLSV1_2) &&
-            (TLS1_get_client_version(s) < TLS1_2_VERSION))
+        if ((c->algorithm_ssl & SSL_TLSV1_2) && (TLS1_get_client_version(s) < TLS1_2_VERSION))
             continue;
 #ifndef OPENSSL_NO_KRB5
-        if (((c->algorithm_mkey & SSL_kKRB5)
-             || (c->algorithm_auth & SSL_aKRB5)) && nokrb5)
+        if (((c->algorithm_mkey & SSL_kKRB5) || (c->algorithm_auth & SSL_aKRB5)) && nokrb5)
             continue;
 #endif                          /* OPENSSL_NO_KRB5 */
 #ifndef OPENSSL_NO_PSK
         /* with PSK there must be client callback set */
-        if (((c->algorithm_mkey & SSL_kPSK) || (c->algorithm_auth & SSL_aPSK))
-            && s->psk_client_callback == NULL)
+        if (((c->algorithm_mkey & SSL_kPSK) || (c->algorithm_auth & SSL_aPSK) && s->psk_client_callback == NULL)
             continue;
 #endif                          /* OPENSSL_NO_PSK */
 #ifndef OPENSSL_NO_SRP
-        if (((c->algorithm_mkey & SSL_kSRP) || (c->algorithm_auth & SSL_aSRP))
-            && !(s->srp_ctx.srp_Mask & SSL_kSRP))
+        if (((c->algorithm_mkey & SSL_kSRP) || (c->algorithm_auth & SSL_aSRP)) && !(s->srp_ctx.srp_Mask & SSL_kSRP))
             continue;
 #endif                          /* OPENSSL_NO_SRP */
         j = put_cb(c, p);
         p += j;
     }
     /*
-     * If p == q, no ciphers; caller indicates an error. Otherwise, add
-     * applicable SCSVs.
+     * If p == q, no ciphers; caller indicates an error. Otherwise, add  applicable SCSVs.
      */
-    if (p != q) {
-        if (!s->renegotiate) {
+    if (p != q)
+	{
+        if (!s->renegotiate)
+		{
             static SSL_CIPHER scsv = {
                 0, NULL, SSL3_CK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0
             };
