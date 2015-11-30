@@ -411,12 +411,11 @@ SSL *SSL_new(SSL_CTX *ctx)
     return (NULL);
 }
 
-int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx,
-                                   unsigned int sid_ctx_len)
+int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx, unsigned int sid_ctx_len)
 {
-    if (sid_ctx_len > sizeof ctx->sid_ctx) {
-        SSLerr(SSL_F_SSL_CTX_SET_SESSION_ID_CONTEXT,
-               SSL_R_SSL_SESSION_ID_CONTEXT_TOO_LONG);
+    if (sid_ctx_len > sizeof ctx->sid_ctx)
+	{
+        SSLerr(SSL_F_SSL_CTX_SET_SESSION_ID_CONTEXT, SSL_R_SSL_SESSION_ID_CONTEXT_TOO_LONG);
         return 0;
     }
     ctx->sid_ctx_length = sid_ctx_len;
@@ -455,8 +454,7 @@ int SSL_set_generate_session_id(SSL *ssl, GEN_SESSION_CB cb)
     return 1;
 }
 
-int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id,
-                                unsigned int id_len)
+int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id, unsigned int id_len)
 {
     /*
      * A quick examination of SSL_SESSION_hash and SSL_SESSION_cmp shows how
@@ -479,8 +477,8 @@ int SSL_has_matching_session_id(const SSL *ssl, const unsigned char *id,
      * must be compared as a padded-out ID because that is what it will be
      * converted to when the callback has finished choosing it.
      */
-    if ((r.ssl_version == SSL2_VERSION) &&
-        (id_len < SSL2_SSL_SESSION_ID_LENGTH)) {
+    if ((r.ssl_version == SSL2_VERSION) && (id_len < SSL2_SSL_SESSION_ID_LENGTH)) 
+	{
         memset(r.session_id + id_len, 0, SSL2_SSL_SESSION_ID_LENGTH - id_len);
         r.session_id_length = SSL2_SSL_SESSION_ID_LENGTH;
     }
@@ -1286,10 +1284,14 @@ STACK_OF(SSL_CIPHER) *SSL_get_ciphers(const SSL *s)
 /** return a STACK of the ciphers available for the SSL and in order of algorithm id */
 STACK_OF(SSL_CIPHER) *ssl_get_ciphers_by_id(SSL *s)
 {
-    if (s != NULL) {
-        if (s->cipher_list_by_id != NULL) {
+    if (s != NULL) 
+	{
+        if (s->cipher_list_by_id != NULL) 
+		{
             return (s->cipher_list_by_id);
-        } else if ((s->ctx != NULL) && (s->ctx->cipher_list_by_id != NULL)) {
+        }
+		else if ((s->ctx != NULL) && (s->ctx->cipher_list_by_id != NULL)) 
+       	{
             return (s->ctx->cipher_list_by_id);
         }
     }
@@ -1395,6 +1397,7 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int len)
     return (buf);
 }
 
+
 int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p, int (*put_cb) (const SSL_CIPHER *, unsigned char *))
 {
     int i, j = 0;
@@ -1439,21 +1442,17 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p,
 	{
         if (!s->renegotiate)
 		{
-            static SSL_CIPHER scsv = {
-                0, NULL, SSL3_CK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0
-            };
+            static SSL_CIPHER scsv = { 0, NULL, SSL3_CK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             j = put_cb(&scsv, p);
             p += j;
 #ifdef OPENSSL_RI_DEBUG
-            fprintf(stderr,
-                    "TLS_EMPTY_RENEGOTIATION_INFO_SCSV sent by client\n");
+            fprintf(stderr, "TLS_EMPTY_RENEGOTIATION_INFO_SCSV sent by client\n");
 #endif
         }
 
-        if (s->mode & SSL_MODE_SEND_FALLBACK_SCSV) {
-            static SSL_CIPHER scsv = {
-                0, NULL, SSL3_CK_FALLBACK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0
-            };
+        if (s->mode & SSL_MODE_SEND_FALLBACK_SCSV) 
+		{
+            static SSL_CIPHER scsv =  { 0, NULL, SSL3_CK_FALLBACK_SCSV, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             j = put_cb(&scsv, p);
             p += j;
         }
@@ -1462,9 +1461,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p,
     return (p - q);
 }
 
-STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
-                                               int num,
-                                               STACK_OF(SSL_CIPHER) **skp)
+STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p, int num, STACK_OF(SSL_CIPHER) **skp)
 {
     const SSL_CIPHER *c;
     STACK_OF(SSL_CIPHER) *sk;
@@ -1473,32 +1470,38 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
     if (s->s3)
         s->s3->send_connection_binding = 0;
 
+	/*获取套件数字表示时占用的字节数*/
     n = ssl_put_cipher_by_char(s, NULL, NULL);
-    if (n == 0 || (num % n) != 0) {
-        SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,
-               SSL_R_ERROR_IN_RECEIVED_CIPHER_LIST);
+    if (n == 0 || (num % n) != 0) 
+	{
+        SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_ERROR_IN_RECEIVED_CIPHER_LIST);
         return (NULL);
     }
-    if ((skp == NULL) || (*skp == NULL)) {
+	
+    if ((skp == NULL) || (*skp == NULL))
+	{
         sk = sk_SSL_CIPHER_new_null(); /* change perhaps later */
-        if(sk == NULL) {
+        if(sk == NULL) 
+		{
             SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, ERR_R_MALLOC_FAILURE);
             return NULL;
         }
-    } else {
+    } 
+	else
+	{
         sk = *skp;
         sk_SSL_CIPHER_zero(sk);
     }
 
-    for (i = 0; i < num; i += n) {
+    for (i = 0; i < num; i += n) 
+	{
         /* Check for TLS_EMPTY_RENEGOTIATION_INFO_SCSV */
-        if (s->s3 && (n != 3 || !p[0]) &&
-            (p[n - 2] == ((SSL3_CK_SCSV >> 8) & 0xff)) &&
-            (p[n - 1] == (SSL3_CK_SCSV & 0xff))) {
+        if (s->s3 && (n != 3 || !p[0]) && (p[n - 2] == ((SSL3_CK_SCSV >> 8) & 0xff)) && (p[n - 1] == (SSL3_CK_SCSV & 0xff))) 
+        {
             /* SCSV fatal if renegotiating */
-            if (s->renegotiate) {
-                SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST,
-                       SSL_R_SCSV_RECEIVED_WHEN_RENEGOTIATING);
+            if (s->renegotiate) 
+			{
+                SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, SSL_R_SCSV_RECEIVED_WHEN_RENEGOTIATING);
                 ssl3_send_alert(s, SSL3_AL_FATAL, SSL_AD_HANDSHAKE_FAILURE);
                 goto err;
             }
@@ -1511,9 +1514,8 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
         }
 
         /* Check for TLS_FALLBACK_SCSV */
-        if ((n != 3 || !p[0]) &&
-            (p[n - 2] == ((SSL3_CK_FALLBACK_SCSV >> 8) & 0xff)) &&
-            (p[n - 1] == (SSL3_CK_FALLBACK_SCSV & 0xff))) {
+        if ((n != 3 || !p[0]) && (p[n - 2] == ((SSL3_CK_FALLBACK_SCSV >> 8) & 0xff)) && (p[n - 1] == (SSL3_CK_FALLBACK_SCSV & 0xff))) 
+           {
             /*
              * The SCSV indicates that the client previously tried a higher
              * version. Fail if the current version is an unexpected
@@ -1533,8 +1535,10 @@ STACK_OF(SSL_CIPHER) *ssl_bytes_to_cipher_list(SSL *s, unsigned char *p,
 
         c = ssl_get_cipher_by_char(s, p);
         p += n;
-        if (c != NULL) {
-            if (!sk_SSL_CIPHER_push(sk, c)) {
+        if (c != NULL) 
+		{
+            if (!sk_SSL_CIPHER_push(sk, c)) 
+			{
                 SSLerr(SSL_F_SSL_BYTES_TO_CIPHER_LIST, ERR_R_MALLOC_FAILURE);
                 goto err;
             }
@@ -3037,6 +3041,11 @@ SSL_CTX *SSL_set_SSL_CTX(SSL *ssl, SSL_CTX *ctx)
 }
 
 #ifndef OPENSSL_NO_STDIO
+
+/*
+specifies that the default locations for which CA certificates are loaded should be used. 
+There is one default directory and one default file.
+*/
 int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx)
 {
     return (X509_STORE_set_default_paths(ctx->cert_store));
@@ -3048,6 +3057,11 @@ int SSL_CTX_set_default_verify_paths(SSL_CTX *ctx)
 CAfile -- 如果不为NULL,则它指向的文件包含PEM格式编码的一个或多个CA证书。
 CApath -- 如果不为NULL,则它指向一个包含PEM格式的CA证书的目录，目录中每一个文件包含一份CA证书，文件名是证书中CA名的HASH值
 返回值 -- 成功返回1， 失败返回0
+*/
+
+/*
+specifies the locations for ctx, at which CA certificates for verification purposes are located. 
+The certificates available via CAfile and CApath are trusted.
 */
 int SSL_CTX_load_verify_locations(SSL_CTX *ctx, const char *CAfile, const char *CApath)
 {

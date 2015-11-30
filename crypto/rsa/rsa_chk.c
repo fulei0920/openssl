@@ -52,6 +52,11 @@
 #include <openssl/err.h>
 #include <openssl/rsa.h>
 
+/*
+This function validates RSA keys. It checks that p and q are in fact prime, and that n = p*q.
+It also checks that d*e = 1 mod (p-1*q-1), and that dmp1, dmq1 and iqmp are set correctly or are NULL .
+see man 
+*/
 int RSA_check_key(const RSA *key)
 {
     BIGNUM *i, *j, *k, *l, *m;
@@ -59,7 +64,8 @@ int RSA_check_key(const RSA *key)
     int r;
     int ret = 1;
 
-    if (!key->p || !key->q || !key->n || !key->e || !key->d) {
+    if (!key->p || !key->q || !key->n || !key->e || !key->d) 
+	{
         RSAerr(RSA_F_RSA_CHECK_KEY, RSA_R_VALUE_MISSING);
         return 0;
     }

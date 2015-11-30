@@ -198,6 +198,7 @@ int ssl2_connect(SSL *s)
             }
             s->init_buf = buf;
             buf = NULL;
+			
             s->init_num = 0;
             s->state = SSL2_ST_SEND_CLIENT_HELLO_A;
             s->ctx->stats.sess_connect++;
@@ -220,10 +221,13 @@ int ssl2_connect(SSL *s)
             if (ret <= 0)
                 goto end;
             s->init_num = 0;
-            if (!s->hit) {      /* new session */
+            if (!s->hit)
+			{      /* new session */
                 s->state = SSL2_ST_SEND_CLIENT_MASTER_KEY_A;
                 BREAK;
-            } else {
+            }
+			else 
+			{
                 s->state = SSL2_ST_CLIENT_START_ENCRYPTION;
                 break;
             }
@@ -348,14 +352,17 @@ static int get_server_hello(SSL *s)
 
     buf = (unsigned char *)s->init_buf->data;
     p = buf;
-    if (s->state == SSL2_ST_GET_SERVER_HELLO_A) {
+    if (s->state == SSL2_ST_GET_SERVER_HELLO_A)
+	{
         i = ssl2_read(s, (char *)&(buf[s->init_num]), 11 - s->init_num);
         if (i < (11 - s->init_num))
             return (ssl2_part_read(s, SSL_F_GET_SERVER_HELLO, i));
         s->init_num = 11;
 
-        if (*(p++) != SSL2_MT_SERVER_HELLO) {
-            if (p[-1] != SSL2_MT_ERROR) {
+        if (*(p++) != SSL2_MT_SERVER_HELLO) 
+		{
+            if (p[-1] != SSL2_MT_ERROR)
+			{
                 ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
                 SSLerr(SSL_F_GET_SERVER_HELLO, SSL_R_READ_WRONG_PACKET_TYPE);
             } else
@@ -464,8 +471,7 @@ static int get_server_hello(SSL *s)
          */
 
         /* load the ciphers */
-        sk = ssl_bytes_to_cipher_list(s, p, s->s2->tmp.csl,
-                                      &s->session->ciphers);
+        sk = ssl_bytes_to_cipher_list(s, p, s->s2->tmp.csl, &s->session->ciphers);
         p += s->s2->tmp.csl;
         if (sk == NULL) {
             ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
@@ -549,6 +555,7 @@ static int client_hello(SSL *s)
     buf = (unsigned char *)s->init_buf->data;
     if (s->state == SSL2_ST_SEND_CLIENT_HELLO_A) 
 	{
+		/*if necessary, allocate a new session*/
         if ((s->session == NULL) || (s->session->ssl_version != s->version)) 
 		{
             if (!ssl_get_new_session(s, 0)) 
@@ -559,10 +566,10 @@ static int client_hello(SSL *s)
         }
         /* else use the pre-loaded session */
 
-        p = buf;                /* header */
-        d = p + 9;              /* data section */
-        *(p++) = SSL2_MT_CLIENT_HELLO; /* type */
-        s2n(SSL2_VERSION, p);   /* version */
+        p = buf;                		/* header */
+        d = p + 9;              		/* data section */
+        *(p++) = SSL2_MT_CLIENT_HELLO; 	/* type */
+        s2n(SSL2_VERSION, p);   		/* version */
         n = j = 0;
 
         n = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), d, 0);

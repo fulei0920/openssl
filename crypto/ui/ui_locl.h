@@ -98,7 +98,8 @@ struct ui_method_st {
                                   const char *object_name);
 };
 
-struct ui_string_st {
+struct ui_string_st 
+{
     enum UI_string_types type;  /* Input */
     const char *out_string;     /* Input */
     int input_flags;            /* Flags from the user */
@@ -130,11 +131,11 @@ struct ui_string_st {
     int flags;                  /* flags for internal use */
 };
 
-struct ui_st {
+struct ui_st 
+{
     const UI_METHOD *meth;
     STACK_OF(UI_STRING) *strings; /* We might want to prompt for more than
-                                   * one thing at a time, and with different
-                                   * echoing status.  */
+                                   * one thing at a time, and with different echoing status.  */
     void *user_data;
     CRYPTO_EX_DATA ex_data;
 # define UI_FLAG_REDOABLE        0x0001

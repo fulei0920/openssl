@@ -514,7 +514,8 @@ int ssl2_generate_key_material(SSL *s)
 
 void ssl2_return_error(SSL *s, int err)
 {
-    if (!s->error) {
+    if (!s->error) 
+	{
         s->error = 3;
         s->error_code = err;
 
@@ -541,16 +542,23 @@ void ssl2_write_error(SSL *s)
 /*      if (i == error) s->rwstate=state; */
 
     if (i < 0)
-        s->error = error;
-    else {
+    {
+		s->error = error;
+	}
+    else
+	{
         s->error = error - i;
 
         if (s->error == 0)
-            if (s->msg_callback) {
+        {
+			if (s->msg_callback) 
+			{
                 /* ERROR */
-                s->msg_callback(1, s->version, 0, buf, 3, s,
-                                s->msg_callback_arg);
+                s->msg_callback(1, s->version, 0, buf, 3, s, s->msg_callback_arg);
             }
+
+		}
+
     }
 }
 

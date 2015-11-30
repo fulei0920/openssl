@@ -169,30 +169,31 @@ typedef struct ssl2_state_st
     /*
      * non-blocking io info, used to make sure the same args were passwd
      */
-    unsigned int wnum;          /* number of bytes sent so far */
-    int wpend_tot;
-    const unsigned char *wpend_buf;
-    int wpend_off;              /* offset to data to write */
-    int wpend_len;              /* number of bytes passwd to write */
+    unsigned int wnum;          /* number of bytes sent so far */ /* ssl2_write上一次发送，未发送完时已发字节数，发送完时为0 */
+    int wpend_tot;					/*上层需要发送的是数据的多少*/
+    const unsigned char *wpend_buf;	/*上层需要发送的数据的首地址*/
+    int wpend_off;              /* offset to data to write */  /*wbuf中待发送数据的起始位置的偏移量*/
+    int wpend_len;              /* number of bytes passwd to write */	/*wbuf中待发送数据的数量，发送完后为0*/
     int wpend_ret;              /* number of bytes to return to caller */
     /* buffer raw data */
     int rbuf_left;				/*rbuf中剩余未处理的数据字节数*/
     int rbuf_offs;				/*rbuf中剩余未处理的数据的起始偏移位置*/
     unsigned char *rbuf;		/*读数据缓存区 -- 需要读的数据先被读到rbuf中。。。，然后才被上层读取*/	
     unsigned char *wbuf;		/*写数据缓存区 -- 需要写的上层数据将被按报文格式要求组织到wbuf中，然后才被发送*/
-    unsigned char *write_ptr;   /* used to point to the start due to 2/3 byte header. */
+    unsigned char *write_ptr;   /*指向wbuf中2/3字节头的起始位置(begin address of raw packet)*/
     unsigned int padding;		/* PADDING-DATA长度*/
-    unsigned int rlength;       /* passed to ssl2_enc */ /*数据长度(不包括记录头)*/
-    int ract_data_length;       /* Set when things are encrypted. */
-    unsigned int wlength;       /* passed to ssl2_enc */
+    unsigned int rlength;       /* passed to ssl2_enc */ 	/*数据长度(不包括记录头) MAC-DATA + ACTUAL-DATA + PADDING-DATA */
+    int ract_data_length;       /*rbuf中ACTUAL-DATA数据多少*/
+    unsigned int wlength;       /* passed to ssl2_enc */	/*数据长度(不包括记录头) MAC-DATA + ACTUAL-DATA + PADDING-DATA */
     int wact_data_length;       /* Set when things are decrypted. */
-    unsigned char *ract_data;	/*指向读ACTUAL-DATA起始位置 -- 用于控制对wbuf和rbuf的读写*/
-    unsigned char *wact_data;	/*指向写ACTUAL-DATA起始位置*/
+    unsigned char *ract_data;	/*指向rbuf中读ACTUAL-DATA起始位置*/
+    unsigned char *wact_data;	/*指向wbuf中写ACTUAL-DATA起始位置*/
     unsigned char *mac_data;	/*指向MAC-DATA起始位置*/
-    unsigned char *read_key;
-    unsigned char *write_key;	/*指向对称加密密钥???*/
-    /* Stuff specifically to do with this SSL session */
-    unsigned int challenge_length;
+    unsigned char *read_key;	/*指向接收对称加密密钥???*/
+    unsigned char *write_key;	/*指向发送对称加密密钥???*/
+
+	/* Stuff specifically to do with this SSL session */
+    unsigned int challenge_length; 		/*SSL2_CHALLENGE_LENGTH*/
     unsigned char challenge[SSL2_MAX_CHALLENGE_LENGTH];
     unsigned int conn_id_length;
     unsigned char conn_id[SSL2_MAX_CONNECTION_ID_LENGTH];

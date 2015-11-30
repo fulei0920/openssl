@@ -496,7 +496,8 @@ typedef struct private_key_st {
 } X509_PKEY;
 
 # ifndef OPENSSL_NO_EVP
-typedef struct X509_info_st {
+typedef struct X509_info_st 
+{
     X509 *x509;
     X509_CRL *crl;
     X509_PKEY *x_pkey;

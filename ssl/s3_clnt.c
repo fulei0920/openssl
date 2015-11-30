@@ -939,7 +939,8 @@ int ssl3_get_server_hello(SSL *s)
 #endif                          /* OPENSSL_NO_TLSEXT */
 
     if (j != 0 && j == s->session->session_id_length
-        && memcmp(p, s->session->session_id, j) == 0) {
+        && memcmp(p, s->session->session_id, j) == 0) 
+    {
         if (s->sid_ctx_length != s->session->sid_ctx_length
             || memcmp(s->session->sid_ctx, s->sid_ctx, s->sid_ctx_length)) {
             /* actually a client application bug */

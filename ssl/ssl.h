@@ -433,7 +433,18 @@ struct ssl_method_st
     int (*ssl_dispatch_alert) (SSL *s);
     long (*ssl_ctrl) (SSL *s, int cmd, long larg, void *parg);
     long (*ssl_ctx_ctrl) (SSL_CTX *ctx, int cmd, long larg, void *parg);
+	/*
+	将数字装换为对应的chiper套件
+	ptr -- 数字存储空间首地址
+	返回值 -- 成功返回数字对应的加密套件，失败返回NULL
+	*/
     const SSL_CIPHER *(*get_cipher_by_char) (const unsigned char *ptr);
+	/*
+	将cipher转换为数字表示存储在ptr指定的空间， 
+	cipher -- 加密套件
+	ptr -- 数字存储空间首地址
+	返回值 -- 数字标识占用的字节数
+	*/
     int (*put_cipher_by_char) (const SSL_CIPHER *cipher, unsigned char *ptr);
     int (*ssl_pending) (const SSL *s);
     int (*num_ciphers) (void);
@@ -823,8 +834,8 @@ DECLARE_LHASH_OF(SSL_SESSION);
 struct ssl_ctx_st 
 {
     const SSL_METHOD *method;
-    STACK_OF(SSL_CIPHER) *cipher_list;
-    STACK_OF(SSL_CIPHER) *cipher_list_by_id;		/* same as above but sorted for lookup */
+    STACK_OF(SSL_CIPHER) *cipher_list;				/* chiper suits in order of preference */
+    STACK_OF(SSL_CIPHER) *cipher_list_by_id;		/* same as above in order of algorithm id, sorted for lookup */
     struct x509_store_st *cert_store;	 			/* X509_STORE */
     LHASH_OF(SSL_SESSION) *sessions;				/* 存储所有session*/
     /*
@@ -914,7 +925,7 @@ struct ssl_ctx_st
     void (*info_callback) (const SSL *ssl, int type, int val);
 
     /* what we put in client cert requests */
-    STACK_OF(X509_NAME) *client_CA;
+    STACK_OF(X509_NAME) *client_CA;   /* 加载的CA证书的名字 */
 
     /*
      * Default values to use in SSL structures follow (these are copied by SSL_new)
@@ -924,7 +935,7 @@ struct ssl_ctx_st
     unsigned long mode;
     long max_cert_list;  	/*默认值SSL_MAX_CERT_LIST_DEFAULT*/
 
-    struct cert_st  *cert;	/* CERT */
+    struct cert_st  *cert;	/*存储客户端或服务器自身的证书*/
     int read_ahead;
 
     /* callback that allows applications to peek at protocol messages */
@@ -1288,13 +1299,13 @@ struct ssl_st
     int shutdown;				 /* we have shut things down, 0x01 sent, 0x02 for received */
     int state;					/* where we are */
     int rstate;					/* where we are when reading */
-    BUF_MEM *init_buf;          /* buffer used during init */
+    BUF_MEM *init_buf;          /* buffer used during init */ /*存储接收到的上层数据，或存储待发送的上层数据*/
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
-    int init_num;               /* amount read/written */	/*数据的字节数多少*/
-    int init_off;               /* amount read/written */  	/*数据的起始偏移位置*/
+    int init_num;               /* amount read/written */	/* init_buf中数据的字节数 */
+    int init_off;               /* amount read/written */  	/* init_buf中数据的起始偏移位置 */
     
-    unsigned char *packet;		/* used internally to point at a raw packet */
-    unsigned int packet_length;
+    unsigned char *packet;		/* used internally to point at a raw packet */  /*指向接收的原始数据包起始位置*/
+    unsigned int packet_length;	/*接收的原始数据包的大小*/
     struct ssl2_state_st *s2;   /* SSLv2 variables */
     struct ssl3_state_st *s3;   /* SSLv3 variables */
     struct dtls1_state_st *d1;  /* DTLSv1 variables */
@@ -1310,7 +1321,7 @@ struct ssl_st
     int trust;                  /* Trust setting */
 #  endif
     /* crypto */
-    STACK_OF(SSL_CIPHER) *cipher_list;
+    STACK_OF(SSL_CIPHER) *cipher_list;		/*支持的加密套件列表*/
     STACK_OF(SSL_CIPHER) *cipher_list_by_id;
     /*
      * These are the ones being used, the ones in SSL_SESSION are the ones to
@@ -1318,14 +1329,14 @@ struct ssl_st
      */
     int mac_flags;
     EVP_CIPHER_CTX *enc_read_ctx; 	/* cryptographic state */			/*接收对称性加密算法*/
-    EVP_MD_CTX *read_hash;      	/* used for mac generation */
+    EVP_MD_CTX *read_hash;      	/* used for mac generation，setted by shakehand*/
 #  ifndef OPENSSL_NO_COMP
     COMP_CTX *expand;           /* uncompress */
 #  else
     char *expand;
 #  endif
     EVP_CIPHER_CTX *enc_write_ctx; 	/* cryptographic state */  			/*发送对称性加密算法*/
-    EVP_MD_CTX *write_hash;     /* used for mac generation */
+    EVP_MD_CTX *write_hash;     	/* used for mac generation, setted by shakehand*/
 #  ifndef OPENSSL_NO_COMP
     COMP_CTX *compress;         /* compression */
 #  else
@@ -1355,10 +1366,8 @@ struct ssl_st
     int (*verify_callback) (int ok, X509_STORE_CTX *ctx);
     /* optional informational callback */
     void (*info_callback) (const SSL *ssl, int type, int val);
-    /* error bytes to be written */
-    int error;
-    /* actual code */
-    int error_code;
+    int error;	/* error bytes to be written */
+    int error_code;	/* actual code */
 #  ifndef OPENSSL_NO_KRB5
     /* Kerberos 5 context */
     KSSL_CTX *kssl_ctx;

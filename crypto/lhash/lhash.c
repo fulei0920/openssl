@@ -257,10 +257,13 @@ void *lh_retrieve(_LHASH *lh, const void *data)
     lh->error = 0;
     rn = getrn(lh, data, &hash);
 
-    if (*rn == NULL) {
+    if (*rn == NULL) 
+	{
         lh->num_retrieve_miss++;
         return (NULL);
-    } else {
+    }
+	else 
+	{
         ret = (*rn)->data;
         lh->num_retrieve++;
     }
@@ -413,10 +416,12 @@ static LHASH_NODE **getrn(_LHASH *lh, const void *data, unsigned long *rhash)
 
     cf = lh->comp;
     ret = &(lh->b[(int)nn]);
-    for (n1 = *ret; n1 != NULL; n1 = n1->next) {
+    for (n1 = *ret; n1 != NULL; n1 = n1->next) 
+	{
 #ifndef OPENSSL_NO_HASH_COMP
         lh->num_hash_comps++;
-        if (n1->hash != hash) {
+        if (n1->hash != hash)
+		{
             ret = &(n1->next);
             continue;
         }

@@ -259,6 +259,7 @@ X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m)
     STACK_OF(X509_LOOKUP) *sk;
     X509_LOOKUP *lu;
 
+	/*查找是否已经存在相同X509_LOOKUP_METHOD的X509_LOOKUP，存在则返回对应的X509_LOOKUP*/
     sk = v->get_cert_methods;
     for (i = 0; i < sk_X509_LOOKUP_num(sk); i++)
 	{
@@ -268,10 +269,12 @@ X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m)
             return lu;
         }
     }
-    /* a new one */
+    /*不存在则新建一个X509_LOOKUP*/
     lu = X509_LOOKUP_new(m);
     if (lu == NULL)
-        return NULL;
+    {
+		return NULL;
+	}
     else 
 	{
         lu->store_ctx = v;
@@ -336,7 +339,8 @@ int X509_STORE_add_cert(X509_STORE *ctx, X509 *x)
     if (x == NULL)
         return 0;
     obj = (X509_OBJECT *)OPENSSL_malloc(sizeof(X509_OBJECT));
-    if (obj == NULL) {
+    if (obj == NULL) 
+	{
         X509err(X509_F_X509_STORE_ADD_CERT, ERR_R_MALLOC_FAILURE);
         return 0;
     }
@@ -347,14 +351,17 @@ int X509_STORE_add_cert(X509_STORE *ctx, X509 *x)
 
     X509_OBJECT_up_ref_count(obj);
 
-    if (X509_OBJECT_retrieve_match(ctx->objs, obj)) {
+    if (X509_OBJECT_retrieve_match(ctx->objs, obj))
+	{
         X509_OBJECT_free_contents(obj);
         OPENSSL_free(obj);
-        X509err(X509_F_X509_STORE_ADD_CERT,
-                X509_R_CERT_ALREADY_IN_HASH_TABLE);
+        X509err(X509_F_X509_STORE_ADD_CERT, X509_R_CERT_ALREADY_IN_HASH_TABLE);
         ret = 0;
-    } else
+    } 
+	else
+	{
         sk_X509_OBJECT_push(ctx->objs, obj);
+	}
 
     CRYPTO_w_unlock(CRYPTO_LOCK_X509_STORE);
 
@@ -369,7 +376,8 @@ int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x)
     if (x == NULL)
         return 0;
     obj = (X509_OBJECT *)OPENSSL_malloc(sizeof(X509_OBJECT));
-    if (obj == NULL) {
+    if (obj == NULL)
+	{
         X509err(X509_F_X509_STORE_ADD_CRL, ERR_R_MALLOC_FAILURE);
         return 0;
     }
@@ -380,13 +388,18 @@ int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x)
 
     X509_OBJECT_up_ref_count(obj);
 
-    if (X509_OBJECT_retrieve_match(ctx->objs, obj)) {
+    if (X509_OBJECT_retrieve_match(ctx->objs, obj))
+	{
         X509_OBJECT_free_contents(obj);
         OPENSSL_free(obj);
         X509err(X509_F_X509_STORE_ADD_CRL, X509_R_CERT_ALREADY_IN_HASH_TABLE);
         ret = 0;
-    } else
-        sk_X509_OBJECT_push(ctx->objs, obj);
+    }
+	else
+	{
+		sk_X509_OBJECT_push(ctx->objs, obj);
+	}
+        
 
     CRYPTO_w_unlock(CRYPTO_LOCK_X509_STORE);
 
@@ -407,7 +420,8 @@ void X509_OBJECT_up_ref_count(X509_OBJECT *a)
 
 void X509_OBJECT_free_contents(X509_OBJECT *a)
 {
-    switch (a->type) {
+    switch (a->type) 
+	{
     case X509_LU_X509:
         X509_free(a->data.x509);
         break;

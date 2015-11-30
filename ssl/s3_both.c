@@ -554,6 +554,8 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
     return (-1);
 }
 
+
+/*获取非对称加密算法类型*/
 int ssl_cert_type(X509 *x, EVP_PKEY *pkey)
 {
     EVP_PKEY *pk;

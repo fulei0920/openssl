@@ -738,9 +738,7 @@ SSL_CTX *tls_create_ctx(struct tls_create_ctx_args a, void *apparg)
                  * SSL_load_client_CA_file is a misnomer, it just creates a
                  * list of CNs.
                  */
-                SSL_CTX_set_client_CA_list(ret,
-                                           SSL_load_client_CA_file
-                                           (a.ca_file));
+                SSL_CTX_set_client_CA_list(ret, SSL_load_client_CA_file (a.ca_file));
                 /*
                  * SSL_CTX_set_client_CA_list does not have a return value;
                  * it does not really need one, but make sure (we really test

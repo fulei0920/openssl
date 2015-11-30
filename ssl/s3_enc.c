@@ -279,8 +279,7 @@ int ssl3_change_cipher_state(SSL *s, int which)
     } else {
         if (s->enc_write_ctx != NULL)
             reuse_dd = 1;
-        else if ((s->enc_write_ctx =
-                  OPENSSL_malloc(sizeof(EVP_CIPHER_CTX))) == NULL)
+        else if ((s->enc_write_ctx = OPENSSL_malloc(sizeof(EVP_CIPHER_CTX))) == NULL)
             goto err;
         else
             /*

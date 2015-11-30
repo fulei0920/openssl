@@ -76,9 +76,7 @@ int ssl2_enc_init(SSL *s, int client)
     ssl_replace_hash(&s->read_hash, md);
     ssl_replace_hash(&s->write_hash, md);
 
-    if ((s->enc_read_ctx == NULL) && ((s->enc_read_ctx = (EVP_CIPHER_CTX *)
-                                       OPENSSL_malloc(sizeof(EVP_CIPHER_CTX)))
-                                      == NULL))
+    if ((s->enc_read_ctx == NULL) && ((s->enc_read_ctx = (EVP_CIPHER_CTX *) OPENSSL_malloc(sizeof(EVP_CIPHER_CTX))) == NULL))
         goto err;
 
     /*
@@ -126,7 +124,7 @@ int ssl2_enc_init(SSL *s, int client)
  */
 
 /*
-对数据进行对称性加密
+对数据进行对称性加密/解密
 send -- 表明是发送还是接收
 */
 int ssl2_enc(SSL *s, int send)
@@ -167,6 +165,7 @@ int ssl2_enc(SSL *s, int send)
 /*
 对数据进行MAC计算(摘要计算--维护数据的完整性)
 send -- 表明是发送还是接收
+md -- 指明摘要结果填充位置
 */
 void ssl2_mac(SSL *s, unsigned char *md, int send)
 {

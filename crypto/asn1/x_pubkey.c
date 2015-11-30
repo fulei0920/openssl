@@ -96,14 +96,18 @@ int X509_PUBKEY_set(X509_PUBKEY **x, EVP_PKEY *pkey)
     if ((pk = X509_PUBKEY_new()) == NULL)
         goto error;
 
-    if (pkey->ameth) {
-        if (pkey->ameth->pub_encode) {
-            if (!pkey->ameth->pub_encode(pk, pkey)) {
-                X509err(X509_F_X509_PUBKEY_SET,
-                        X509_R_PUBLIC_KEY_ENCODE_ERROR);
+    if (pkey->ameth)
+	{
+        if (pkey->ameth->pub_encode) 
+		{
+            if (!pkey->ameth->pub_encode(pk, pkey))
+			{
+                X509err(X509_F_X509_PUBKEY_SET, X509_R_PUBLIC_KEY_ENCODE_ERROR);
                 goto error;
             }
-        } else {
+        } 
+		else 
+		{
             X509err(X509_F_X509_PUBKEY_SET, X509_R_METHOD_NOT_SUPPORTED);
             goto error;
         }

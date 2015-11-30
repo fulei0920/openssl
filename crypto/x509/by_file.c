@@ -101,11 +101,8 @@ static int by_file_ctrl(X509_LOOKUP *ctx, int cmd, const char *argp, long argl, 
             file = (char *)getenv(X509_get_default_cert_file_env());
             if (file)
                 ok = (X509_load_cert_crl_file(ctx, file, X509_FILETYPE_PEM) != 0);
-
             else
-                ok = (X509_load_cert_crl_file
-                      (ctx, X509_get_default_cert_file(),
-                       X509_FILETYPE_PEM) != 0);
+                ok = (X509_load_cert_crl_file(ctx, X509_get_default_cert_file(), X509_FILETYPE_PEM) != 0);
 
             if (!ok) {
                 X509err(X509_F_BY_FILE_CTRL, X509_R_LOADING_DEFAULTS);

@@ -182,6 +182,7 @@ int ssl23_accept(SSL *s)
             /* s->version=SSL3_VERSION; */
             s->type = SSL_ST_ACCEPT;
 
+			/*Îªinit_buf·ÖÅäÄÚ´æ*/
             if (s->init_buf == NULL) 
 			{
                 if ((buf = BUF_MEM_new()) == NULL)

@@ -90,7 +90,8 @@ DECLARE_OBJ_BSEARCH_CMP_FN(const ASN1_OBJECT *, unsigned int, obj);
 #define ADDED_LNAME     2
 #define ADDED_NID       3
 
-typedef struct added_obj_st {
+typedef struct added_obj_st 
+{
     int type;
     ASN1_OBJECT *obj;
 } ADDED_OBJ;

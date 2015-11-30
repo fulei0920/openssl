@@ -70,7 +70,8 @@ void OPENSSL_cleanse(void *ptr, size_t len)
     if (ptr == NULL)
         return;
 
-    while (loop--) {
+    while (loop--) 
+	{
         *(p++) = (unsigned char)ctr;
         ctr += (17 + ((size_t)p & 0xF));
     }

@@ -392,6 +392,7 @@ static int ssl_set_cert(CERT *c, X509 *x)
         return (0);
     }
 
+	/*该证书对应私钥存在，如果必要则将私钥证书进行匹配验证*/
     if (c->pkeys[i].privatekey != NULL)
 	{
         EVP_PKEY_copy_parameters(pkey, c->pkeys[i].privatekey);
@@ -402,12 +403,12 @@ static int ssl_set_cert(CERT *c, X509 *x)
          * Don't check the public/private key, this is mostly for smart
          * cards.
          */
-        if ((c->pkeys[i].privatekey->type == EVP_PKEY_RSA) &&
-            (RSA_flags(c->pkeys[i].privatekey->pkey.rsa) &
-             RSA_METHOD_FLAG_NO_CHECK)) ;
+        if ((c->pkeys[i].privatekey->type == EVP_PKEY_RSA) && (RSA_flags(c->pkeys[i].privatekey->pkey.rsa) & RSA_METHOD_FLAG_NO_CHECK)) 
+			/*nothing*/;
         else
 #endif                          /* OPENSSL_NO_RSA */
-        if (!X509_check_private_key(x, c->pkeys[i].privatekey)) {
+        if (!X509_check_private_key(x, c->pkeys[i].privatekey))
+		{
             /*
              * don't fail for a cert/key mismatch, just free current private
              * key (when switching to a different cert & key, first this
@@ -474,7 +475,8 @@ int SSL_CTX_use_certificate_file(SSL_CTX *ctx, const char *file, int type)
         goto end;
     }
 
-    if (x == NULL) {
+    if (x == NULL)
+	{
         SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, j);
         goto end;
     }

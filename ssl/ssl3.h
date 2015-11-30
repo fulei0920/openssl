@@ -135,8 +135,7 @@ extern "C" {
 # define SSL3_CK_SCSV                            0x030000FF
 
 /*
- * Signalling cipher suite value from draft-ietf-tls-downgrade-scsv-00
- * (TLS_FALLBACK_SCSV)
+ * Signalling cipher suite value from draft-ietf-tls-downgrade-scsv-00 (TLS_FALLBACK_SCSV)
  */
 # define SSL3_CK_FALLBACK_SCSV                   0x03005600
 

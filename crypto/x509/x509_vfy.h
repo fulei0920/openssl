@@ -185,7 +185,7 @@ struct x509_store_st
 {
     /* The following is a cache of trusted certs */
     int cache;                  				/* if true, stash any hits */
-    STACK_OF(X509_OBJECT) *objs; 				/* Cache of all objects */
+    STACK_OF(X509_OBJECT) *objs; 				/* Cache of all objects */ /*存储所有加载的CA证书*/
     STACK_OF(X509_LOOKUP) *get_cert_methods;	/* These are external lookup methods */
     X509_VERIFY_PARAM *param;
     /* Callbacks for various operations */

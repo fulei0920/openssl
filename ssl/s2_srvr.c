@@ -169,10 +169,12 @@ int ssl2_accept(SSL *s)
     }
 
     clear_sys_error();
-    for (;;) {
+    for (;;) 
+	{
         state = s->state;
 
-        switch (s->state) {
+        switch (s->state)
+		{
         case SSL_ST_BEFORE:
         case SSL_ST_ACCEPT:
         case SSL_ST_BEFORE | SSL_ST_ACCEPT:
@@ -184,14 +186,16 @@ int ssl2_accept(SSL *s)
 
             s->version = SSL2_VERSION;
             s->type = SSL_ST_ACCEPT;
-
-            if (s->init_buf == NULL) {
-                if ((buf = BUF_MEM_new()) == NULL) {
+			/*为init_buf分配内存*/
+            if (s->init_buf == NULL) 
+			{
+                if ((buf = BUF_MEM_new()) == NULL) 
+				{
                     ret = -1;
                     goto end;
                 }
-                if (!BUF_MEM_grow
-                    (buf, (int)SSL2_MAX_RECORD_LENGTH_3_BYTE_HEADER)) {
+                if (!BUF_MEM_grow(buf, (int)SSL2_MAX_RECORD_LENGTH_3_BYTE_HEADER)) 
+				{
                     BUF_MEM_free(buf);
                     ret = -1;
                     goto end;
@@ -221,7 +225,8 @@ int ssl2_accept(SSL *s)
             if (ret <= 0)
                 goto end;
             s->init_num = 0;
-            if (!s->hit) {
+            if (!s->hit)
+			{
                 s->state = SSL2_ST_GET_CLIENT_MASTER_KEY_A;
                 BREAK;
             } else {
@@ -567,27 +572,35 @@ static int get_client_hello(SSL *s)
     int z;
 
     /*
-     * This is a bit of a hack to check for the correct packet type the first
-     * time round.
+     * This is a bit of a hack to check for the correct packet type the first time round.
      */
-    if (s->state == SSL2_ST_GET_CLIENT_HELLO_A) {
+    if (s->state == SSL2_ST_GET_CLIENT_HELLO_A) 
+	{
         s->first_packet = 1;
         s->state = SSL2_ST_GET_CLIENT_HELLO_B;
     }
 
     p = (unsigned char *)s->init_buf->data;
-    if (s->state == SSL2_ST_GET_CLIENT_HELLO_B) {
+    if (s->state == SSL2_ST_GET_CLIENT_HELLO_B) 
+	{
+		/* 1(type) + 2(version) + 2(chipher number) + 2(session id length) + 2(challenge length)*/
         i = ssl2_read(s, (char *)&(p[s->init_num]), 9 - s->init_num);
         if (i < (9 - s->init_num))
             return (ssl2_part_read(s, SSL_F_GET_CLIENT_HELLO, i));
         s->init_num = 9;
 
-        if (*(p++) != SSL2_MT_CLIENT_HELLO) {
-            if (p[-1] != SSL2_MT_ERROR) {
+        if (*(p++) != SSL2_MT_CLIENT_HELLO)
+		{
+            if (p[-1] != SSL2_MT_ERROR) 
+			{
                 ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
                 SSLerr(SSL_F_GET_CLIENT_HELLO, SSL_R_READ_WRONG_PACKET_TYPE);
-            } else
-                SSLerr(SSL_F_GET_CLIENT_HELLO, SSL_R_PEER_ERROR);
+            } 
+			else
+           	{
+				SSLerr(SSL_F_GET_CLIENT_HELLO, SSL_R_PEER_ERROR);
+			}
+                
             return (-1);
         }
         n2s(p, i);
@@ -599,8 +612,8 @@ static int get_client_hello(SSL *s)
         s->s2->tmp.session_id_length = i;
         n2s(p, i);
         s->s2->challenge_length = i;
-        if ((i < SSL2_MIN_CHALLENGE_LENGTH) ||
-            (i > SSL2_MAX_CHALLENGE_LENGTH)) {
+        if ((i < SSL2_MIN_CHALLENGE_LENGTH) || (i > SSL2_MAX_CHALLENGE_LENGTH)) 
+		{
             ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
             SSLerr(SSL_F_GET_CLIENT_HELLO, SSL_R_INVALID_CHALLENGE_LENGTH);
             return (-1);
@@ -610,11 +623,9 @@ static int get_client_hello(SSL *s)
 
     /* SSL2_ST_GET_CLIENT_HELLO_C */
     p = (unsigned char *)s->init_buf->data;
-    len =
-        9 + (unsigned long)s->s2->tmp.cipher_spec_length +
-        (unsigned long)s->s2->challenge_length +
-        (unsigned long)s->s2->tmp.session_id_length;
-    if (len > SSL2_MAX_RECORD_LENGTH_3_BYTE_HEADER) {
+    len = 9 + (unsigned long)s->s2->tmp.cipher_spec_length + (unsigned long)s->s2->challenge_length + (unsigned long)s->s2->tmp.session_id_length;
+    if (len > SSL2_MAX_RECORD_LENGTH_3_BYTE_HEADER) 
+	{
         ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
         SSLerr(SSL_F_GET_CLIENT_HELLO, SSL_R_MESSAGE_TOO_LONG);
         return -1;
@@ -623,40 +634,47 @@ static int get_client_hello(SSL *s)
     i = ssl2_read(s, (char *)&(p[s->init_num]), n);
     if (i != n)
         return (ssl2_part_read(s, SSL_F_GET_CLIENT_HELLO, i));
-    if (s->msg_callback) {
+    if (s->msg_callback) 
+	{
         /* CLIENT-HELLO */
-        s->msg_callback(0, s->version, 0, p, (size_t)len, s,
-                        s->msg_callback_arg);
+        s->msg_callback(0, s->version, 0, p, (size_t)len, s, s->msg_callback_arg);
     }
     p += 9;
 
     /*
-     * get session-id before cipher stuff so we can get out session structure
-     * if it is cached
+     * get session-id before cipher stuff so we can get out session structure if it is cached
      */
+     
     /* session-id */
-    if ((s->s2->tmp.session_id_length != 0) &&
-        (s->s2->tmp.session_id_length != SSL2_SSL_SESSION_ID_LENGTH)) {
+    if ((s->s2->tmp.session_id_length != 0) && (s->s2->tmp.session_id_length != SSL2_SSL_SESSION_ID_LENGTH)) 
+	{
         ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
         SSLerr(SSL_F_GET_CLIENT_HELLO, SSL_R_BAD_SSL_SESSION_ID_LENGTH);
         return (-1);
     }
 
-    if (s->s2->tmp.session_id_length == 0) {
-        if (!ssl_get_new_session(s, 1)) {
+    if (s->s2->tmp.session_id_length == 0)
+	{
+        if (!ssl_get_new_session(s, 1)) 
+		{
             ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
             return (-1);
         }
-    } else {
-        i = ssl_get_prev_session(s, &(p[s->s2->tmp.cipher_spec_length]),
-                                 s->s2->tmp.session_id_length, NULL);
-        if (i == 1) {           /* previous session */
+    } 
+	else
+	{
+        i = ssl_get_prev_session(s, &(p[s->s2->tmp.cipher_spec_length]), s->s2->tmp.session_id_length, NULL);
+        if (i == 1) 
+		{           /* previous session */
             s->hit = 1;
-        } else if (i == -1) {
+        } else if (i == -1) 
+       	{
             ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
             return (-1);
-        } else {
-            if (s->cert == NULL) {
+        } else 
+       	{
+            if (s->cert == NULL) 
+			{
                 ssl2_return_error(s, SSL2_PE_NO_CERTIFICATE);
                 SSLerr(SSL_F_GET_CLIENT_HELLO, SSL_R_NO_CERTIFICATE_SET);
                 return (-1);
@@ -669,30 +687,39 @@ static int get_client_hello(SSL *s)
         }
     }
 
-    if (!s->hit) {
-        cs = ssl_bytes_to_cipher_list(s, p, s->s2->tmp.cipher_spec_length,
-                                      &s->session->ciphers);
+
+	/*设置会话使用的加密套件*/
+    if (!s->hit) 
+	{
+        cs = ssl_bytes_to_cipher_list(s, p, s->s2->tmp.cipher_spec_length, &s->session->ciphers);
         if (cs == NULL)
             goto mem_err;
 
         cl = SSL_get_ciphers(s);
 
-        if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) {
+        if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) 
+		{
             prio = sk_SSL_CIPHER_dup(cl);
             if (prio == NULL)
                 goto mem_err;
             allow = cs;
-        } else {
+        } 
+		else 
+		{
             prio = cs;
             allow = cl;
         }
-        for (z = 0; z < sk_SSL_CIPHER_num(prio); z++) {
-            if (sk_SSL_CIPHER_find(allow, sk_SSL_CIPHER_value(prio, z)) < 0) {
+		
+        for (z = 0; z < sk_SSL_CIPHER_num(prio); z++)
+		{
+            if (sk_SSL_CIPHER_find(allow, sk_SSL_CIPHER_value(prio, z)) < 0) 
+			{
                 (void)sk_SSL_CIPHER_delete(prio, z);
                 z--;
             }
         }
-        if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) {
+        if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) 
+		{
             sk_SSL_CIPHER_free(s->session->ciphers);
             s->session->ciphers = prio;
         }
@@ -703,14 +730,13 @@ static int get_client_hello(SSL *s)
          * if SSL_OP_CIPHER_SERVER_PREFERENCE was set.
          */
     }
+	
     p += s->s2->tmp.cipher_spec_length;
-    /* done cipher selection */
-
-    /* session id extracted already */
-    p += s->s2->tmp.session_id_length;
+    p += s->s2->tmp.session_id_length;	/* session id extracted already */
 
     /* challenge */
-    if (s->s2->challenge_length > sizeof s->s2->challenge) {
+    if (s->s2->challenge_length > sizeof s->s2->challenge) 
+	{
         ssl2_return_error(s, SSL2_PE_UNDEFINED_ERROR);
         SSLerr(SSL_F_GET_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
         return -1;
@@ -728,21 +754,28 @@ static int server_hello(SSL *s)
     int n, hit;
 
     p = (unsigned char *)s->init_buf->data;
-    if (s->state == SSL2_ST_SEND_SERVER_HELLO_A) {
+    if (s->state == SSL2_ST_SEND_SERVER_HELLO_A) 
+	{
         d = p + 11;
         *(p++) = SSL2_MT_SERVER_HELLO; /* type */
         hit = s->hit;
         *(p++) = (unsigned char)hit;
 # if 1
-        if (!hit) {
+        if (!hit) 
+		{
             if (s->session->sess_cert != NULL)
-                /*
+            {
+            	/*
                  * This can't really happen because get_client_hello has
                  * called ssl_get_new_session, which does not set sess_cert.
                  */
                 ssl_sess_cert_free(s->session->sess_cert);
+
+			}
+
             s->session->sess_cert = ssl_sess_cert_new();
-            if (s->session->sess_cert == NULL) {
+            if (s->session->sess_cert == NULL) 
+			{
                 SSLerr(SSL_F_SERVER_HELLO, ERR_R_MALLOC_FAILURE);
                 return (-1);
             }
@@ -773,18 +806,22 @@ static int server_hello(SSL *s)
         }
 # endif
 
-        if (s->cert == NULL) {
+        if (s->cert == NULL)
+		{
             ssl2_return_error(s, SSL2_PE_NO_CERTIFICATE);
             SSLerr(SSL_F_SERVER_HELLO, SSL_R_NO_CERTIFICATE_SPECIFIED);
             return (-1);
         }
 
-        if (hit) {
+        if (hit) 
+		{
             *(p++) = 0;         /* no certificate type */
             s2n(s->version, p); /* version */
             s2n(0, p);          /* cert len */
             s2n(0, p);          /* ciphers len */
-        } else {
+        } 
+		else 
+		{
             /* EAY EAY */
             /* put certificate type */
             *(p++) = SSL2_CT_X509_CERTIFICATE;
@@ -805,8 +842,7 @@ static int server_hello(SSL *s)
         /* make and send conn_id */
         s2n(SSL2_CONNECTION_ID_LENGTH, p); /* add conn_id length */
         s->s2->conn_id_length = SSL2_CONNECTION_ID_LENGTH;
-        if (RAND_pseudo_bytes(s->s2->conn_id, (int)s->s2->conn_id_length) <=
-            0)
+        if (RAND_pseudo_bytes(s->s2->conn_id, (int)s->s2->conn_id_length) <= 0)
             return -1;
         memcpy(d, s->s2->conn_id, SSL2_CONNECTION_ID_LENGTH);
         d += SSL2_CONNECTION_ID_LENGTH;
@@ -821,7 +857,8 @@ static int server_hello(SSL *s)
      * without a read between them.  This occurs when Session-id reuse is
      * used, so I will put in a buffering module
      */
-    if (s->hit) {
+    if (s->hit)
+	{
         if (!ssl_init_wbio_buffer(s, 1))
             return (-1);
     }

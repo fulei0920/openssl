@@ -209,8 +209,8 @@ typedef struct asn1_const_ctx_st {
 # define ASN1_OBJECT_FLAG_DYNAMIC_DATA    0x08/* internal use */
 typedef struct asn1_object_st
 {
-    const char *sn;		/* ¼òĞ´Ãû×Ö */	 
-	const char *ln;		/* È«³ÆÃû×Ö*/
+    const char *sn;		/* short name */	 
+	const char *ln;		/* long name */
     int nid;
     int length;
     const unsigned char *data;  /* data remains const after init */

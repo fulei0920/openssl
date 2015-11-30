@@ -308,6 +308,7 @@ X509 *X509_find_by_subject(STACK_OF(X509) *sk, X509_NAME *name)
     return (NULL);
 }
 
+/*从证书中获取公钥*/
 EVP_PKEY *X509_get_pubkey(X509 *x)
 {
     if ((x == NULL) || (x->cert_info == NULL))

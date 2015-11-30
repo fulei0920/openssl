@@ -322,7 +322,8 @@ static int echo_console(UI *ui);
 static int noecho_console(UI *ui);
 static int close_console(UI *ui);
 
-static UI_METHOD ui_openssl = {
+static UI_METHOD ui_openssl = 
+{
     "OpenSSL default user interface",
     open_console,
     write_string,
@@ -360,28 +361,26 @@ static int read_string(UI *ui, UI_STRING *uis)
 {
     int ok = 0;
 
-    switch (UI_get_string_type(uis)) {
+    switch (UI_get_string_type(uis))
+	{
     case UIT_BOOLEAN:
         fputs(UI_get0_output_string(uis), tty_out);
         fputs(UI_get0_action_string(uis), tty_out);
         fflush(tty_out);
-        return read_string_inner(ui, uis,
-                                 UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO,
-                                 0);
+        return read_string_inner(ui, uis, UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 0);
+		
     case UIT_PROMPT:
         fputs(UI_get0_output_string(uis), tty_out);
         fflush(tty_out);
-        return read_string_inner(ui, uis,
-                                 UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO,
-                                 1);
+        return read_string_inner(ui, uis, UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 1);
+		
     case UIT_VERIFY:
         fprintf(tty_out, "Verifying - %s", UI_get0_output_string(uis));
         fflush(tty_out);
-        if ((ok = read_string_inner(ui, uis,
-                                    UI_get_input_flags(uis) &
-                                    UI_INPUT_FLAG_ECHO, 1)) <= 0)
+        if ((ok = read_string_inner(ui, uis, UI_get_input_flags(uis) & UI_INPUT_FLAG_ECHO, 1)) <= 0)
             return ok;
-        if (strcmp(UI_get0_result_string(uis), UI_get0_test_string(uis)) != 0) {
+        if (strcmp(UI_get0_result_string(uis), UI_get0_test_string(uis)) != 0) 
+		{
             fprintf(tty_out, "Verify failure\n");
             fflush(tty_out);
             return 0;
@@ -432,7 +431,8 @@ static int read_string_inner(UI *ui, UI_STRING *uis, int echo, int strip_nl)
 
     result[0] = '\0';
 # ifdef OPENSSL_SYS_MSDOS
-    if (!echo) {
+    if (!echo) 
+	{
         noecho_fgets(result, maxsize, tty_in);
         p = result;             /* FIXME: noecho_fgets doesn't return errors */
     } else
@@ -609,7 +609,8 @@ static void pushsig(void)
     savsig[SIGSEGV] = signal(SIGSEGV, recsig);
     savsig[SIGTERM] = signal(SIGTERM, recsig);
 # else
-    for (i = 1; i < NX509_SIG; i++) {
+    for (i = 1; i < NX509_SIG; i++) 
+	{
 #  ifdef SIGUSR1
         if (i == SIGUSR1)
             continue;

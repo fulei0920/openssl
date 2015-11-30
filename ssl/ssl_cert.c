@@ -403,7 +403,8 @@ SESS_CERT *ssl_sess_cert_new(void)
     SESS_CERT *ret;
 
     ret = OPENSSL_malloc(sizeof *ret);
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         SSLerr(SSL_F_SSL_SESS_CERT_NEW, ERR_R_MALLOC_FAILURE);
         return NULL;
     }
@@ -529,12 +530,13 @@ int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk)
     return (i);
 }
 
-static void set_client_CA_list(STACK_OF(X509_NAME) **ca_list,
-                               STACK_OF(X509_NAME) *name_list)
+static void set_client_CA_list(STACK_OF(X509_NAME) **ca_list, STACK_OF(X509_NAME) *name_list)
 {
+	/*释放之前的STACK_OF(X509_NAME)*/
     if (*ca_list != NULL)
         sk_X509_NAME_pop_free(*ca_list, X509_NAME_free);
 
+	/*指向新的STACK_OF(X509_NAME)*/
     *ca_list = name_list;
 }
 
@@ -572,12 +574,15 @@ STACK_OF(X509_NAME) *SSL_CTX_get_client_CA_list(const SSL_CTX *ctx)
 
 STACK_OF(X509_NAME) *SSL_get_client_CA_list(const SSL *s)
 {
-    if (s->type == SSL_ST_CONNECT) { /* we are in the client */
+    if (s->type == SSL_ST_CONNECT)	/* we are in the client */
+	{ 
         if (((s->version >> 8) == SSL3_VERSION_MAJOR) && (s->s3 != NULL))
             return (s->s3->tmp.ca_names);
         else
             return (NULL);
-    } else {
+    }
+	else 
+	{
         if (s->client_CA != NULL)
             return (s->client_CA);
         else
@@ -597,7 +602,8 @@ static int add_client_CA(STACK_OF(X509_NAME) **sk, X509 *x)
     if ((name = X509_NAME_dup(X509_get_subject_name(x))) == NULL)
         return (0);
 
-    if (!sk_X509_NAME_push(*sk, name)) {
+    if (!sk_X509_NAME_push(*sk, name)) 
+	{
         X509_NAME_free(name);
         return (0);
     }
@@ -639,7 +645,8 @@ STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file)
 
     in = BIO_new(BIO_s_file_internal());
 
-    if ((sk == NULL) || (in == NULL)) {
+    if ((sk == NULL) || (in == NULL)) 
+	{
         SSLerr(SSL_F_SSL_LOAD_CLIENT_CA_FILE, ERR_R_MALLOC_FAILURE);
         goto err;
     }
@@ -647,12 +654,15 @@ STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file)
     if (!BIO_read_filename(in, file))
         goto err;
 
-    for (;;) {
+    for (;;) 
+	{
         if (PEM_read_bio_X509(in, &x, NULL, NULL) == NULL)
             break;
-        if (ret == NULL) {
+        if (ret == NULL) 
+		{
             ret = sk_X509_NAME_new_null();
-            if (ret == NULL) {
+            if (ret == NULL) 
+			{
                 SSLerr(SSL_F_SSL_LOAD_CLIENT_CA_FILE, ERR_R_MALLOC_FAILURE);
                 goto err;
             }
@@ -664,14 +674,18 @@ STACK_OF(X509_NAME) *SSL_load_client_CA_file(const char *file)
         if (xn == NULL)
             goto err;
         if (sk_X509_NAME_find(sk, xn) >= 0)
-            X509_NAME_free(xn);
-        else {
+        {
+			X509_NAME_free(xn);
+		}
+        else 
+		{
             sk_X509_NAME_push(sk, xn);
             sk_X509_NAME_push(ret, xn);
         }
     }
 
-    if (0) {
+    if (0)
+	{
  err:
         if (ret != NULL)
             sk_X509_NAME_pop_free(ret, X509_NAME_free);

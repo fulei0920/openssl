@@ -226,7 +226,7 @@ static int ssl2_read_internal(SSL *s, void *buf, int len, int peek)
 
     if (s->rstate == SSL_ST_READ_BODY)
 	{
-        n = s->s2->rlength + 2 + s->s2->three_byte_header;
+        n = s->s2->rlength + 2 + s->s2->three_byte_header;  /*整个报文长度*/
         if (n > (int)s->packet_length)
 		{
             n -= s->packet_length;
@@ -235,14 +235,18 @@ static int ssl2_read_internal(SSL *s, void *buf, int len, int peek)
                 return (i);     /* ERROR */
         }
 
+		
         p = &(s->packet[2]);
         s->rstate = SSL_ST_READ_HEADER;
+
+		/*获取填充数据字节数目*/
         if (s->s2->three_byte_header)
             s->s2->padding = *(p++);
         else
             s->s2->padding = 0;
 
         /* Data portion */
+		/*获取原始数据的MAC-DATA, ACTUAL-DATA位置*/
         if (s->s2->clear_text) 
 		{
             mac_size = 0;
@@ -271,8 +275,7 @@ static int ssl2_read_internal(SSL *s, void *buf, int len, int peek)
 
         s->s2->ract_data_length = s->s2->rlength;
         /*
-         * added a check for length > max_size in case encryption was not
-         * turned on yet due to an error
+         * added a check for length > max_size in case encryption was not  turned on yet due to an error
          */
         if ((!s->s2->clear_text) && (s->s2->rlength >= (unsigned int)mac_size))
 		{
@@ -284,9 +287,8 @@ static int ssl2_read_internal(SSL *s, void *buf, int len, int peek)
             s->s2->ract_data_length -= mac_size;
             ssl2_mac(s, mac, 0);
             s->s2->ract_data_length -= s->s2->padding;
-            if ((CRYPTO_memcmp(mac, s->s2->mac_data, mac_size) != 0) ||
-                (s->s2->rlength %
-                 EVP_CIPHER_CTX_block_size(s->enc_read_ctx) != 0)) {
+            if ((CRYPTO_memcmp(mac, s->s2->mac_data, mac_size) != 0) || (s->s2->rlength % EVP_CIPHER_CTX_block_size(s->enc_read_ctx) != 0)) 
+            {
                 SSLerr(SSL_F_SSL2_READ_INTERNAL, SSL_R_BAD_MAC_DECODE);
                 return (-1);
             }
@@ -333,6 +335,7 @@ int ssl2_peek(SSL *s, void *buf, int len)
 
 
 /*
+
 n -- 需要读取的字节数目
 max -- 最大读取的字节数目
 extend -- 是否追加到上一次的读取位置之后
@@ -372,13 +375,16 @@ static int read_n(SSL *s, unsigned int n, unsigned int max, unsigned int extend)
     off = 0;
     if ((s->s2->rbuf_left != 0) || ((s->packet_length != 0) && extend))
 	{
+		/*将剩余数据复制到读缓冲区起始位置，以给后续读操作更多存储空间*/
         newb = s->s2->rbuf_left;
         if (extend) 
 		{
             off = s->packet_length;
             if (s->packet != s->s2->rbuf)
-                memcpy(s->s2->rbuf, s->packet, (unsigned int)newb + off);
-			/*掉了这一句 s->s2->rbuf_offs = 0;*/
+            {
+				memcpy(s->s2->rbuf, s->packet, (unsigned int)newb + off);
+				/*掉了这一句 s->s2->rbuf_offs = s->packet_length;*/
+			}
         }
 		else if (s->s2->rbuf_offs != 0)
        	{
@@ -442,23 +448,28 @@ static int read_n(SSL *s, unsigned int n, unsigned int max, unsigned int extend)
     return (n);
 }
 
+/*
+发送数据，直到发送完成或有错误为止
+*/
 int ssl2_write(SSL *s, const void *_buf, int len)
 {
     const unsigned char *buf = _buf;
     unsigned int n, tot;
     int i;
 
+	/* 如果在初始化状态，且还没有握手，则进行握手 */
     if (SSL_in_init(s) && !s->in_handshake)
 	{
         i = s->handshake_func(s);
         if (i < 0)
             return (i);
-        if (i == 0) {
+        if (i == 0) 
+		{
             SSLerr(SSL_F_SSL2_WRITE, SSL_R_SSL_HANDSHAKE_FAILURE);
             return (-1);
         }
     }
-
+	
     if (s->error) 
 	{
         ssl2_write_error(s);
@@ -502,8 +513,7 @@ static int write_pending(SSL *s, const unsigned char *buf, unsigned int len)
     /*
      * check that they have given us the same buffer to write
      */
-    if ((s->s2->wpend_tot > (int)len) ||
-        ((s->s2->wpend_buf != buf) && !(s->mode & SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER))) 
+    if ((s->s2->wpend_tot > (int)len) || ((s->s2->wpend_buf != buf) && !(s->mode & SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER))) 
     {
         SSLerr(SSL_F_WRITE_PENDING, SSL_R_BAD_WRITE_RETRY);
         return (-1);
@@ -542,6 +552,12 @@ static int write_pending(SSL *s, const unsigned char *buf, unsigned int len)
     }
 }
 
+/*
+将上层数据按报文格式组织然后发送
+buf -- 上层数据
+len -- 上层数据长度
+返回值 -- >0 发送的字节数  ==0    <0 错误
+*/
 static int n_do_ssl_write(SSL *s, const unsigned char *buf, unsigned int len)
 {
     unsigned int j, k, olen, p, bs;
@@ -558,7 +574,7 @@ static int n_do_ssl_write(SSL *s, const unsigned char *buf, unsigned int len)
     if (s->s2->wpend_len != 0)
         return (write_pending(s, buf, len));
 
-    /*获取MAC-DATA长度*/
+    /*根据摘要算法，获取MAC-DATA长度*/
     if (s->s2->clear_text)
     {
 		mac_size = 0;
@@ -571,7 +587,7 @@ static int n_do_ssl_write(SSL *s, const unsigned char *buf, unsigned int len)
     }
 
     /*
-	设置PADDING-DATA长度
+	根据对称性加密算法，设置PADDING-DATA长度
 	设置为两字节记录头或者三字节记录头
 	*/
     if (s->s2->clear_text)
@@ -613,7 +629,8 @@ static int n_do_ssl_write(SSL *s, const unsigned char *buf, unsigned int len)
             p = 0;
         } 
 		else 
-		{                /* we may have to use a 3 byte header */
+		{   
+			/* we may have to use a 3 byte header */
 
             /*-
              * If s->s2->escape is not set, then
@@ -722,13 +739,15 @@ int ssl2_part_read(SSL *s, unsigned long f, int i)
     unsigned char *p;
     int j;
 
-    if (i < 0) {
+    if (i < 0)
+	{
         /* ssl2_return_error(s); */
         /*
          * for non-blocking io, this is not necessarily fatal
          */
         return (i);
-    } else {
+    } else 
+   	{
         s->init_num += i;
 
         /*
@@ -736,9 +755,11 @@ int ssl2_part_read(SSL *s, unsigned long f, int i)
          * function is not called when those must be expected; any error
          * detected here is fatal.
          */
-        if (s->init_num >= 3) {
+        if (s->init_num >= 3) 
+		{
             p = (unsigned char *)s->init_buf->data;
-            if (p[0] == SSL2_MT_ERROR) {
+            if (p[0] == SSL2_MT_ERROR)
+			{
                 j = (p[1] << 8) | p[2];
                 SSLerr((int)f, ssl_mt_error(j));
                 s->init_num -= 3;
@@ -756,6 +777,10 @@ int ssl2_part_read(SSL *s, unsigned long f, int i)
     }
 }
 
+
+/*
+发送init_buf中的数据
+*/
 int ssl2_do_write(SSL *s)
 {
     int ret;

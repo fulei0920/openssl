@@ -504,7 +504,7 @@ typedef struct cert_pkey_st
 {
     X509 *x509;					/*证书内容*/			
     EVP_PKEY *privatekey;		/*证书对应的私钥*/
-    const EVP_MD *digest;		/* Digest to use when signing */
+    const EVP_MD *digest;		/*签名所使用的摘要算法*/
 } CERT_PKEY;
 
 typedef struct cert_st 
@@ -536,11 +536,12 @@ typedef struct cert_st
     EC_KEY *ecdh_tmp;
     EC_KEY *(*ecdh_tmp_cb) (SSL *ssl, int is_export, int keysize); /* Callback for generating ephemeral ECDH keys */
 # endif
-    CERT_PKEY pkeys[SSL_PKEY_NUM];  /* 存储不同方式加密和签名的证书信息 */
+    CERT_PKEY pkeys[SSL_PKEY_NUM];  /* 存储不同加密算法下的证书和对应私钥及签名算法 */
     int references;             /* >1 only if SSL_copy_session_id is used */
 } CERT;
 
-typedef struct sess_cert_st {
+typedef struct sess_cert_st 
+{
     STACK_OF(X509) *cert_chain; /* as received from peer (not for SSL2) */
     /* The 'peer_...' members are used only by clients. */
     int peer_cert_type;
