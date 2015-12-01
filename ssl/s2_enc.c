@@ -60,6 +60,10 @@
 #ifndef OPENSSL_NO_SSL2
 # include <stdio.h>
 
+
+/*
+client -- 表明是客户端还是服务端
+*/
 int ssl2_enc_init(SSL *s, int client)
 {
     /* Max number of bytes needed */
@@ -68,7 +72,8 @@ int ssl2_enc_init(SSL *s, int client)
     const EVP_MD *md;
     int num;
 
-    if (!ssl_cipher_get_evp(s->session, &c, &md, NULL, NULL, NULL)) {
+    if (!ssl_cipher_get_evp(s->session, &c, &md, NULL, NULL, NULL)) 
+	{
         ssl2_return_error(s, SSL2_PE_NO_CIPHER);
         SSLerr(SSL_F_SSL2_ENC_INIT, SSL_R_PROBLEMS_MAPPING_CIPHER_FUNCTIONS);
         return (0);
@@ -80,16 +85,12 @@ int ssl2_enc_init(SSL *s, int client)
         goto err;
 
     /*
-     * make sure it's intialized in case the malloc for enc_write_ctx fails
-     * and we exit with an error
+     * make sure it's intialized in case the malloc for enc_write_ctx fails and we exit with an error
      */
     rs = s->enc_read_ctx;
     EVP_CIPHER_CTX_init(rs);
 
-    if ((s->enc_write_ctx == NULL) && ((s->enc_write_ctx = (EVP_CIPHER_CTX *)
-                                        OPENSSL_malloc(sizeof
-                                                       (EVP_CIPHER_CTX))) ==
-                                       NULL))
+    if ((s->enc_write_ctx == NULL) && ((s->enc_write_ctx = (EVP_CIPHER_CTX *) OPENSSL_malloc(sizeof(EVP_CIPHER_CTX))) == NULL))
         goto err;
 
     ws = s->enc_write_ctx;
@@ -103,12 +104,8 @@ int ssl2_enc_init(SSL *s, int client)
         return 0;
 
     OPENSSL_assert(c->iv_len <= (int)sizeof(s->session->key_arg));
-    EVP_EncryptInit_ex(ws, c, NULL,
-                       &(s->s2->key_material[(client) ? num : 0]),
-                       s->session->key_arg);
-    EVP_DecryptInit_ex(rs, c, NULL,
-                       &(s->s2->key_material[(client) ? 0 : num]),
-                       s->session->key_arg);
+    EVP_EncryptInit_ex(ws, c, NULL, &(s->s2->key_material[(client) ? num : 0]), s->session->key_arg);
+    EVP_DecryptInit_ex(rs, c, NULL, &(s->s2->key_material[(client) ? 0 : num]), s->session->key_arg);
     s->s2->read_key = &(s->s2->key_material[(client) ? 0 : num]);
     s->s2->write_key = &(s->s2->key_material[(client) ? num : 0]);
     return (1);

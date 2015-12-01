@@ -1131,10 +1131,8 @@ long SSL_callback_ctrl(SSL *s, int cmd, void (*fp) (void))
 {
     switch (cmd) {
     case SSL_CTRL_SET_MSG_CALLBACK:
-        s->msg_callback = (void (*)
-                           (int write_p, int version, int content_type,
-                            const void *buf, size_t len, SSL *ssl,
-                            void *arg))(fp);
+        s->msg_callback = (void (*) (int write_p, int version, int content_type,
+                            const void *buf, size_t len, SSL *ssl, void *arg))(fp);
         return 1;
 
     default:
@@ -1228,12 +1226,10 @@ long SSL_CTX_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
 
 long SSL_CTX_callback_ctrl(SSL_CTX *ctx, int cmd, void (*fp) (void))
 {
-    switch (cmd) {
+    switch (cmd) 
+	{
     case SSL_CTRL_SET_MSG_CALLBACK:
-        ctx->msg_callback = (void (*)
-                             (int write_p, int version, int content_type,
-                              const void *buf, size_t len, SSL *ssl,
-                              void *arg))(fp);
+        ctx->msg_callback = (void (*) (int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg))(fp);
         return 1;
 
     default:
@@ -1252,8 +1248,7 @@ int ssl_cipher_id_cmp(const SSL_CIPHER *a, const SSL_CIPHER *b)
         return ((l > 0) ? 1 : -1);
 }
 
-int ssl_cipher_ptr_id_cmp(const SSL_CIPHER *const *ap,
-                          const SSL_CIPHER *const *bp)
+int ssl_cipher_ptr_id_cmp(const SSL_CIPHER *const *ap, const SSL_CIPHER *const *bp)
 {
     long l;
 
@@ -2072,9 +2067,7 @@ void SSL_CTX_set_default_passwd_cb_userdata(SSL_CTX *ctx, void *u)
     ctx->default_passwd_callback_userdata = u;
 }
 
-void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx,
-                                      int (*cb) (X509_STORE_CTX *, void *),
-                                      void *arg)
+void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx, int (*cb) (X509_STORE_CTX *, void *), void *arg)
 {
     ctx->app_verify_callback = cb;
     ctx->app_verify_arg = arg;

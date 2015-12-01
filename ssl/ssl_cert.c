@@ -483,7 +483,8 @@ int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk)
         return (0);
 
     x = sk_X509_value(sk, 0);
-    if (!X509_STORE_CTX_init(&ctx, s->ctx->cert_store, x, sk)) {
+    if (!X509_STORE_CTX_init(&ctx, s->ctx->cert_store, x, sk))
+	{
         SSLerr(SSL_F_SSL_VERIFY_CERT_CHAIN, ERR_R_X509_LIB);
         return (0);
     }
@@ -500,9 +501,8 @@ int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk)
      */
 
     X509_STORE_CTX_set_default(&ctx, s->server ? "ssl_client" : "ssl_server");
-    /*
-     * Anything non-default in "param" should overwrite anything in the ctx.
-     */
+
+	/*Anything non-default in "param" should overwrite anything in the ctx. */
     X509_VERIFY_PARAM_set1(X509_STORE_CTX_get0_param(&ctx), s->param);
 
     if (s->verify_callback)
@@ -514,7 +514,8 @@ int ssl_verify_cert_chain(SSL *s, STACK_OF(X509) *sk)
 #else
         i = s->ctx->app_verify_callback(&ctx); /* should pass app_verify_arg */
 #endif
-    else {
+    else
+	{
 #ifndef OPENSSL_NO_X509_VERIFY
         i = X509_verify_cert(&ctx);
 #else

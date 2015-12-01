@@ -504,7 +504,7 @@ typedef struct cert_pkey_st
 {
     X509 *x509;					/*证书内容*/			
     EVP_PKEY *privatekey;		/*证书对应的私钥*/
-    const EVP_MD *digest;		/*签名所使用的摘要算法*/
+    const EVP_MD *digest;		/*证书签名所使用的摘要算法*/
 } CERT_PKEY;
 
 typedef struct cert_st 
@@ -544,8 +544,8 @@ typedef struct sess_cert_st
 {
     STACK_OF(X509) *cert_chain; /* as received from peer (not for SSL2) */
     /* The 'peer_...' members are used only by clients. */
-    int peer_cert_type;
-    CERT_PKEY *peer_key;        /* points to an element of peer_pkeys (never NULL!) */
+    int peer_cert_type;			/*证书类型??*/
+    CERT_PKEY *peer_key;        /* points to an element of peer_pkeys (never NULL!) */  /*指向当前使用的证书*/
     CERT_PKEY peer_pkeys[SSL_PKEY_NUM];
     /*
      * Obviously we don't have the private keys of these, so maybe we

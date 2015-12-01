@@ -746,7 +746,8 @@ int ssl2_part_read(SSL *s, unsigned long f, int i)
          * for non-blocking io, this is not necessarily fatal
          */
         return (i);
-    } else 
+    } 
+	else 
    	{
         s->init_num += i;
 

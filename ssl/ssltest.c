@@ -990,17 +990,14 @@ int main(int argc, char *argv[])
 
     if (client_auth) {
         BIO_printf(bio_err, "client authentication\n");
-        SSL_CTX_set_verify(s_ctx,
-                           SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
-                           verify_callback);
-        SSL_CTX_set_cert_verify_callback(s_ctx, app_verify_callback,
-                                         &app_verify_arg);
+        SSL_CTX_set_verify(s_ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, verify_callback);
+        SSL_CTX_set_cert_verify_callback(s_ctx, app_verify_callback, &app_verify_arg);
     }
-    if (server_auth) {
+    if (server_auth) 
+	{
         BIO_printf(bio_err, "server authentication\n");
         SSL_CTX_set_verify(c_ctx, SSL_VERIFY_PEER, verify_callback);
-        SSL_CTX_set_cert_verify_callback(c_ctx, app_verify_callback,
-                                         &app_verify_arg);
+        SSL_CTX_set_cert_verify_callback(c_ctx, app_verify_callback, &app_verify_arg);
     }
 
     {
@@ -2158,15 +2155,18 @@ static int MS_CALLBACK app_verify_callback(X509_STORE_CTX *ctx, void *arg)
         }
         return (1);
     }
-    if (cb_arg->proxy_auth) {
+    if (cb_arg->proxy_auth) 
+	{
         int found_any = 0, i;
         char *sp;
 
         for (i = 0; i < 26; i++)
             letters[i] = 0;
-        for (sp = cb_arg->proxy_auth; *sp; sp++) {
+        for (sp = cb_arg->proxy_auth; *sp; sp++) 
+		{
             int c = *sp;
-            if (isascii(c) && isalpha(c)) {
+            if (isascii(c) && isalpha(c))
+			{
                 if (islower(c))
                     c = toupper(c);
                 letters[c - 'A'] = 1;

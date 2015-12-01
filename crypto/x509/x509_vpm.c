@@ -140,7 +140,6 @@ void X509_VERIFY_PARAM_free(X509_VERIFY_PARAM *param)
  */
 
 /* Macro to test if a field should be copied from src to dest */
-
 #define test_x509_verify_param_copy(field, def) \
         (to_overwrite || ((src->field != def) && (to_default || (dest->field == def))))
 
@@ -150,8 +149,7 @@ void X509_VERIFY_PARAM_free(X509_VERIFY_PARAM *param)
         if (test_x509_verify_param_copy(field, def)) \
                 dest->field = src->field
 
-int X509_VERIFY_PARAM_inherit(X509_VERIFY_PARAM *dest,
-                              const X509_VERIFY_PARAM *src)
+int X509_VERIFY_PARAM_inherit(X509_VERIFY_PARAM *dest, const X509_VERIFY_PARAM *src)
 {
     unsigned long inh_flags;
     int to_default, to_overwrite;
@@ -202,8 +200,7 @@ int X509_VERIFY_PARAM_inherit(X509_VERIFY_PARAM *dest,
     return 1;
 }
 
-int X509_VERIFY_PARAM_set1(X509_VERIFY_PARAM *to,
-                           const X509_VERIFY_PARAM *from)
+int X509_VERIFY_PARAM_set1(X509_VERIFY_PARAM *to, const X509_VERIFY_PARAM *from)
 {
     unsigned long save_flags = to->inh_flags;
     int ret;
@@ -325,7 +322,8 @@ int X509_VERIFY_PARAM_get_depth(const X509_VERIFY_PARAM *param)
  * in alphabetical order because it will be searched using OBJ_search.
  */
 
-static const X509_VERIFY_PARAM default_table[] = {
+static const X509_VERIFY_PARAM default_table[] = 
+{
     {
      "default",                 /* X509 default parameters */
      0,                         /* Check time */
@@ -367,14 +365,14 @@ static const X509_VERIFY_PARAM default_table[] = {
      NULL                       /* policies */
      },
     {
-     "ssl_server",              /* SSL/TLS server parameters */
-     0,                         /* Check time */
-     0,                         /* internal flags */
-     0,                         /* flags */
-     X509_PURPOSE_SSL_SERVER,   /* purpose */
-     X509_TRUST_SSL_SERVER,     /* trust */
-     -1,                        /* depth */
-     NULL                       /* policies */
+	     "ssl_server",              /* SSL/TLS server parameters */
+	     0,                         /* Check time */
+	     0,                         /* internal flags */
+	     0,                         /* flags */
+	     X509_PURPOSE_SSL_SERVER,   /* purpose */
+	     X509_TRUST_SSL_SERVER,     /* trust */
+	     -1,                        /* depth */
+	     NULL                       /* policies */
      }
 };
 
@@ -388,49 +386,64 @@ static int table_cmp(const X509_VERIFY_PARAM *a, const X509_VERIFY_PARAM *b)
 DECLARE_OBJ_BSEARCH_CMP_FN(X509_VERIFY_PARAM, X509_VERIFY_PARAM, table);
 IMPLEMENT_OBJ_BSEARCH_CMP_FN(X509_VERIFY_PARAM, X509_VERIFY_PARAM, table);
 
-static int param_cmp(const X509_VERIFY_PARAM *const *a,
-                     const X509_VERIFY_PARAM *const *b)
+static int param_cmp(const X509_VERIFY_PARAM *const *a, const X509_VERIFY_PARAM *const *b)
 {
     return strcmp((*a)->name, (*b)->name);
 }
 
+/*
+添加一个新的验证参数到param_table中
+*/
 int X509_VERIFY_PARAM_add0_table(X509_VERIFY_PARAM *param)
 {
     int idx;
     X509_VERIFY_PARAM *ptmp;
-    if (!param_table) {
+    if (!param_table)  
+	{	/*表不存在则新建一个*/
         param_table = sk_X509_VERIFY_PARAM_new(param_cmp);
         if (!param_table)
             return 0;
-    } else {
+    } 
+	else 
+	{	/*存在相同名字的，删除掉旧的*/
         idx = sk_X509_VERIFY_PARAM_find(param_table, param);
-        if (idx != -1) {
+        if (idx != -1) 
+		{
             ptmp = sk_X509_VERIFY_PARAM_value(param_table, idx);
             X509_VERIFY_PARAM_free(ptmp);
             (void)sk_X509_VERIFY_PARAM_delete(param_table, idx);
         }
     }
+	/*添加新的验证参数*/
     if (!sk_X509_VERIFY_PARAM_push(param_table, param))
         return 0;
     return 1;
 }
 
+/*
+查找name对应的验证参数
+*/
 const X509_VERIFY_PARAM *X509_VERIFY_PARAM_lookup(const char *name)
 {
     int idx;
     X509_VERIFY_PARAM pm;
 
+	/*在param_table表中查找*/
     pm.name = (char *)name;
-    if (param_table) {
+    if (param_table) 
+	{
         idx = sk_X509_VERIFY_PARAM_find(param_table, &pm);
         if (idx != -1)
             return sk_X509_VERIFY_PARAM_value(param_table, idx);
     }
-    return OBJ_bsearch_table(&pm, default_table,
-                             sizeof(default_table) /
-                             sizeof(X509_VERIFY_PARAM));
+	
+	/*在default_table表中查找*/
+    return OBJ_bsearch_table(&pm, default_table, sizeof(default_table) / sizeof(X509_VERIFY_PARAM));
 }
 
+/*
+销毁param_table表
+*/
 void X509_VERIFY_PARAM_table_cleanup(void)
 {
     if (param_table)

@@ -532,12 +532,11 @@ struct ssl_session_st
     int references;
     long timeout;
     long time;
-    unsigned int compress_meth; /* Need to lookup the method */
-    const SSL_CIPHER *cipher;
-    unsigned long cipher_id;    /* when ASN.1 loaded, this needs to be used
-                                 * to load the 'cipher' structure */
-    STACK_OF(SSL_CIPHER) *ciphers; /* shared ciphers? */
-    CRYPTO_EX_DATA ex_data;     /* application specific data */
+    unsigned int compress_meth; 	/* Need to lookup the method */
+    const SSL_CIPHER *cipher;		/*通过协商确定使用的加密套件方法*/
+    unsigned long cipher_id;    	/* when ASN.1 loaded, this needs to be used to load the 'cipher' structure */
+    STACK_OF(SSL_CIPHER) *ciphers; 	/* shared ciphers? */
+    CRYPTO_EX_DATA ex_data;     	/* application specific data */
     /*
      * These are used to make removal of session-ids more efficient and to
      * implement a maximum cache size.
@@ -1251,8 +1250,9 @@ const char *SSL_get_psk_identity(const SSL *s);
 /*表示一个TLS/SSL连接，其中保存了该TLS/SSL连接需要的数据*/
 struct ssl_st 
 {
-    
-    int version;	/* protocol version (one of SSL2_VERSION, SSL3_VERSION, TLS1_VERSION, DTLS1_VERSION) */
+	/* protocol version (one of SSL2_VERSION, SSL3_VERSION, TLS1_VERSION, DTLS1_VERSION) */
+	/*客户端和服务端进行协商，最终为二者的较小值*/
+    int version;	
     int type;	 	/* SSL_ST_CONNECT or SSL_ST_ACCEPT */
     /* SSLv3 */
     const SSL_METHOD *method;
@@ -1285,9 +1285,9 @@ struct ssl_st
      * handshake_func is == 0 until then, we use this test instead of an
      * "init" member.
      */
-    /* are we the server side? - mostly used by SSL_clear */
-    int server;
-    /*
+    int server;		/* are we the server side? - mostly used by SSL_clear */
+
+	/*
      * Generate a new session or reuse an old one.
      * NB: For servers, the 'new' session may actually be a previously
      * cached session or even the previous session unless
@@ -1321,8 +1321,10 @@ struct ssl_st
     int trust;                  /* Trust setting */
 #  endif
     /* crypto */
-    STACK_OF(SSL_CIPHER) *cipher_list;		/*支持的加密套件列表*/
-    STACK_OF(SSL_CIPHER) *cipher_list_by_id;
+ 
+    STACK_OF(SSL_CIPHER) *cipher_list;				/* chiper suits available for the SSL in order of preference */
+    STACK_OF(SSL_CIPHER) *cipher_list_by_id;		/* same as above in order of algorithm id, sorted for lookup */
+	
     /*
      * These are the ones being used, the ones in SSL_SESSION are the ones to
      * be 'copied' into these ones
@@ -1389,7 +1391,7 @@ struct ssl_st
      */
     int debug;
     /* extra application data */
-    long verify_result;
+    long verify_result;			/*对端证书认证结果*/
     CRYPTO_EX_DATA ex_data;
     /* for server side, keep the list of CA_dn we can use */
     STACK_OF(X509_NAME) *client_CA;

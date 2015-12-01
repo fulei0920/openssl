@@ -443,7 +443,11 @@ BIO *BIO_push(BIO *b, BIO *bio)
     return (b);
 }
 
-/* Remove the first and return the rest */
+/*
+Remove the first and return the rest 
+删除b(通常为第一个)
+返回值 -- 返回b后面的一个(通常为链表表头)
+*/
 BIO *BIO_pop(BIO *b)
 {
     BIO *ret;

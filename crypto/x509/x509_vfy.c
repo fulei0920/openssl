@@ -158,14 +158,16 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
     int num, j, retry;
     int (*cb) (int xok, X509_STORE_CTX *xctx);
     STACK_OF(X509) *sktmp = NULL;
-    if (ctx->cert == NULL) {
+	
+    if (ctx->cert == NULL) 
+	{
         X509err(X509_F_X509_VERIFY_CERT, X509_R_NO_CERT_SET_FOR_US_TO_VERIFY);
         return -1;
     }
-    if (ctx->chain != NULL) {
+    if (ctx->chain != NULL) 
+	{
         /*
-         * This X509_STORE_CTX has already been used to verify a cert. We
-         * cannot do another one.
+         * This X509_STORE_CTX has already been used to verify a cert. We cannot do another one.
          */
         X509err(X509_F_X509_VERIFY_CERT, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
         return -1;
@@ -173,12 +175,9 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
 
     cb = ctx->verify_cb;
 
-    /*
-     * first we make sure the chain we are going to build is present and that
-     * the first entry is in place
-     */
-    if (((ctx->chain = sk_X509_new_null()) == NULL) ||
-        (!sk_X509_push(ctx->chain, ctx->cert))) {
+    /* first we make sure the chain we are going to build is present and that the first entry is in place */
+    if (((ctx->chain = sk_X509_new_null()) == NULL) || (!sk_X509_push(ctx->chain, ctx->cert))) 
+	{
         X509err(X509_F_X509_VERIFY_CERT, ERR_R_MALLOC_FAILURE);
         goto end;
     }
@@ -186,8 +185,8 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
     ctx->last_untrusted = 1;
 
     /* We use a temporary STACK so we can chop and hack at it */
-    if (ctx->untrusted != NULL
-        && (sktmp = sk_X509_dup(ctx->untrusted)) == NULL) {
+    if (ctx->untrusted != NULL && (sktmp = sk_X509_dup(ctx->untrusted)) == NULL)
+    {
         X509err(X509_F_X509_VERIFY_CERT, ERR_R_MALLOC_FAILURE);
         goto end;
     }
@@ -196,7 +195,8 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
     x = sk_X509_value(ctx->chain, num - 1);
     depth = param->depth;
 
-    for (;;) {
+    for (;;) 
+	{
         /* If we have enough, we break */
         if (depth < num)
             break;              /* FIXME: If this happens, we should take
@@ -209,10 +209,13 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
             break;
 
         /* If we were passed a cert chain, use it first */
-        if (ctx->untrusted != NULL) {
+        if (ctx->untrusted != NULL) 
+		{
             xtmp = find_issuer(ctx, sktmp, x);
-            if (xtmp != NULL) {
-                if (!sk_X509_push(ctx->chain, xtmp)) {
+            if (xtmp != NULL) 
+			{
+                if (!sk_X509_push(ctx->chain, xtmp)) 
+				{
                     X509err(X509_F_X509_VERIFY_CERT, ERR_R_MALLOC_FAILURE);
                     goto end;
                 }
@@ -1999,8 +2002,14 @@ void X509_STORE_CTX_free(X509_STORE_CTX *ctx)
     OPENSSL_free(ctx);
 }
 
-int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509,
-                        STACK_OF(X509) *chain)
+
+/*
+初始化X509_STORE_CTX
+store -- 
+x509 -- 待验证的证书
+chain -- 
+*/
+int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509, STACK_OF(X509) *chain)
 {
     int ret = 1;
     ctx->ctx = store;
@@ -2025,35 +2034,39 @@ int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509,
 
     ctx->param = X509_VERIFY_PARAM_new();
 
-    if (!ctx->param) {
+    if (!ctx->param) 
+	{
         X509err(X509_F_X509_STORE_CTX_INIT, ERR_R_MALLOC_FAILURE);
         return 0;
     }
 
-    /*
-     * Inherit callbacks and flags from X509_STORE if not set use defaults.
-     */
-
+    /* Inherit callbacks and flags from X509_STORE if not set use defaults. */
     if (store)
         ret = X509_VERIFY_PARAM_inherit(ctx->param, store->param);
     else
         ctx->param->inh_flags |= X509_VP_FLAG_DEFAULT | X509_VP_FLAG_ONCE;
 
-    if (store) {
+    if (store) 
+	{
         ctx->verify_cb = store->verify_cb;
         ctx->cleanup = store->cleanup;
-    } else
-        ctx->cleanup = 0;
+    } 
+	else
+    {
+		ctx->cleanup = 0;
+	}
+        
 
     if (ret)
-        ret = X509_VERIFY_PARAM_inherit(ctx->param,
-                                        X509_VERIFY_PARAM_lookup("default"));
+        ret = X509_VERIFY_PARAM_inherit(ctx->param, X509_VERIFY_PARAM_lookup("default"));
 
-    if (ret == 0) {
+    if (ret == 0) 
+	{
         X509err(X509_F_X509_STORE_CTX_INIT, ERR_R_MALLOC_FAILURE);
         return 0;
     }
 
+	/* set Callbacks for various operations */
     if (store && store->check_issued)
         ctx->check_issued = store->check_issued;
     else
@@ -2112,8 +2125,8 @@ int X509_STORE_CTX_init(X509_STORE_CTX *ctx, X509_STORE *store, X509 *x509,
      * corresponding "new" here and remove this bogus initialisation.
      */
     /* memset(&(ctx->ex_data),0,sizeof(CRYPTO_EX_DATA)); */
-    if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_X509_STORE_CTX, ctx,
-                            &(ctx->ex_data))) {
+    if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_X509_STORE_CTX, ctx, &(ctx->ex_data))) 
+	{
         OPENSSL_free(ctx);
         X509err(X509_F_X509_STORE_CTX_INIT, ERR_R_MALLOC_FAILURE);
         return 0;
@@ -2184,6 +2197,10 @@ int X509_STORE_CTX_get_explicit_policy(X509_STORE_CTX *ctx)
     return ctx->explicit_policy;
 }
 
+
+/*
+继承name对应的验证参数
+*/
 int X509_STORE_CTX_set_default(X509_STORE_CTX *ctx, const char *name)
 {
     const X509_VERIFY_PARAM *param;

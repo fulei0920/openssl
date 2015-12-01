@@ -317,7 +317,7 @@ struct evp_cipher_st
 {
     int nid;			/*对称算法 nid*/
     int block_size;		/*对称算法每次加解密的字节数*/
-    int key_len;			/* Default value for variable length ciphers */ /*对称算法的密钥长度字节数*/
+    int key_len;		/* Default value for variable length ciphers */ /*对称算法的密钥长度字节数*/
     int iv_len;			/*对称算法的填充长度*/
     unsigned long flags;  	/* Various flags */  
 	/*初始化函数，用来初始化 ctx， key 为对称密钥值， iv 为初始化向量， enc用于指明是要加密还是解密，这些信息存放在 ctx 中*/

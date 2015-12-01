@@ -475,17 +475,18 @@ int ssl2_generate_key_material(SSL *s)
     EVP_MD_CTX_init(&ctx);
     km = s->s2->key_material;
 
-    if (s->session->master_key_length < 0 ||
-        s->session->master_key_length > (int)sizeof(s->session->master_key)) {
+    if (s->session->master_key_length < 0 || s->session->master_key_length > (int)sizeof(s->session->master_key)) 
+    {
         SSLerr(SSL_F_SSL2_GENERATE_KEY_MATERIAL, ERR_R_INTERNAL_ERROR);
         return 0;
     }
     md_size = EVP_MD_size(md5);
     if (md_size < 0)
         return 0;
-    for (i = 0; i < s->s2->key_material_length; i += md_size) {
-        if (((km - s->s2->key_material) + md_size) >
-            (int)sizeof(s->s2->key_material)) {
+    for (i = 0; i < s->s2->key_material_length; i += md_size)
+	{
+        if (((km - s->s2->key_material) + md_size) > (int)sizeof(s->s2->key_material)) 
+		{
             /*
              * EVP_DigestFinal_ex() below would write beyond buffer
              */
@@ -495,11 +496,8 @@ int ssl2_generate_key_material(SSL *s)
 
         EVP_DigestInit_ex(&ctx, md5, NULL);
 
-        OPENSSL_assert(s->session->master_key_length >= 0
-                       && s->session->master_key_length
-                       <= (int)sizeof(s->session->master_key));
-        EVP_DigestUpdate(&ctx, s->session->master_key,
-                         s->session->master_key_length);
+        OPENSSL_assert(s->session->master_key_length >= 0 && s->session->master_key_length <= (int)sizeof(s->session->master_key));
+        EVP_DigestUpdate(&ctx, s->session->master_key, s->session->master_key_length);
         EVP_DigestUpdate(&ctx, &c, 1);
         c++;
         EVP_DigestUpdate(&ctx, s->s2->challenge, s->s2->challenge_length);

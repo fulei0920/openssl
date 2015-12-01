@@ -776,13 +776,13 @@ static int no_check(const X509_PURPOSE *xp, const X509 *x, int ca)
 
 int X509_check_issued(X509 *issuer, X509 *subject)
 {
-    if (X509_NAME_cmp(X509_get_subject_name(issuer),
-                      X509_get_issuer_name(subject)))
+    if (X509_NAME_cmp(X509_get_subject_name(issuer), X509_get_issuer_name(subject)))
         return X509_V_ERR_SUBJECT_ISSUER_MISMATCH;
     x509v3_cache_extensions(issuer);
     x509v3_cache_extensions(subject);
 
-    if (subject->akid) {
+    if (subject->akid) 
+	{
         int ret = X509_check_akid(issuer, subject->akid);
         if (ret != X509_V_OK)
             return ret;

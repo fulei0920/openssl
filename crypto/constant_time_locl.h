@@ -185,16 +185,12 @@ static inline unsigned char constant_time_eq_int_8(int a, int b)
     return constant_time_eq_8((unsigned)(a), (unsigned)(b));
 }
 
-static inline unsigned int constant_time_select(unsigned int mask,
-                                                unsigned int a,
-                                                unsigned int b)
+static inline unsigned int constant_time_select(unsigned int mask, unsigned int a, unsigned int b)
 {
     return (mask & a) | (~mask & b);
 }
 
-static inline unsigned char constant_time_select_8(unsigned char mask,
-                                                   unsigned char a,
-                                                   unsigned char b)
+static inline unsigned char constant_time_select_8(unsigned char mask, unsigned char a, unsigned char b)
 {
     return (unsigned char)(constant_time_select(mask, a, b));
 }

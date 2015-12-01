@@ -189,16 +189,16 @@ typedef struct ssl2_state_st
     unsigned char *ract_data;	/*指向rbuf中读ACTUAL-DATA起始位置*/
     unsigned char *wact_data;	/*指向wbuf中写ACTUAL-DATA起始位置*/
     unsigned char *mac_data;	/*指向MAC-DATA起始位置*/
-    unsigned char *read_key;	/*指向接收对称加密密钥???*/
-    unsigned char *write_key;	/*指向发送对称加密密钥???*/
+    unsigned char *read_key;	/*指向key_material中接收对称加密密钥*/
+    unsigned char *write_key;	/*指向key_material中发送对称加密密钥*/
 
 	/* Stuff specifically to do with this SSL session */
-    unsigned int challenge_length; 		/*SSL2_CHALLENGE_LENGTH*/
+    unsigned int challenge_length; 									/*SSL2_CHALLENGE_LENGTH*/
     unsigned char challenge[SSL2_MAX_CHALLENGE_LENGTH];
     unsigned int conn_id_length;
     unsigned char conn_id[SSL2_MAX_CONNECTION_ID_LENGTH];
-    unsigned int key_material_length;
-    unsigned char key_material[SSL2_MAX_KEY_MATERIAL_LENGTH * 2];
+    unsigned int key_material_length;								/* 2*对称算法的密钥长度字节数 */
+    unsigned char key_material[SSL2_MAX_KEY_MATERIAL_LENGTH * 2];	/*存储对称性加密发送密钥和接收密钥*/
     unsigned long read_sequence;
     unsigned long write_sequence;
     struct 
@@ -206,9 +206,9 @@ typedef struct ssl2_state_st
         unsigned int conn_id_length;
         unsigned int cert_type;
         unsigned int cert_length;
-        unsigned int csl;
-        unsigned int clear;
-        unsigned int enc;
+        unsigned int csl;		//chipher suits length
+        unsigned int clear;		/*master key明文字节数*/
+        unsigned int enc;		/*master key密文字节数*/
         unsigned char ccl[SSL2_MAX_CERT_CHALLENGE_LENGTH];
         unsigned int cipher_spec_length;
         unsigned int session_id_length;

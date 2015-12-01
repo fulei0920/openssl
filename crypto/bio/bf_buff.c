@@ -98,12 +98,14 @@ static int buffer_new(BIO *bi)
     if (ctx == NULL)
         return (0);
     ctx->ibuf = (char *)OPENSSL_malloc(DEFAULT_BUFFER_SIZE);
-    if (ctx->ibuf == NULL) {
+    if (ctx->ibuf == NULL) 
+	{
         OPENSSL_free(ctx);
         return (0);
     }
     ctx->obuf = (char *)OPENSSL_malloc(DEFAULT_BUFFER_SIZE);
-    if (ctx->obuf == NULL) {
+    if (ctx->obuf == NULL) 
+	{
         OPENSSL_free(ctx->ibuf);
         OPENSSL_free(ctx);
         return (0);

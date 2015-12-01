@@ -188,19 +188,13 @@ struct x509_store_st
     STACK_OF(X509_OBJECT) *objs; 				/* Cache of all objects */ /*存储所有加载的CA证书*/
     STACK_OF(X509_LOOKUP) *get_cert_methods;	/* These are external lookup methods */
     X509_VERIFY_PARAM *param;
-    /* Callbacks for various operations */
-    /* called to verify a certificate */
-    int (*verify) (X509_STORE_CTX *ctx);
-    /* error callback */
-    int (*verify_cb) (int ok, X509_STORE_CTX *ctx);
-    /* get issuers cert from ctx */
-    int (*get_issuer) (X509 **issuer, X509_STORE_CTX *ctx, X509 *x);
-    /* check issued */
-    int (*check_issued) (X509_STORE_CTX *ctx, X509 *x, X509 *issuer);
-    /* Check revocation status of chain */
-    int (*check_revocation) (X509_STORE_CTX *ctx);
-    /* retrieve CRL */
-    int (*get_crl) (X509_STORE_CTX *ctx, X509_CRL **crl, X509 *x);
+    /*---Callbacks for various operations----*/
+    int (*verify) (X509_STORE_CTX *ctx);								/* called to verify a certificate */
+    int (*verify_cb) (int ok, X509_STORE_CTX *ctx);						/* error callback */
+    int (*get_issuer) (X509 **issuer, X509_STORE_CTX *ctx, X509 *x);	/* get issuers cert from ctx */
+    int (*check_issued) (X509_STORE_CTX *ctx, X509 *x, X509 *issuer);	/* check issued */
+    int (*check_revocation) (X509_STORE_CTX *ctx);						/* Check revocation status of chain */
+    int (*get_crl) (X509_STORE_CTX *ctx, X509_CRL **crl, X509 *x);		/* retrieve CRL */
     /* Check CRL validity */
     int (*check_crl) (X509_STORE_CTX *ctx, X509_CRL *crl);
     /* Check certificate against CRL */
@@ -232,25 +226,24 @@ struct x509_lookup_st
  * cert chain can take some time (and have to be 'retried', this needs to be
  * kept and passed around.
  */
-struct x509_store_ctx_st {      /* X509_STORE_CTX */
+struct x509_store_ctx_st 	/* X509_STORE_CTX */
+{      
     X509_STORE *ctx;
-    /* used when looking up certs */
-    int current_method;
-    /* The following are set by the caller */
-    /* The cert to check */
-    X509 *cert;
-    /* chain of X509s - untrusted - passed in */
-    STACK_OF(X509) *untrusted;
+   
+    int current_method;	 	/* used when looking up certs */
+  	/*---The following are set by the caller---*/
+    X509 *cert;	 				/* The cert to check */
+    STACK_OF(X509) *untrusted;	/* chain of X509s - untrusted - passed in */
     /* set of CRLs passed in */
     STACK_OF(X509_CRL) *crls;
     X509_VERIFY_PARAM *param;
     /* Other info for use with get_issuer() */
     void *other_ctx;
-    /* Callbacks for various operations */
-    /* called to verify a certificate */
-    int (*verify) (X509_STORE_CTX *ctx);
-    /* error callback */
-    int (*verify_cb) (int ok, X509_STORE_CTX *ctx);
+    /* ----Callbacks for various operations---- */
+    
+    int (*verify) (X509_STORE_CTX *ctx);		/* called to verify a certificate */
+    
+    int (*verify_cb) (int ok, X509_STORE_CTX *ctx);	/* error callback */
     /* get issuers cert from ctx */
     int (*get_issuer) (X509 **issuer, X509_STORE_CTX *ctx, X509 *x);
     /* check issued */
@@ -270,10 +263,10 @@ struct x509_store_ctx_st {      /* X509_STORE_CTX */
     /* The following is built up */
     /* if 0, rebuild chain */
     int valid;
-    /* index of last untrusted cert */
-    int last_untrusted;
-    /* chain of X509s - built up and trusted */
-    STACK_OF(X509) *chain;
+    
+    int last_untrusted;			/* index of last untrusted cert */
+   
+    STACK_OF(X509) *chain;		 /* chain of X509s - built up and trusted */
     /* Valid policy tree */
     X509_POLICY_TREE *tree;
     /* Require explicit policy value */

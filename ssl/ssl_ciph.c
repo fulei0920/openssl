@@ -200,8 +200,7 @@ static const EVP_MD *ssl_digest_methods[SSL_MD_NUM_IDX] =
  */
 static int ssl_mac_pkey_id[SSL_MD_NUM_IDX] = 
 {
-    EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_HMAC, NID_undef,
-    EVP_PKEY_HMAC, EVP_PKEY_HMAC
+    EVP_PKEY_HMAC, EVP_PKEY_HMAC, EVP_PKEY_HMAC, NID_undef, EVP_PKEY_HMAC, EVP_PKEY_HMAC
 };
 
 static int ssl_mac_secret_size[SSL_MD_NUM_IDX] = 
@@ -481,9 +480,13 @@ static void load_builtin_compressions(void)
 }
 #endif
 
-int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
-                       const EVP_MD **md, int *mac_pkey_type,
-                       int *mac_secret_size, SSL_COMP **comp)
+
+/*
+根据协商后的加密套件获取对应的对称性加密算法，摘要算法
+返回值 -- 成功返回1， 失败返回0
+*/
+int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc, const EVP_MD **md, 
+		int *mac_pkey_type, int *mac_secret_size, SSL_COMP **comp)
 {
     int i;
     const SSL_CIPHER *c;
@@ -491,7 +494,8 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
     c = s->cipher;
     if (c == NULL)
         return (0);
-    if (comp != NULL) {
+    if (comp != NULL)
+	{
         SSL_COMP ctmp;
 #ifndef OPENSSL_NO_COMP
         load_builtin_compressions();
@@ -499,7 +503,8 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
 
         *comp = NULL;
         ctmp.id = s->compress_meth;
-        if (ssl_comp_methods != NULL) {
+        if (ssl_comp_methods != NULL)
+		{
             i = sk_SSL_COMP_find(ssl_comp_methods, &ctmp);
             if (i >= 0)
                 *comp = sk_SSL_COMP_value(ssl_comp_methods, i);
@@ -511,7 +516,8 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
     if ((enc == NULL) || (md == NULL))
         return (0);
 
-    switch (c->algorithm_enc) {
+    switch (c->algorithm_enc) 
+	{
     case SSL_DES:
         i = SSL_ENC_DES_IDX;
         break;
@@ -560,15 +566,19 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
     }
 
     if ((i < 0) || (i >= SSL_ENC_NUM_IDX))
-        *enc = NULL;
-    else {
+    {
+		*enc = NULL;
+	}
+    else 
+	{
         if (i == SSL_ENC_NULL_IDX)
             *enc = EVP_enc_null();
         else
             *enc = ssl_cipher_methods[i];
     }
 
-    switch (c->algorithm_mac) {
+    switch (c->algorithm_mac) 
+	{
     case SSL_MD5:
         i = SSL_MD_MD5_IDX;
         break;
@@ -591,7 +601,8 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
         i = -1;
         break;
     }
-    if ((i < 0) || (i >= SSL_MD_NUM_IDX)) {
+    if ((i < 0) || (i >= SSL_MD_NUM_IDX))
+	{
         *md = NULL;
         if (mac_pkey_type != NULL)
             *mac_pkey_type = NID_undef;
@@ -599,7 +610,9 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
             *mac_secret_size = 0;
         if (c->algorithm_mac == SSL_AEAD)
             mac_pkey_type = NULL;
-    } else {
+    }
+	else 
+	{
         *md = ssl_digest_methods[i];
         if (mac_pkey_type != NULL)
             *mac_pkey_type = ssl_mac_pkey_id[i];
@@ -607,13 +620,12 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
             *mac_secret_size = ssl_mac_secret_size[i];
     }
 
-    if ((*enc != NULL) &&
-        (*md != NULL || (EVP_CIPHER_flags(*enc) & EVP_CIPH_FLAG_AEAD_CIPHER))
-        && (!mac_pkey_type || *mac_pkey_type != NID_undef)) {
+    if ((*enc != NULL) && (*md != NULL || (EVP_CIPHER_flags(*enc) & EVP_CIPH_FLAG_AEAD_CIPHER))
+			&& (!mac_pkey_type || *mac_pkey_type != NID_undef)) 
+    {
         const EVP_CIPHER *evp;
 
-        if (s->ssl_version >> 8 != TLS1_VERSION_MAJOR ||
-            s->ssl_version < TLS1_VERSION)
+        if (s->ssl_version >> 8 != TLS1_VERSION_MAJOR || s->ssl_version < TLS1_VERSION)
             return 1;
 
 #ifdef OPENSSL_FIPS
@@ -634,8 +646,12 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc,
                  (evp = EVP_get_cipherbyname("AES-256-CBC-HMAC-SHA1")))
             *enc = evp, *md = NULL;
         return (1);
-    } else
-        return (0);
+    }
+	else
+	{
+		return (0);
+	}
+        
 }
 
 int ssl_get_handshake_digest(int idx, long *mask, const EVP_MD **md)
