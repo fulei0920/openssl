@@ -448,8 +448,8 @@ struct bio_dgram_sctp_prinfo {
 # define BIO_C_SET_SSL_RENEGOTIATE_TIMEOUT       127
 # define BIO_C_FILE_SEEK                         128
 # define BIO_C_GET_CIPHER_CTX                    129
-# define BIO_C_SET_BUF_MEM_EOF_RETURN            130/* return end of input
-                                                     * value */
+# define BIO_C_SET_BUF_MEM_EOF_RETURN            130/* return end of input value */
+
 # define BIO_C_SET_BIND_MODE                     131
 # define BIO_C_GET_BIND_MODE                     132
 # define BIO_C_FILE_TELL                         133

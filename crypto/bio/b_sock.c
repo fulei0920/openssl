@@ -119,7 +119,8 @@ int BIO_get_host_ip(const char *str, unsigned char *ip)
     struct hostent *he;
 
     i = get_ip(str, ip);
-    if (i < 0) {
+    if (i < 0)
+	{
         BIOerr(BIO_F_BIO_GET_HOST_IP, BIO_R_INVALID_IP_ADDRESS);
         goto err;
     }
@@ -132,8 +133,7 @@ int BIO_get_host_ip(const char *str, unsigned char *ip)
         return 0;               /* don't generate another error code here */
 
     /*
-     * If the string actually contained an IP address, we need not do
-     * anything more
+     * If the string actually contained an IP address, we need not do anything more
      */
     if (i > 0)
         return (1);
@@ -142,15 +142,16 @@ int BIO_get_host_ip(const char *str, unsigned char *ip)
     CRYPTO_w_lock(CRYPTO_LOCK_GETHOSTBYNAME);
     locked = 1;
     he = BIO_gethostbyname(str);
-    if (he == NULL) {
+    if (he == NULL) 
+	{
         BIOerr(BIO_F_BIO_GET_HOST_IP, BIO_R_BAD_HOSTNAME_LOOKUP);
         goto err;
     }
 
     /* cast to short because of win16 winsock definition */
-    if ((short)he->h_addrtype != AF_INET) {
-        BIOerr(BIO_F_BIO_GET_HOST_IP,
-               BIO_R_GETHOSTBYNAME_ADDR_IS_NOT_AF_INET);
+    if ((short)he->h_addrtype != AF_INET)
+	{
+        BIOerr(BIO_F_BIO_GET_HOST_IP, BIO_R_GETHOSTBYNAME_ADDR_IS_NOT_AF_INET);
         goto err;
     }
     for (i = 0; i < 4; i++)
@@ -172,14 +173,18 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
     int i;
     struct servent *s;
 
-    if (str == NULL) {
+    if (str == NULL) 
+	{
         BIOerr(BIO_F_BIO_GET_PORT, BIO_R_NO_PORT_DEFINED);
         return (0);
     }
     i = atoi(str);
     if (i != 0)
-        *port_ptr = (unsigned short)i;
-    else {
+    {
+		*port_ptr = (unsigned short)i;
+	}
+    else 
+	{
         CRYPTO_w_lock(CRYPTO_LOCK_GETSERVBYNAME);
         /*
          * Note: under VMS with SOCKETSHR, it seems like the first parameter
@@ -193,7 +198,8 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
         if (s != NULL)
             *port_ptr = ntohs((unsigned short)s->s_port);
         CRYPTO_w_unlock(CRYPTO_LOCK_GETSERVBYNAME);
-        if (s == NULL) {
+        if (s == NULL)
+		{
             if (strcmp(str, "http") == 0)
                 *port_ptr = 80;
             else if (strcmp(str, "telnet") == 0)
@@ -212,7 +218,8 @@ int BIO_get_port(const char *str, unsigned short *port_ptr)
             else if (strcmp(str, "wais") == 0)
                 *port_ptr = 21;
 # endif
-            else {
+            else 
+			{
                 SYSerr(SYS_F_GETSERVBYNAME, get_last_socket_error());
                 ERR_add_error_data(3, "service='", str, "'");
                 return (0);
@@ -711,8 +718,11 @@ int BIO_get_accept_socket(char *host, int bind_mode)
     addrlen = sizeof(server.sa_in);
 
     if (h == NULL || strcmp(h, "*") == 0)
-        server.sa_in.sin_addr.s_addr = INADDR_ANY;
-    else {
+    {
+		server.sa_in.sin_addr.s_addr = INADDR_ANY;
+	} 
+    else 
+	{
         if (!BIO_get_host_ip(h, &(ip[0])))
             goto err;
         l = (unsigned long)
@@ -724,21 +734,24 @@ int BIO_get_accept_socket(char *host, int bind_mode)
 
  again:
     s = socket(server.sa.sa_family, SOCK_STREAM, SOCKET_PROTOCOL);
-    if (s == INVALID_SOCKET) {
+    if (s == INVALID_SOCKET) 
+	{
         SYSerr(SYS_F_SOCKET, get_last_socket_error());
         ERR_add_error_data(3, "port='", host, "'");
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET, BIO_R_UNABLE_TO_CREATE_SOCKET);
         goto err;
     }
 # ifdef SO_REUSEADDR
-    if (bind_mode == BIO_BIND_REUSEADDR) {
+    if (bind_mode == BIO_BIND_REUSEADDR) 
+	{
         int i = 1;
 
         ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&i, sizeof(i));
         bind_mode = BIO_BIND_NORMAL;
     }
 # endif
-    if (bind(s, &server.sa, addrlen) == -1) {
+    if (bind(s, &server.sa, addrlen) == -1) 
+	{
 # ifdef SO_REUSEADDR
         err_num = get_last_socket_error();
         if ((bind_mode == BIO_BIND_REUSEADDR_IF_UNUSED) &&
@@ -752,21 +765,29 @@ int BIO_get_accept_socket(char *host, int bind_mode)
 #  endif
         {
             client = server;
-            if (h == NULL || strcmp(h, "*") == 0) {
+            if (h == NULL || strcmp(h, "*") == 0) 
+			{
 #  if OPENSSL_USE_IPV6
-                if (client.sa.sa_family == AF_INET6) {
-                    memset(&client.sa_in6.sin6_addr, 0,
-                           sizeof(client.sa_in6.sin6_addr));
+                if (client.sa.sa_family == AF_INET6) 
+				{
+                    memset(&client.sa_in6.sin6_addr, 0, sizeof(client.sa_in6.sin6_addr));
                     client.sa_in6.sin6_addr.s6_addr[15] = 1;
-                } else
+                } 
+				else
 #  endif
-                if (client.sa.sa_family == AF_INET) {
+                if (client.sa.sa_family == AF_INET) 
+				{
                     client.sa_in.sin_addr.s_addr = htonl(0x7F000001);
-                } else
-                    goto err;
+                } 
+				else
+				{
+					goto err;
+				}
+                    
             }
             cs = socket(client.sa.sa_family, SOCK_STREAM, SOCKET_PROTOCOL);
-            if (cs != INVALID_SOCKET) {
+            if (cs != INVALID_SOCKET)
+			{
                 int ii;
                 ii = connect(cs, &client.sa, addrlen);
                 closesocket(cs);
@@ -785,7 +806,8 @@ int BIO_get_accept_socket(char *host, int bind_mode)
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET, BIO_R_UNABLE_TO_BIND_SOCKET);
         goto err;
     }
-    if (listen(s, MAX_LISTEN) == -1) {
+    if (listen(s, MAX_LISTEN) == -1)
+	{
         SYSerr(SYS_F_BIND, get_last_socket_error());
         ERR_add_error_data(3, "port='", host, "'");
         BIOerr(BIO_F_BIO_GET_ACCEPT_SOCKET, BIO_R_UNABLE_TO_LISTEN_SOCKET);

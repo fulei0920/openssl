@@ -71,10 +71,12 @@
 extern "C" {
 #endif
 
-typedef struct {
-    char *section;
-    char *name;
-    char *value;
+/*Openssl 采用哈希表来存放这些信息，便于快速查找。*/
+typedef struct 
+{
+    char *section;  /*表明配置文件中的段*/
+    char *name;		/*表明这个段中的一个属性*/		
+    char *value;	/*表明这个属性的值*/
 } CONF_VALUE;
 
 DECLARE_STACK_OF(CONF_VALUE)
@@ -144,7 +146,8 @@ void OPENSSL_no_config(void);
  * that wasn't the case, the above functions would have been replaced
  */
 
-struct conf_st {
+struct conf_st 
+{
     CONF_METHOD *meth;
     void *meth_data;
     LHASH_OF(CONF_VALUE) *data;

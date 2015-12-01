@@ -90,7 +90,8 @@ static int def_to_int(const CONF *conf, char c);
 
 const char CONF_def_version[] = "CONF_def" OPENSSL_VERSION_PTEXT;
 
-static CONF_METHOD default_method = {
+static CONF_METHOD default_method = 
+{
     "OpenSSL default",
     def_create,
     def_init_default,
@@ -132,10 +133,15 @@ static CONF *def_create(CONF_METHOD *meth)
 
     ret = OPENSSL_malloc(sizeof(CONF) + sizeof(unsigned short *));
     if (ret)
-        if (meth->init(ret) == 0) {
+    {
+    	if (meth->init(ret) == 0) 
+		{
             OPENSSL_free(ret);
             ret = NULL;
         }
+
+	}
+
     return ret;
 }
 

@@ -143,7 +143,7 @@ int EVP_DigestInit(EVP_MD_CTX *ctx, const EVP_MD *type)
 }
 
 /*
-设置具体的摘要算法
+???t????????
 */
 int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 {
@@ -272,7 +272,9 @@ int EVP_DigestFinal_ex(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *size)
     ret = ctx->digest->final(ctx, md);
     if (size != NULL)
         *size = ctx->digest->md_size;
-    if (ctx->digest->cleanup) {
+	
+    if (ctx->digest->cleanup) 
+	{
         ctx->digest->cleanup(ctx);
         EVP_MD_CTX_set_flags(ctx, EVP_MD_CTX_FLAG_CLEANED);
     }
@@ -353,13 +355,13 @@ int EVP_MD_CTX_copy_ex(EVP_MD_CTX *out, const EVP_MD_CTX *in)
 
 
 /*
-计算数据的摘要信息
-data -- 原始数据
-count -- 原始数据大小 
-md -- 摘要结果
-size -- 摘要结果大小
-type -- 摘要算法
-impl -- 硬件引擎
+??????????????
+data -- ??????
+count -- ???????小 
+md -- ?????
+size -- ???????小
+type -- ????
+impl -- ???????
 */
 int EVP_Digest(const void *data, size_t count, unsigned char *md, unsigned int *size, const EVP_MD *type, ENGINE *impl)
 {
