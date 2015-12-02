@@ -944,7 +944,6 @@ static int get_client_finished(SSL *s)
     return (1);
 }
 
-/*为什么放challenge， 而不是发送session id*/
 static int server_verify(SSL *s)
 {
     unsigned char *p;
@@ -1006,7 +1005,8 @@ static int request_certificate(SSL *s)
     STACK_OF(X509) *sk = NULL;
 
     ccd = s->s2->tmp.ccl;
-    if (s->state == SSL2_ST_SEND_REQUEST_CERTIFICATE_A) {
+    if (s->state == SSL2_ST_SEND_REQUEST_CERTIFICATE_A)
+	{
         p = (unsigned char *)s->init_buf->data;
         *(p++) = SSL2_MT_REQUEST_CERTIFICATE;
         *(p++) = SSL2_AT_MD5_WITH_RSA_ENCRYPTION;
@@ -1019,9 +1019,11 @@ static int request_certificate(SSL *s)
         s->init_off = 0;
     }
 
-    if (s->state == SSL2_ST_SEND_REQUEST_CERTIFICATE_B) {
+    if (s->state == SSL2_ST_SEND_REQUEST_CERTIFICATE_B) 
+	{
         i = ssl2_do_write(s);
-        if (i <= 0) {
+        if (i <= 0) 
+		{
             ret = i;
             goto end;
         }

@@ -567,7 +567,8 @@ void SSL_free(SSL *s)
         sk_SSL_CIPHER_free(s->cipher_list_by_id);
 
     /* Make the next call work :-) */
-    if (s->session != NULL) {
+    if (s->session != NULL) 
+	{
         ssl_clear_bad_session(s);
         SSL_SESSION_free(s->session);
     }
@@ -2856,6 +2857,9 @@ EVP_PKEY *SSL_get_privatekey(SSL *s)
         return (NULL);
 }
 
+/*
+获取协商确定的加密套件
+*/
 const SSL_CIPHER *SSL_get_current_cipher(const SSL *s)
 {
     if ((s->session != NULL) && (s->session->cipher != NULL))

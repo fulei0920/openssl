@@ -206,9 +206,9 @@ typedef struct ssl2_state_st
         unsigned int conn_id_length;
         unsigned int cert_type;
         unsigned int cert_length;
-        unsigned int csl;		//chipher suits length
-        unsigned int clear;		/*master key明文字节数*/
-        unsigned int enc;		/*master key密文字节数*/
+        unsigned int csl;				//chipher suits length
+        unsigned int clear;				/*master key明文字节数*/
+        unsigned int enc;				/*master key密文字节数*/
         unsigned char ccl[SSL2_MAX_CERT_CHALLENGE_LENGTH];
         unsigned int cipher_spec_length;
         unsigned int session_id_length;

@@ -727,6 +727,8 @@ static void freelist_insert(SSL_CTX *ctx, int for_read, size_t sz, void *mem)
 # define freelist_insert(c,fr,sz,m) OPENSSL_free(m)
 #endif
 
+
+/*∑÷≈‰ø’º‰*/
 int ssl3_setup_read_buffer(SSL *s)
 {
     unsigned char *p;

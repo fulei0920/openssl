@@ -483,7 +483,7 @@ typedef struct ssl3_state_st
      * When set of handshake digests is determined, buffer is hashed and
      * freed and MD_CTX-es for all required digests are stored in this array
      */
-    EVP_MD_CTX **handshake_dgst;
+    EVP_MD_CTX **handshake_dgst;  
     /*
      * Set whenever an expected ChangeCipherSpec message is processed.
      * Unset when the peer's Finished message is received.

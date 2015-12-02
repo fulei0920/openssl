@@ -668,8 +668,7 @@ int SSL_CTX_use_PrivateKey_file(SSL_CTX *ctx, const char *file, int type)
 }
 #endif
 
-int SSL_CTX_use_PrivateKey_ASN1(int type, SSL_CTX *ctx,
-                                const unsigned char *d, long len)
+int SSL_CTX_use_PrivateKey_ASN1(int type, SSL_CTX *ctx, const unsigned char *d, long len)
 {
     int ret;
     const unsigned char *p;

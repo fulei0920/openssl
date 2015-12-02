@@ -550,7 +550,8 @@ void ssl3_free_digest_list(SSL *s)
     int i;
     if (!s->s3->handshake_dgst)
         return;
-    for (i = 0; i < SSL_MAX_DIGEST; i++) {
+    for (i = 0; i < SSL_MAX_DIGEST; i++)
+	{
         if (s->s3->handshake_dgst[i])
             EVP_MD_CTX_destroy(s->s3->handshake_dgst[i]);
     }
@@ -560,12 +561,15 @@ void ssl3_free_digest_list(SSL *s)
 
 void ssl3_finish_mac(SSL *s, const unsigned char *buf, int len)
 {
-    if (s->s3->handshake_buffer
-        && !(s->s3->flags & TLS1_FLAGS_KEEP_HANDSHAKE)) {
+    if (s->s3->handshake_buffer && !(s->s3->flags & TLS1_FLAGS_KEEP_HANDSHAKE))
+    {
         BIO_write(s->s3->handshake_buffer, (void *)buf, len);
-    } else {
+    } 
+	else 
+	{
         int i;
-        for (i = 0; i < SSL_MAX_DIGEST; i++) {
+        for (i = 0; i < SSL_MAX_DIGEST; i++) 
+		{
             if (s->s3->handshake_dgst[i] != NULL)
                 EVP_DigestUpdate(s->s3->handshake_dgst[i], buf, len);
         }

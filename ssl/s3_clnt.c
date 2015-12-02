@@ -266,7 +266,8 @@ int ssl3_connect(SSL *s)
                 buf = NULL;
             }
 
-            if (!ssl3_setup_buffers(s)) {
+            if (!ssl3_setup_buffers(s))
+			{
                 ret = -1;
                 goto end;
             }

@@ -780,7 +780,8 @@ static int client_certificate(SSL *s)
      * it does not have one
      */
 
-    if (s->state == SSL2_ST_SEND_CLIENT_CERTIFICATE_A) {
+    if (s->state == SSL2_ST_SEND_CLIENT_CERTIFICATE_A) 
+	{
         i = ssl2_read(s, (char *)&(buf[s->init_num]),
                       SSL2_MAX_CERT_CHALLENGE_LENGTH + 2 - s->init_num);
         if (i < (SSL2_MIN_CERT_CHALLENGE_LENGTH + 2 - s->init_num))

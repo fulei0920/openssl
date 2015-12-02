@@ -1012,7 +1012,7 @@ struct ssl_ctx_st
 
 #  ifndef OPENSSL_NO_BUF_FREELISTS
 #   define SSL_MAX_BUF_FREELIST_LEN_DEFAULT 32
-    unsigned int freelist_max_len;
+    unsigned int freelist_max_len;				/*允许wbuf_freelist和rbuf_freelist的最大节点个数*/
     struct ssl3_buf_freelist_st *wbuf_freelist;
     struct ssl3_buf_freelist_st *rbuf_freelist;
 #  endif
