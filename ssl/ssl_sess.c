@@ -402,7 +402,7 @@ static int def_generate_session_id(const SSL *ssl, unsigned char *id, unsigned i
 
 
 /*
-
+生成一个新的session
 session -- 是否生成随机session id
 返回值 -- 成功返回1， 失败返回0
 */
@@ -667,7 +667,8 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
     if (try_session_cache &&
         ret == NULL &&
         !(s->session_ctx->session_cache_mode &
-          SSL_SESS_CACHE_NO_INTERNAL_LOOKUP)) {
+          SSL_SESS_CACHE_NO_INTERNAL_LOOKUP))
+    {
         SSL_SESSION data;
         data.ssl_version = s->version;
         data.session_id_length = len;
@@ -686,7 +687,8 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
     }
 
     if (try_session_cache &&
-        ret == NULL && s->session_ctx->get_session_cb != NULL) {
+        ret == NULL && s->session_ctx->get_session_cb != NULL) 
+  	{
         int copy = 1;
 
         if ((ret = s->session_ctx->get_session_cb(s, session_id, len, &copy))) {

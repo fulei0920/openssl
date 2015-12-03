@@ -82,9 +82,7 @@
  *   1: if the padding was valid
  *  -1: otherwise.
  */
-int ssl3_cbc_remove_padding(const SSL *s,
-                            SSL3_RECORD *rec,
-                            unsigned block_size, unsigned mac_size)
+int ssl3_cbc_remove_padding(const SSL *s, SSL3_RECORD *rec, unsigned block_size, unsigned mac_size)
 {
     unsigned padding_length, good;
     const unsigned overhead = 1 /* padding length byte */  + mac_size;

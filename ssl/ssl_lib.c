@@ -952,7 +952,8 @@ int SSL_check_private_key(const SSL *ssl)
         SSLerr(SSL_F_SSL_CHECK_PRIVATE_KEY, SSL_R_NO_CERTIFICATE_ASSIGNED);
         return (0);
     }
-    if (ssl->cert->key->privatekey == NULL) {
+    if (ssl->cert->key->privatekey == NULL)
+	{
         SSLerr(SSL_F_SSL_CHECK_PRIVATE_KEY, SSL_R_NO_PRIVATE_KEY_ASSIGNED);
         return (0);
     }

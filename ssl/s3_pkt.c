@@ -118,8 +118,7 @@
 #include <openssl/buffer.h>
 #include <openssl/rand.h>
 
-static int do_ssl3_write(SSL *s, int type, const unsigned char *buf,
-                         unsigned int len, int create_empty_fragment);
+static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned int len, int create_empty_fragment);
 static int ssl3_get_record(SSL *s);
 
 int ssl3_read_n(SSL *s, int n, int max, int extend)
@@ -141,27 +140,31 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
 
     rb = &(s->s3->rbuf);
     if (rb->buf == NULL)
-        if (!ssl3_setup_read_buffer(s))
+    {
+		if (!ssl3_setup_read_buffer(s))
             return -1;
+	}
+        
 
     left = rb->left;
-#if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD!=0
+#if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD != 0
     align = (long)rb->buf + SSL3_RT_HEADER_LENGTH;
     align = (-align) & (SSL3_ALIGN_PAYLOAD - 1);
 #endif
 
-    if (!extend) {
-        /* start with empty packet ... */
-        if (left == 0)
-            rb->offset = align;
-        else if (align != 0 && left >= SSL3_RT_HEADER_LENGTH) {
-            /*
-             * check if next packet length is large enough to justify payload
-             * alignment...
-             */
+    if (!extend)
+	{
+        
+        if (left == 0)		/* start with empty packet ... */
+        {	
+			rb->offset = align;
+		}
+        else if (align != 0 && left >= SSL3_RT_HEADER_LENGTH) 
+		{
+            /* check if next packet length is large enough to justify payload alignment... */
             pkt = rb->buf + rb->offset;
-            if (pkt[0] == SSL3_RT_APPLICATION_DATA
-                && (pkt[3] << 8 | pkt[4]) >= 128) {
+            if (pkt[0] == SSL3_RT_APPLICATION_DATA && (pkt[3] << 8 | pkt[4]) >= 128) 
+           	{
                 /*
                  * Note that even if packet is corrupted and its length field
                  * is insane, we can only be led to wrong decision about
@@ -183,7 +186,8 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
      * operation returns the whole packet at once (as long as it fits into
      * the buffer).
      */
-    if (SSL_version(s) == DTLS1_VERSION || SSL_version(s) == DTLS1_BAD_VER) {
+    if (SSL_version(s) == DTLS1_VERSION || SSL_version(s) == DTLS1_BAD_VER)
+	{
         if (left == 0 && extend)
             return 0;
         if (left > 0 && n > left)
@@ -191,7 +195,8 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
     }
 
     /* if there is enough in the buffer from a previous read, take some */
-    if (left >= n) {
+    if (left >= n) 
+	{
         s->packet_length += n;
         rb->left = left - n;
         rb->offset += n;
@@ -206,29 +211,36 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
      * Move any available bytes to front of buffer: 'len' bytes already
      * pointed to by 'packet', 'left' extra ones at the end
      */
-    if (s->packet != pkt) {     /* len > 0 */
+    if (s->packet != pkt) 	  /* len > 0 */
+	{   
         memmove(pkt, s->packet, len + left);
         s->packet = pkt;
         rb->offset = len + align;
     }
 
-    if (n > (int)(rb->len - rb->offset)) { /* does not happen */
+    if (n > (int)(rb->len - rb->offset)) 	/* does not happen */
+	{ 
         SSLerr(SSL_F_SSL3_READ_N, ERR_R_INTERNAL_ERROR);
         return -1;
     }
 
     /* We always act like read_ahead is set for DTLS */
     if (!s->read_ahead && !SSL_IS_DTLS(s))
-        /* ignore max parameter */
+    {
+ 		/* ignore max parameter */
         max = n;
-    else {
+	}
+       
+    else 
+	{
         if (max < n)
             max = n;
         if (max > (int)(rb->len - rb->offset))
             max = rb->len - rb->offset;
     }
 
-    while (left < n) {
+    while (left < n)
+	{
         /*
          * Now we have len+left bytes at the front of s->s3->rbuf.buf and
          * need to read in more until we have len+n (up to len+max if
@@ -236,21 +248,26 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
          */
 
         clear_sys_error();
-        if (s->rbio != NULL) {
+        if (s->rbio != NULL) 
+		{
             s->rwstate = SSL_READING;
             i = BIO_read(s->rbio, pkt + len + left, max - left);
-        } else {
+        } 
+		else 
+		{
             SSLerr(SSL_F_SSL3_READ_N, SSL_R_READ_BIO_NOT_SET);
             i = -1;
         }
 
-        if (i <= 0) {
+        if (i <= 0)
+		{
             rb->left = left;
-            if (s->mode & SSL_MODE_RELEASE_BUFFERS &&
-                SSL_version(s) != DTLS1_VERSION
-                && SSL_version(s) != DTLS1_BAD_VER)
+            if (s->mode & SSL_MODE_RELEASE_BUFFERS && SSL_version(s) != DTLS1_VERSION && SSL_version(s) != DTLS1_BAD_VER)
+            {
                 if (len + left == 0)
                     ssl3_release_read_buffer(s);
+			}
+
             return (i);
         }
         left += i;
@@ -259,8 +276,8 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
          * underlying transport protocol is message oriented as opposed to
          * byte oriented as in the TLS case.
          */
-        if (SSL_version(s) == DTLS1_VERSION
-            || SSL_version(s) == DTLS1_BAD_VER) {
+        if (SSL_version(s) == DTLS1_VERSION || SSL_version(s) == DTLS1_BAD_VER)
+        {
             if (n > left)
                 n = left;       /* makes the while condition false */
         }
@@ -312,7 +329,8 @@ static int ssl3_get_record(SSL *s)
         extra = SSL3_RT_MAX_EXTRA;
     else
         extra = 0;
-    if (extra && !s->s3->init_extra) {
+    if (extra && !s->s3->init_extra)
+	{
         /*
          * An application error: SLS_OP_MICROSOFT_BIG_SSLV3_BUFFER set after
          * ssl3_setup_buffers() was done
@@ -323,8 +341,8 @@ static int ssl3_get_record(SSL *s)
 
  again:
     /* check if we have the header */
-    if ((s->rstate != SSL_ST_READ_BODY) ||
-        (s->packet_length < SSL3_RT_HEADER_LENGTH)) {
+    if ((s->rstate != SSL_ST_READ_BODY) || (s->packet_length < SSL3_RT_HEADER_LENGTH))
+    {
         n = ssl3_read_n(s, SSL3_RT_HEADER_LENGTH, s->s3->rbuf.len, 0);
         if (n <= 0)
             return (n);         /* error or non-blocking */
@@ -343,12 +361,15 @@ static int ssl3_get_record(SSL *s)
 #endif
 
         /* Lets check version */
-        if (!s->first_packet) {
-            if (version != s->version) {
+        if (!s->first_packet) 
+		{
+            if (version != s->version)
+			{
                 SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_WRONG_VERSION_NUMBER);
-                if ((s->version & 0xFF00) == (version & 0xFF00)
-                    && !s->enc_write_ctx && !s->write_hash) {
-                    if (rr->type == SSL3_RT_ALERT) {
+                if ((s->version & 0xFF00) == (version & 0xFF00) && !s->enc_write_ctx && !s->write_hash) 
+                {
+                    if (rr->type == SSL3_RT_ALERT) 
+					{
                         /*
                          * The record is using an incorrect version number, but
                          * what we've got appears to be an alert. We haven't
@@ -368,12 +389,14 @@ static int ssl3_get_record(SSL *s)
             }
         }
 
-        if ((version >> 8) != SSL3_VERSION_MAJOR) {
+        if ((version >> 8) != SSL3_VERSION_MAJOR)
+		{
             SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_WRONG_VERSION_NUMBER);
             goto err;
         }
 
-        if (rr->length > s->s3->rbuf.len - SSL3_RT_HEADER_LENGTH) {
+        if (rr->length > s->s3->rbuf.len - SSL3_RT_HEADER_LENGTH)
+		{
             al = SSL_AD_RECORD_OVERFLOW;
             SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_PACKET_LENGTH_TOO_LONG);
             goto f_err;
@@ -384,15 +407,16 @@ static int ssl3_get_record(SSL *s)
 
     /* s->rstate == SSL_ST_READ_BODY, get and decode the data */
 
-    if (rr->length > s->packet_length - SSL3_RT_HEADER_LENGTH) {
+    if (rr->length > s->packet_length - SSL3_RT_HEADER_LENGTH) 
+	{
+	
         /* now s->packet_length == SSL3_RT_HEADER_LENGTH */
         i = rr->length;
         n = ssl3_read_n(s, i, i, 1);
         if (n <= 0)
             return (n);         /* error or non-blocking io */
         /*
-         * now n == rr->length, and s->packet_length == SSL3_RT_HEADER_LENGTH
-         * + rr->length
+         * now n == rr->length, and s->packet_length == SSL3_RT_HEADER_LENGTH + rr->length
          */
     }
 
@@ -417,7 +441,8 @@ static int ssl3_get_record(SSL *s)
      */
 
     /* check is not needed I believe */
-    if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH + extra) {
+    if (rr->length > SSL3_RT_MAX_ENCRYPTED_LENGTH + extra) 
+	{
         al = SSL_AD_RECORD_OVERFLOW;
         SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_ENCRYPTED_LENGTH_TOO_LONG);
         goto f_err;
@@ -433,7 +458,8 @@ static int ssl3_get_record(SSL *s)
      *    1: if the padding is valid
      *    -1: if the padding is invalid
      */
-    if (enc_err == 0) {
+    if (enc_err == 0)
+	{
         al = SSL_AD_DECRYPTION_FAILED;
         SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_BLOCK_CIPHER_PAD_IS_WRONG);
         goto f_err;
@@ -449,8 +475,8 @@ static int ssl3_get_record(SSL *s)
 #endif
 
     /* r->length is now the compressed data plus mac */
-    if ((sess != NULL) &&
-        (s->enc_read_ctx != NULL) && (EVP_MD_CTX_md(s->read_hash) != NULL)) {
+    if ((sess != NULL) && (s->enc_read_ctx != NULL) && (EVP_MD_CTX_md(s->read_hash) != NULL))
+	{
         /* s->read_hash != NULL => mac_size != -1 */
         unsigned char *mac = NULL;
         unsigned char mac_tmp[EVP_MAX_MD_SIZE];
@@ -505,7 +531,8 @@ static int ssl3_get_record(SSL *s)
             enc_err = -1;
     }
 
-    if (enc_err < 0) {
+    if (enc_err < 0) 
+	{
         /*
          * A separate 'decryption_failed' alert was introduced with TLS 1.0,
          * SSL 3.0 only has 'bad_record_mac'.  But unless a decryption
@@ -553,7 +580,8 @@ static int ssl3_get_record(SSL *s)
     s->packet_length = 0;
 
     /* just read a 0 length packet */
-    if (rr->length == 0) {
+    if (rr->length == 0) 
+	{
         empty_record_count++;
         if (empty_record_count > MAX_EMPTY_RECORDS) {
             al = SSL_AD_UNEXPECTED_MESSAGE;
@@ -674,8 +702,7 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
         if ((i == (int)n) || (type == SSL3_RT_APPLICATION_DATA && (s->mode & SSL_MODE_ENABLE_PARTIAL_WRITE))) 
         {
             /*
-             * next chunk of data should get another prepended empty fragment
-             * in ciphersuites with known-IV weakness:
+             * next chunk of data should get another prepended empty fragment in ciphersuites with known-IV weakness:
              */
             s->s3->empty_fragment_done = 0;
 
@@ -698,10 +725,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
     SSL3_BUFFER *wb = &(s->s3->wbuf);
     SSL_SESSION *sess;
 
-    /*
-     * first check if there is a SSL3_BUFFER still being written out.  This
-     * will happen with non blocking IO
-     */
+    /* first check if there is a SSL3_BUFFER still being written out.  This will happen with non blocking IO */
     if (wb->left != 0)
         return (ssl3_write_pending(s, type, buf, len));
 
@@ -740,9 +764,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
             goto err;
     }
 
-    /*
-     * 'create_empty_fragment' is true only when this function calls itself
-     */
+    /* 'create_empty_fragment' is true only when this function calls itself */
     if (!clear && !create_empty_fragment && !s->s3->empty_fragment_done) 
 	{
         /*
@@ -751,7 +773,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
          */
 
         if (s->s3->need_empty_fragments && type == SSL3_RT_APPLICATION_DATA) 
-		{
+	{
             /*
              * recursive function call with 'create_empty_fragment' set; this
              * prepares and buffers the data for an empty fragment (these
@@ -802,11 +824,11 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
         wb->offset = align;
     }
 
-    /* write the header */
-
+    /* 野割content type */
     *(p++) = type & 0xff;
     wr->type = type;
 
+	/* 野割version */
     *(p++) = (s->version >> 8);
     /*
      * Some servers hang if iniatial client hello is larger than 256 bytes and record version number > TLS 1.0
@@ -819,6 +841,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
     /* field where we are to write out packet length */
     plen = p;
     p += 2;
+	
     /* Explicit IV length, block ciphers and TLS version 1.1 or later */
     if (s->enc_write_ctx && s->version >= TLS1_1_VERSION) 
 	{
@@ -896,8 +919,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
     s2n(wr->length, plen);
 
     /*
-     * we should now have wr->data pointing to the encrypted data, which is
-     * wr->length long
+     * we should now have wr->data pointing to the encrypted data, which is wr->length long
      */
     wr->type = type;            /* not needed but helps for debugging */
     wr->length += SSL3_RT_HEADER_LENGTH;
@@ -915,8 +937,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
     wb->left = prefix_len + wr->length;
 
     /*
-     * memorize arguments so that ssl3_write_pending can detect bad write
-     * retries later
+     * memorize arguments so that ssl3_write_pending can detect bad write retries later
      */
     s->s3->wpend_tot = len;
     s->s3->wpend_buf = buf;
@@ -936,8 +957,7 @@ int ssl3_write_pending(SSL *s, int type, const unsigned char *buf, unsigned int 
     SSL3_BUFFER *wb = &(s->s3->wbuf);
 
 /* XXXX */
-    if ((s->s3->wpend_tot > (int)len) || ((s->s3->wpend_buf != buf) &&
-            !(s->mode & SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER)) || (s->s3->wpend_type != type)) 
+    if ((s->s3->wpend_tot > (int)len) || ((s->s3->wpend_buf != buf) && !(s->mode & SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER))  || (s->s3->wpend_type != type)) 
     {
         SSLerr(SSL_F_SSL3_WRITE_PENDING, SSL_R_BAD_WRITE_RETRY);
         return (-1);
@@ -956,21 +976,20 @@ int ssl3_write_pending(SSL *s, int type, const unsigned char *buf, unsigned int 
             SSLerr(SSL_F_SSL3_WRITE_PENDING, SSL_R_BIO_NOT_SET);
             i = -1;
         }
-        if (i == wb->left) {
+        if (i == wb->left) 
+		{
             wb->left = 0;
             wb->offset += i;
-            if (s->mode & SSL_MODE_RELEASE_BUFFERS &&
-                SSL_version(s) != DTLS1_VERSION
-                && SSL_version(s) != DTLS1_BAD_VER)
+            if (s->mode & SSL_MODE_RELEASE_BUFFERS && SSL_version(s) != DTLS1_VERSION && SSL_version(s) != DTLS1_BAD_VER)
                 ssl3_release_write_buffer(s);
             s->rwstate = SSL_NOTHING;
             return (s->s3->wpend_ret);
-        } else if (i <= 0) {
-            if (s->version == DTLS1_VERSION || s->version == DTLS1_BAD_VER) {
-                /*
-                 * For DTLS, just drop it. That's kind of the whole point in
-                 * using a datagram service
-                 */
+        } 
+		else if (i <= 0)
+		{
+            if (s->version == DTLS1_VERSION || s->version == DTLS1_BAD_VER) 
+			{
+                /* For DTLS, just drop it. That's kind of the whole point in using a datagram service */
                 wb->left = 0;
             }
             return (i);
@@ -1075,7 +1094,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
     rr = &(s->s3->rrec);
 
     /* get new packet if necessary */
-    if ((rr->length == 0) || (s->rstate == SSL_ST_READ_BODY)) {
+    if ((rr->length == 0) || (s->rstate == SSL_ST_READ_BODY))
+	{
         ret = ssl3_get_record(s);
         if (ret <= 0)
             return (ret);

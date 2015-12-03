@@ -113,13 +113,13 @@
 #include "ssl_locl.h"
 
 /* Add the client's renegotiation binding */
-int ssl_add_clienthello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
-                                        int maxlen)
+int ssl_add_clienthello_renegotiate_ext(SSL *s, unsigned char *p, int *len, int maxlen)
 {
-    if (p) {
-        if ((s->s3->previous_client_finished_len + 1) > maxlen) {
-            SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_RENEGOTIATE_EXT,
-                   SSL_R_RENEGOTIATE_EXT_TOO_LONG);
+    if (p)
+	{
+        if ((s->s3->previous_client_finished_len + 1) > maxlen) 
+		{
+            SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_RENEGOTIATE_EXT, SSL_R_RENEGOTIATE_EXT_TOO_LONG);
             return 0;
         }
 
@@ -127,8 +127,7 @@ int ssl_add_clienthello_renegotiate_ext(SSL *s, unsigned char *p, int *len,
         *p = s->s3->previous_client_finished_len;
         p++;
 
-        memcpy(p, s->s3->previous_client_finished,
-               s->s3->previous_client_finished_len);
+        memcpy(p, s->s3->previous_client_finished, s->s3->previous_client_finished_len);
 #ifdef OPENSSL_RI_DEBUG
         fprintf(stderr, "%s RI extension sent by client\n",
                 s->s3->previous_client_finished_len ? "Non-empty" : "Empty");

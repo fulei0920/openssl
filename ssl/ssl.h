@@ -394,9 +394,9 @@ typedef int (*tls_session_secret_cb_fn) (SSL *s, void *secret,
 /* used to hold info on the particular ciphers used */
 struct ssl_cipher_st 
 {
-    int valid;
-    const char *name;           /* text name */
-    unsigned long id;           /* id, 4 bytes, first is version */
+    int valid;					/* 表明是否合法加密套件 */
+    const char *name;           /* 加密套件的名字 */
+    unsigned long id;           /* id, 4 bytes, first is version */  /*加 密 套 件 ID*/
     /*
      * changed in 0.9.9: these four used to be portions of a single value 'algorithms'
      */
@@ -495,9 +495,8 @@ struct ssl_session_st
     unsigned int session_id_length;
     unsigned char session_id[SSL_MAX_SSL_SESSION_ID_LENGTH];
     /*
-     * this is used to determine whether the session is being reused in the
-     * appropriate context. It is up to the application to set this, via
-     * SSL_new
+     * this is used to determine whether the session is being reused in the appropriate context. 
+     * It is up to the application to set this, via SSL_new
      */
     unsigned int sid_ctx_length;
     unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
@@ -1352,7 +1351,7 @@ struct ssl_st
     unsigned int sid_ctx_length;
     unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
     
-    SSL_SESSION *session; /* This can also be in the session once a session is established */
+    SSL_SESSION *session;		/* This can also be in the session once a session is established */
     
     GEN_SESSION_CB generate_session_id;  /* Default generate session ID callback. */
     /* Used in SSL2 and SSL3 */
@@ -1400,7 +1399,8 @@ struct ssl_st
     long max_cert_list;
     int first_packet;
     
-    int client_version;	/* what was passed, used for SSLv3/TLS rollback check */
+   
+    int client_version;			 /* what was passed, used for SSLv3/TLS rollback check */
     unsigned int max_send_fragment;
 #  ifndef OPENSSL_NO_TLSEXT
     /* TLS extension debug callback */
