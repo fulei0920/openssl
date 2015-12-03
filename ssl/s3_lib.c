@@ -2885,7 +2885,8 @@ OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] =
 /* end of list */
 };
 
-SSL3_ENC_METHOD SSLv3_enc_data = {
+SSL3_ENC_METHOD SSLv3_enc_data = 
+{
     ssl3_enc,
     n_ssl3_mac,
     ssl3_setup_key_block,
@@ -3762,8 +3763,7 @@ int ssl3_put_cipher_by_char(const SSL_CIPHER *c, unsigned char *p)
     return (2);
 }
 
-SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt,
-                               STACK_OF(SSL_CIPHER) *srvr)
+SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_CIPHER) *srvr)
 {
     SSL_CIPHER *c, *ret = NULL;
     STACK_OF(SSL_CIPHER) *prio, *allow;

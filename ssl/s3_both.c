@@ -125,8 +125,7 @@
 #include <openssl/x509.h>
 
 /*
- * send s->init_buf in records of type 'type' (SSL3_RT_HANDSHAKE or
- * SSL3_RT_CHANGE_CIPHER_SPEC)
+ * send s->init_buf in records of type 'type' (SSL3_RT_HANDSHAKE or SSL3_RT_CHANGE_CIPHER_SPEC)
  */
 int ssl3_do_write(SSL *s, int type)
 {
@@ -137,11 +136,11 @@ int ssl3_do_write(SSL *s, int type)
         return (-1);
 	
     if (type == SSL3_RT_HANDSHAKE)
-        /*
-         * should not be done for 'Hello Request's, but in that case we'll
-         * ignore the result anyway
-         */
+    {
+        /* should not be done for 'Hello Request's, but in that case we'll ignore the result anyway  */
         ssl3_finish_mac(s, (unsigned char *)&s->init_buf->data[s->init_off], ret);
+	}
+
 
     if (ret == s->init_num) 
 	{
@@ -817,7 +816,8 @@ int ssl3_setup_buffers(SSL *s)
 
 int ssl3_release_write_buffer(SSL *s)
 {
-    if (s->s3->wbuf.buf != NULL) {
+    if (s->s3->wbuf.buf != NULL) 
+	{
         freelist_insert(s->ctx, 0, s->s3->wbuf.len, s->s3->wbuf.buf);
         s->s3->wbuf.buf = NULL;
     }

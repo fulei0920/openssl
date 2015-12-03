@@ -287,7 +287,7 @@
  * ONLY ONE BIT PER MASK CAN BE SET AT A TIME.
  */
 
-/* Bits for algorithm_mkey (key exchange algorithm) */
+/* Bits for algorithm_mkey (√‹‘øΩªªªÀ„∑®) */
 /* RSA key exchange */
 # define SSL_kRSA                0x00000001L
 /* DH cert, RSA CA cert */
@@ -375,7 +375,6 @@
 # define SSL_TLSV1_2             0x00000004UL
 
 /* Bits for algorithm2 (handshake digests and other extra flags) */
-
 # define SSL_HANDSHAKE_MAC_MD5 0x10
 # define SSL_HANDSHAKE_MAC_SHA 0x20
 # define SSL_HANDSHAKE_MAC_GOST94 0x40

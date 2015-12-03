@@ -140,7 +140,8 @@
 #include <openssl/evp.h>
 #include <openssl/md5.h>
 
-static unsigned char ssl3_pad_1[48] = {
+static unsigned char ssl3_pad_1[48] = 
+{
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36,
@@ -149,7 +150,8 @@ static unsigned char ssl3_pad_1[48] = {
     0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36, 0x36
 };
 
-static unsigned char ssl3_pad_2[48] = {
+static unsigned char ssl3_pad_2[48] = 
+{
     0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
     0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
     0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c,
@@ -425,14 +427,16 @@ int ssl3_setup_key_block(SSL *s)
 
     ret = ssl3_generate_key_block(s, p, num);
 
-    if (!(s->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS)) {
+    if (!(s->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS))
+	{
         /*
          * enable vulnerability countermeasure for CBC ciphers with known-IV
          * problem (http://www.openssl.org/~bodo/tls-cbc.txt)
          */
         s->s3->need_empty_fragments = 1;
 
-        if (s->session->cipher != NULL) {
+        if (s->session->cipher != NULL) 
+		{
             if (s->session->cipher->algorithm_enc == SSL_eNULL)
                 s->s3->need_empty_fragments = 0;
 
@@ -479,14 +483,17 @@ int ssl3_enc(SSL *s, int send)
     int bs, i, mac_size = 0;
     const EVP_CIPHER *enc;
 
-    if (send) {
+    if (send)
+	{
         ds = s->enc_write_ctx;
         rec = &(s->s3->wrec);
         if (s->enc_write_ctx == NULL)
             enc = NULL;
         else
             enc = EVP_CIPHER_CTX_cipher(s->enc_write_ctx);
-    } else {
+    } 
+	else 
+	{
         ds = s->enc_read_ctx;
         rec = &(s->s3->rrec);
         if (s->enc_read_ctx == NULL)
@@ -495,16 +502,20 @@ int ssl3_enc(SSL *s, int send)
             enc = EVP_CIPHER_CTX_cipher(s->enc_read_ctx);
     }
 
-    if ((s->session == NULL) || (ds == NULL) || (enc == NULL)) {
+    if ((s->session == NULL) || (ds == NULL) || (enc == NULL)) 
+	{
         memmove(rec->data, rec->input, rec->length);
         rec->input = rec->data;
-    } else {
+    } 
+	else 
+	{
         l = rec->length;
         bs = EVP_CIPHER_block_size(ds->cipher);
 
         /* COMPRESS */
 
-        if ((bs != 1) && send) {
+        if ((bs != 1) && send) 
+		{
             i = bs - ((int)l % bs);
 
             /* we need to add 'i-1' padding bytes */
@@ -518,7 +529,8 @@ int ssl3_enc(SSL *s, int send)
             rec->input[l - 1] = (i - 1);
         }
 
-        if (!send) {
+        if (!send) 
+		{
             if (l == 0 || l % bs != 0)
                 return 0;
             /* otherwise, rec->length >= bs */
@@ -697,6 +709,11 @@ static int ssl3_handshake_mac(SSL *s, int md_nid,
     return ((int)ret);
 }
 
+
+/*
+md -- 计算结果填充首地址
+send -- 表明是发送还是接收
+*/
 int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
 {
     SSL3_RECORD *rec;
@@ -708,12 +725,15 @@ int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
     int npad;
     int t;
 
-    if (send) {
+    if (send) 
+	{
         rec = &(ssl->s3->wrec);
         mac_sec = &(ssl->s3->write_mac_secret[0]);
         seq = &(ssl->s3->write_sequence[0]);
         hash = ssl->write_hash;
-    } else {
+    }
+	else 
+	{
         rec = &(ssl->s3->rrec);
         mac_sec = &(ssl->s3->read_mac_secret[0]);
         seq = &(ssl->s3->read_sequence[0]);
@@ -732,9 +752,8 @@ int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
     orig_len = rec->length + md_size + ((unsigned int)rec->type >> 8);
     rec->type &= 0xff;
 
-    if (!send &&
-        EVP_CIPHER_CTX_mode(ssl->enc_read_ctx) == EVP_CIPH_CBC_MODE &&
-        ssl3_cbc_record_digest_supported(hash)) {
+    if (!send && EVP_CIPHER_CTX_mode(ssl->enc_read_ctx) == EVP_CIPH_CBC_MODE && ssl3_cbc_record_digest_supported(hash)) 
+    {
         /*
          * This is a CBC-encrypted record. We must avoid leaking any
          * timing-side channel information about how many blocks of data we
@@ -767,7 +786,10 @@ int n_ssl3_mac(SSL *ssl, unsigned char *md, int send)
                                header, rec->input,
                                rec->length + md_size, orig_len,
                                mac_sec, md_size, 1);
-    } else {
+    }
+	else
+	{
+    
         unsigned int md_size_u;
         /* Chop the digest off the end :-) */
         EVP_MD_CTX_init(&md_ctx);
@@ -802,15 +824,15 @@ void ssl3_record_sequence_update(unsigned char *seq)
 {
     int i;
 
-    for (i = 7; i >= 0; i--) {
+    for (i = 7; i >= 0; i--) 
+	{
         ++seq[i];
         if (seq[i] != 0)
             break;
     }
 }
 
-int ssl3_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
-                                int len)
+int ssl3_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p, int len)
 {
     static const unsigned char *salt[3] = {
 #ifndef CHARSET_EBCDIC

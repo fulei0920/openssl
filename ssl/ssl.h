@@ -394,9 +394,9 @@ typedef int (*tls_session_secret_cb_fn) (SSL *s, void *secret,
 /* used to hold info on the particular ciphers used */
 struct ssl_cipher_st 
 {
-    int valid;
-    const char *name;           /* text name */
-    unsigned long id;           /* id, 4 bytes, first is version */
+    int valid;					/* 表明是否合法加密套件 */
+    const char *name;           /* 加密套件的名字 */
+    unsigned long id;           /* id, 4 bytes, first is version */  /*加 密 套 件 ID*/
     /*
      * changed in 0.9.9: these four used to be portions of a single value 'algorithms'
      */
@@ -495,9 +495,8 @@ struct ssl_session_st
     unsigned int session_id_length;
     unsigned char session_id[SSL_MAX_SSL_SESSION_ID_LENGTH];
     /*
-     * this is used to determine whether the session is being reused in the
-     * appropriate context. It is up to the application to set this, via
-     * SSL_new
+     * this is used to determine whether the session is being reused in the appropriate context. 
+     * It is up to the application to set this, via SSL_new
      */
     unsigned int sid_ctx_length;
     unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
@@ -1301,8 +1300,8 @@ struct ssl_st
     int rstate;					/* where we are when reading */
     BUF_MEM *init_buf;          /* buffer used during init */ /*存储接收到的上层数据，或存储待发送的上层数据*/
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
-    int init_num;               /* amount read/written */	/* init_buf中数据的字节数 */
-    int init_off;               /* amount read/written */  	/* init_buf中数据的起始偏移位置 */
+    int init_num;               /* init_buf中数据的字节数 */
+    int init_off;               /* init_buf中数据的起始偏移位置 */
     
     unsigned char *packet;		/* used internally to point at a raw packet */  /*指向接收的原始数据包起始位置*/
     unsigned int packet_length;	/*接收的原始数据包的大小*/
@@ -1354,10 +1353,10 @@ struct ssl_st
      */
     unsigned int sid_ctx_length;
     unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
-    /* This can also be in the session once a session is established */
-    SSL_SESSION *session;
-    /* Default generate session ID callback. */
-    GEN_SESSION_CB generate_session_id;
+    
+    SSL_SESSION *session;		/* This can also be in the session once a session is established */
+    
+    GEN_SESSION_CB generate_session_id;  /* Default generate session ID callback. */
     /* Used in SSL2 and SSL3 */
     /*
      * 0 don't care about verify failure.
@@ -1402,8 +1401,8 @@ struct ssl_st
     unsigned long mode;
     long max_cert_list;
     int first_packet;
-    /* what was passed, used for SSLv3/TLS rollback check */
-    int client_version;
+   
+    int client_version;			 /* what was passed, used for SSLv3/TLS rollback check */
     unsigned int max_send_fragment;
 #  ifndef OPENSSL_NO_TLSEXT
     /* TLS extension debug callback */

@@ -364,15 +364,16 @@ extern "C" {
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
-typedef struct ssl3_record_st {
-    /* type of record */
+typedef struct ssl3_record_st 
+{
+    
     /*
      * r
-     */ int type;
-    /* How many bytes available */
+     */ int type;		/* type of record */
+    
     /*
      * rw
-     */ unsigned int length;
+     */ unsigned int length;		/* How many bytes available */
     /* read/write offset into 'buf' */
     /*
      * r
@@ -398,9 +399,9 @@ typedef struct ssl3_buffer_st
 {
     /* at least SSL3_RT_MAX_PACKET_SIZE bytes, see ssl3_setup_buffers() */
     unsigned char *buf;
-    size_t len;			/* buffer size */
-    int offset;			/* where to 'copy from' */
-    int left;			/* how many bytes left */
+    size_t len;				/* 缓冲区大小 */
+    int offset;			  	/* 缓冲区数据起始位置的偏移量*/
+    int left;				/* 缓冲区中剩余的数据量 */
 } SSL3_BUFFER;
 
 # endif
@@ -472,13 +473,13 @@ typedef struct ssl3_state_st
     unsigned char handshake_fragment[4];
     unsigned int handshake_fragment_len;
     /* partial write - check the numbers match */
-    unsigned int wnum;          /* number of bytes sent so far */
+    unsigned int wnum;          /* number of bytes sent so far */  /* ssl3_write_bytes 上一次发送，未发送完时已发字节数，发送完时为0 */
     int wpend_tot;              /* number bytes written */
     int wpend_type;
     int wpend_ret;              /* number of bytes submitted */
     const unsigned char *wpend_buf;
-    /* used during startup, digest all incoming/outgoing packets */
-    BIO *handshake_buffer;
+    
+    BIO *handshake_buffer;		/* used during startup, digest all incoming/outgoing packets */
     /*
      * When set of handshake digests is determined, buffer is hashed and
      * freed and MD_CTX-es for all required digests are stored in this array
@@ -515,7 +516,8 @@ typedef struct ssl3_state_st
     size_t client_opaque_prf_input_len;
     void *server_opaque_prf_input;
     size_t server_opaque_prf_input_len;
-    struct {
+    struct 
+	{
         /* actually only needs to be 16+20 */
         unsigned char cert_verify_md[EVP_MAX_MD_SIZE * 2];
         /* actually only need to be 16+20 for SSLv3 and 12 for TLS */
@@ -525,8 +527,8 @@ typedef struct ssl3_state_st
         int peer_finish_md_len;
         unsigned long message_size;
         int message_type;
-        /* used to hold the new cipher we are going to use */
-        const SSL_CIPHER *new_cipher;
+        
+        const SSL_CIPHER *new_cipher;		/* used to hold the new cipher we are going to use */
 #  ifndef OPENSSL_NO_DH
         DH *dh;
 #  endif

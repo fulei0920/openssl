@@ -253,7 +253,8 @@ int ssl3_accept(SSL *s)
 	{
         state = s->state;
 
-        switch (s->state) {
+        switch (s->state) 
+		{
         case SSL_ST_RENEGOTIATE:
             s->renegotiate = 1;
             /* s->state=SSL_ST_ACCEPT; */
@@ -275,13 +276,16 @@ int ssl3_accept(SSL *s)
             }
             s->type = SSL_ST_ACCEPT;
 
-            if (s->init_buf == NULL) {
-                if ((buf = BUF_MEM_new()) == NULL) {
+            if (s->init_buf == NULL) 
+			{
+                if ((buf = BUF_MEM_new()) == NULL) 
+				{
                     ret = -1;
                     s->state = SSL_ST_ERR;
                     goto end;
                 }
-                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) {
+                if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH)) 
+				{
                     BUF_MEM_free(buf);
                     ret = -1;
                     s->state = SSL_ST_ERR;
@@ -290,7 +294,8 @@ int ssl3_accept(SSL *s)
                 s->init_buf = buf;
             }
 
-            if (!ssl3_setup_buffers(s)) {
+            if (!ssl3_setup_buffers(s)) 
+			{
                 ret = -1;
                 s->state = SSL_ST_ERR;
                 goto end;
@@ -299,17 +304,17 @@ int ssl3_accept(SSL *s)
             s->init_num = 0;
             s->s3->flags &= ~SSL3_FLAGS_SGC_RESTART_DONE;
             s->s3->flags &= ~SSL3_FLAGS_CCS_OK;
-            /*
-             * Should have been reset by ssl3_get_finished, too.
-             */
+            /* Should have been reset by ssl3_get_finished, too.  */
             s->s3->change_cipher_spec = 0;
 
-            if (s->state != SSL_ST_RENEGOTIATE) {
+            if (s->state != SSL_ST_RENEGOTIATE) 
+			{
                 /*
                  * Ok, we now need to push on a buffering BIO so that the
                  * output is sent in a way that TCP likes :-)
                  */
-                if (!ssl_init_wbio_buffer(s, 1)) {
+                if (!ssl_init_wbio_buffer(s, 1)) 
+				{
                     ret = -1;
                     s->state = SSL_ST_ERR;
                     goto end;
@@ -318,7 +323,8 @@ int ssl3_accept(SSL *s)
                 ssl3_init_finished_mac(s);
                 s->state = SSL3_ST_SR_CLNT_HELLO_A;
                 s->ctx->stats.sess_accept++;
-            } else if (!s->s3->send_connection_binding &&
+            }
+			else if (!s->s3->send_connection_binding &&
                        !(s->options &
                          SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)) {
                 /*
@@ -1018,10 +1024,12 @@ int ssl3_get_client_hello(SSL *s)
     p += 2;
 
     if ((s->version == DTLS1_VERSION && s->client_version > s->version) ||
-        (s->version != DTLS1_VERSION && s->client_version < s->version)) {
+        (s->version != DTLS1_VERSION && s->client_version < s->version)) 
+    {
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_WRONG_VERSION_NUMBER);
         if ((s->client_version >> 8) == SSL3_VERSION_MAJOR &&
-            !s->enc_write_ctx && !s->write_hash) {
+            !s->enc_write_ctx && !s->write_hash) 
+        {
             /*
              * similar to ssl3_get_record, send alert using remote version
              * number
@@ -1037,7 +1045,8 @@ int ssl3_get_client_hello(SSL *s)
      * return since we do not want to allocate any memory yet. So check
      * cookie length...
      */
-    if (SSL_get_options(s) & SSL_OP_COOKIE_EXCHANGE) {
+    if (SSL_get_options(s) & SSL_OP_COOKIE_EXCHANGE) 
+	{
         unsigned int session_length, cookie_length;
 
         session_length = *(p + SSL3_RANDOM_SIZE);
@@ -1060,7 +1069,8 @@ int ssl3_get_client_hello(SSL *s)
     /* get the session-id */
     j = *(p++);
 
-    if (p + j > d + n) {
+    if (p + j > d + n)
+	{
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_TOO_SHORT);
         goto f_err;
@@ -1083,7 +1093,9 @@ int ssl3_get_client_hello(SSL *s)
 	{
         if (!ssl_get_new_session(s, 1))
             goto err;
-    } else {
+    } 
+	else 
+	{
         i = ssl_get_prev_session(s, p, j, d + n);
         /*
          * Only resume if the session's version matches the negotiated
@@ -1094,13 +1106,16 @@ int ssl3_get_client_hello(SSL *s)
          * In practice, clients do not accept a version mismatch and
          * will abort the handshake with an error.
          */
-        if (i == 1 && s->version == s->session->ssl_version) { /* previous
-                                                                * session */
+        if (i == 1 && s->version == s->session->ssl_version) 
+		{ 	/* previous session */
             s->hit = 1;
-        } else if (i == -1)
-            goto err;
-        else {                  /* i == 0 */
-
+        } 
+		else if (i == -1)
+        {
+			 goto err;
+		}
+        else		/* i == 0 */
+		{                  
             if (!ssl_get_new_session(s, 1))
                 goto err;
         }
@@ -1108,7 +1123,8 @@ int ssl3_get_client_hello(SSL *s)
 
     p += j;
 
-    if (s->version == DTLS1_VERSION || s->version == DTLS1_BAD_VER) {
+    if (s->version == DTLS1_VERSION || s->version == DTLS1_BAD_VER) 
+	{
         /* cookie stuff */
         if (p + 1 > d + n) {
             al = SSL_AD_DECODE_ERROR;
@@ -1163,33 +1179,38 @@ int ssl3_get_client_hello(SSL *s)
         p += cookie_len;
     }
 
-    if (p + 2 > d + n) {
+    if (p + 2 > d + n)
+	{
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_TOO_SHORT);
         goto f_err;
     }
     n2s(p, i);
 
-    if (i == 0) {
+    if (i == 0) 
+	{
         al = SSL_AD_ILLEGAL_PARAMETER;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_NO_CIPHERS_SPECIFIED);
         goto f_err;
     }
 
     /* i bytes of cipher data + 1 byte for compression length later */
-    if ((p + i + 1) > (d + n)) {
+    if ((p + i + 1) > (d + n))
+	{
         /* not enough data */
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_MISMATCH);
         goto f_err;
     }
-    if (ssl_bytes_to_cipher_list(s, p, i, &(ciphers)) == NULL) {
+    if (ssl_bytes_to_cipher_list(s, p, i, &(ciphers)) == NULL) 
+	{
         goto err;
     }
     p += i;
 
     /* If it is a hit, check that the cipher is in the list */
-    if (s->hit) {
+    if (s->hit) 
+	{
         j = 0;
         id = s->session->cipher->id;
 
@@ -1243,20 +1264,23 @@ int ssl3_get_client_hello(SSL *s)
 
     /* compression */
     i = *(p++);
-    if ((p + i) > (d + n)) {
+    if ((p + i) > (d + n))
+	{
         /* not enough data */
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_MISMATCH);
         goto f_err;
     }
     q = p;
-    for (j = 0; j < i; j++) {
+    for (j = 0; j < i; j++) 
+	{
         if (p[j] == 0)
             break;
     }
 
     p += i;
-    if (j >= i) {
+    if (j >= i)
+	{
         /* no compress */
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_NO_COMPRESSION_SPECIFIED);
@@ -1415,7 +1439,8 @@ int ssl3_get_client_hello(SSL *s)
      * Given s->session->ciphers and SSL_get_ciphers, we must pick a cipher
      */
 
-    if (!s->hit) {
+    if (!s->hit) 
+	{
 #ifdef OPENSSL_NO_COMP
         s->session->compress_meth = 0;
 #else
@@ -1424,7 +1449,8 @@ int ssl3_get_client_hello(SSL *s)
         if (s->session->ciphers != NULL)
             sk_SSL_CIPHER_free(s->session->ciphers);
         s->session->ciphers = ciphers;
-        if (ciphers == NULL) {
+        if (ciphers == NULL)
+		{
             al = SSL_AD_INTERNAL_ERROR;
             SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, ERR_R_INTERNAL_ERROR);
             goto f_err;
@@ -1432,13 +1458,16 @@ int ssl3_get_client_hello(SSL *s)
         ciphers = NULL;
         c = ssl3_choose_cipher(s, s->session->ciphers, SSL_get_ciphers(s));
 
-        if (c == NULL) {
+        if (c == NULL) 
+		{
             al = SSL_AD_HANDSHAKE_FAILURE;
             SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_NO_SHARED_CIPHER);
             goto f_err;
         }
         s->s3->tmp.new_cipher = c;
-    } else {
+    }
+	else
+	{
         /* Session-id reuse */
 #ifdef REUSE_CIPHER_BUG
         STACK_OF(SSL_CIPHER) *sk;
@@ -1514,11 +1543,14 @@ int ssl3_send_server_hello(SSL *s)
     int i, sl;
     unsigned long l;
 
-    if (s->state == SSL3_ST_SW_SRVR_HELLO_A) {
+    if (s->state == SSL3_ST_SW_SRVR_HELLO_A)
+	{
         buf = (unsigned char *)s->init_buf->data;
 #ifdef OPENSSL_NO_TLSEXT
+		//生成随机数
         p = s->s3->server_random;
-        if (ssl_fill_hello_random(s, 1, p, SSL3_RANDOM_SIZE) <= 0) {
+        if (ssl_fill_hello_random(s, 1, p, SSL3_RANDOM_SIZE) <= 0) 
+		{
             s->state = SSL_ST_ERR;
             return -1;
         }
@@ -1526,10 +1558,11 @@ int ssl3_send_server_hello(SSL *s)
         /* Do the message type and length last */
         d = p = &(buf[4]);
 
+		//填充版本
         *(p++) = s->version >> 8;
         *(p++) = s->version & 0xff;
 
-        /* Random stuff */
+        //填充随机数*/
         memcpy(p, s->s3->server_random, SSL3_RANDOM_SIZE);
         p += SSL3_RANDOM_SIZE;
 
@@ -1549,12 +1582,12 @@ int ssl3_send_server_hello(SSL *s)
          * so the following won't overwrite an ID that we're supposed
          * to send back.
          */
-        if (!(s->ctx->session_cache_mode & SSL_SESS_CACHE_SERVER)
-            && !s->hit)
+        if (!(s->ctx->session_cache_mode & SSL_SESS_CACHE_SERVER) && !s->hit)
             s->session->session_id_length = 0;
 
         sl = s->session->session_id_length;
-        if (sl > (int)sizeof(s->session->session_id)) {
+        if (sl > (int)sizeof(s->session->session_id)) 
+		{
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, ERR_R_INTERNAL_ERROR);
             s->state = SSL_ST_ERR;
             return -1;
@@ -1577,7 +1610,8 @@ int ssl3_send_server_hello(SSL *s)
             *(p++) = s->s3->tmp.new_compression->id;
 #endif
 #ifndef OPENSSL_NO_TLSEXT
-        if (ssl_prepare_serverhello_tlsext(s) <= 0) {
+        if (ssl_prepare_serverhello_tlsext(s) <= 0)
+		{
             SSLerr(SSL_F_SSL3_SEND_SERVER_HELLO, SSL_R_SERVERHELLO_TLSEXT);
             s->state = SSL_ST_ERR;
             return -1;
@@ -1598,8 +1632,8 @@ int ssl3_send_server_hello(SSL *s)
         l2n3(l, d);
 
         s->state = SSL3_ST_SW_SRVR_HELLO_B;
-        /* number of bytes to write */
-        s->init_num = p - buf;
+      
+        s->init_num = p - buf;    /* number of bytes to write */
         s->init_off = 0;
     }
 

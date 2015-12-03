@@ -248,6 +248,7 @@ int ssl3_connect(SSL *s)
             /* s->version=SSL3_VERSION; */
             s->type = SSL_ST_CONNECT;
 
+			/*为init_buf分配内存*/
             if (s->init_buf == NULL) 
 			{
                 if ((buf = BUF_MEM_new()) == NULL)
@@ -316,7 +317,8 @@ int ssl3_connect(SSL *s)
             if (ret <= 0)
                 goto end;
 
-            if (s->hit) {
+            if (s->hit)
+			{
                 s->state = SSL3_ST_CR_FINISHED_A;
 #ifndef OPENSSL_NO_TLSEXT
                 if (s->tlsext_ticket_expected) {
@@ -690,6 +692,7 @@ int ssl3_client_hello(SSL *s)
     buf = (unsigned char *)s->init_buf->data;
     if (s->state == SSL3_ST_CW_CLNT_HELLO_A)
 	{
+		/* if necessary, create a new session */
         SSL_SESSION *sess = s->session;
         if ((sess == NULL) || (sess->ssl_version != s->version) ||
 #ifdef OPENSSL_NO_TLSEXT
@@ -708,7 +711,6 @@ int ssl3_client_hello(SSL *s)
         /* else use the pre-loaded session */
 
         p = s->s3->client_random;
-
         if (ssl_fill_hello_random(s, 0, p, SSL3_RANDOM_SIZE) <= 0)
             goto err;
 
@@ -754,11 +756,11 @@ int ssl3_client_hello(SSL *s)
         *(p++) = s->client_version & 0xff;
 #endif
 
-        /* Random stuff */
+        /* 填充随机数 */
         memcpy(p, s->s3->client_random, SSL3_RANDOM_SIZE);
         p += SSL3_RANDOM_SIZE;
 
-        /* Session ID */
+        /* 填充session id length 和 session id */
         if (s->new_session)
             i = 0;
         else
@@ -775,7 +777,7 @@ int ssl3_client_hello(SSL *s)
             p += i;
         }
 
-        /* Ciphers supported */
+        /* 填充chipher suites length 和 chipher suites */
         i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &(p[2]), 0);
         if (i == 0) 
 		{
@@ -794,11 +796,10 @@ int ssl3_client_hello(SSL *s)
         s2n(i, p);
         p += i;
 
-        /* COMPRESSION */
+        /* 填充compression methods length 和 compression methods */
 #ifdef OPENSSL_NO_COMP
         *(p++) = 1;
 #else
-
         if ((s->options & SSL_OP_NO_COMPRESSION) || !s->ctx->comp_methods)
             j = 0;
         else
@@ -811,6 +812,7 @@ int ssl3_client_hello(SSL *s)
         }
 #endif
         *(p++) = 0;             /* Add the NULL method */
+
 
 #ifndef OPENSSL_NO_TLSEXT
         /* TLS extensions */
@@ -856,14 +858,13 @@ int ssl3_get_server_hello(SSL *s)
     SSL_COMP *comp;
 #endif
 
-    n = s->method->ssl_get_message(s,
-                                   SSL3_ST_CR_SRVR_HELLO_A,
-                                   SSL3_ST_CR_SRVR_HELLO_B, -1, 20000, &ok);
+    n = s->method->ssl_get_message(s, SSL3_ST_CR_SRVR_HELLO_A, SSL3_ST_CR_SRVR_HELLO_B, -1, 20000, &ok);
 
     if (!ok)
         return ((int)n);
 
-    if (SSL_version(s) == DTLS1_VERSION || SSL_version(s) == DTLS1_BAD_VER) {
+    if (SSL_version(s) == DTLS1_VERSION || SSL_version(s) == DTLS1_BAD_VER) 
+	{
         if (s->s3->tmp.message_type == DTLS1_MT_HELLO_VERIFY_REQUEST) {
             if (s->d1->send_cookie == 0) {
                 s->s3->tmp.reuse_message = 1;
@@ -877,7 +878,8 @@ int ssl3_get_server_hello(SSL *s)
         }
     }
 
-    if (s->s3->tmp.message_type != SSL3_MT_SERVER_HELLO) {
+    if (s->s3->tmp.message_type != SSL3_MT_SERVER_HELLO) 
+	{
         al = SSL_AD_UNEXPECTED_MESSAGE;
         SSLerr(SSL_F_SSL3_GET_SERVER_HELLO, SSL_R_BAD_MESSAGE_TYPE);
         goto f_err;

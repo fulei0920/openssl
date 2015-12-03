@@ -397,9 +397,7 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
          * + hostname length
          */
 
-        if ((lenmax = limit - ret - 9) < 0
-            || (size_str =
-                strlen(s->tlsext_hostname)) > (unsigned long)lenmax)
+        if ((lenmax = limit - ret - 9) < 0 || (size_str = strlen(s->tlsext_hostname)) > (unsigned long)lenmax)
             return NULL;
 
         /* extension type and length */
@@ -421,7 +419,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
 	{
         int el;
 
-        if (!ssl_add_clienthello_renegotiate_ext(s, 0, &el, 0)) {
+        if (!ssl_add_clienthello_renegotiate_ext(s, 0, &el, 0))
+		{
             SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
             return NULL;
         }
@@ -432,7 +431,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
         s2n(TLSEXT_TYPE_renegotiate, ret);
         s2n(el, ret);
 
-        if (!ssl_add_clienthello_renegotiate_ext(s, ret, &el, el)) {
+        if (!ssl_add_clienthello_renegotiate_ext(s, ret, &el, el)) 
+		{
             SSLerr(SSL_F_SSL_ADD_CLIENTHELLO_TLSEXT, ERR_R_INTERNAL_ERROR);
             return NULL;
         }
@@ -1721,7 +1721,8 @@ int ssl_prepare_clienthello_tlsext(SSL *s)
         }
     }
     using_ecc = using_ecc && (s->version >= TLS1_VERSION);
-    if (using_ecc) 
+
+	if (using_ecc) 
 	{
         if (s->tlsext_ecpointformatlist != NULL)
             OPENSSL_free(s->tlsext_ecpointformatlist);
@@ -1757,24 +1758,28 @@ int ssl_prepare_clienthello_tlsext(SSL *s)
     {
         int r = 1;
 
-        if (s->ctx->tlsext_opaque_prf_input_callback != 0) {
-            r = s->ctx->tlsext_opaque_prf_input_callback(s, NULL, 0,
-                                                         s->
-                                                         ctx->tlsext_opaque_prf_input_callback_arg);
+        if (s->ctx->tlsext_opaque_prf_input_callback != 0) 
+		{
+            r = s->ctx->tlsext_opaque_prf_input_callback(s, NULL, 0, s->ctx->tlsext_opaque_prf_input_callback_arg);
             if (!r)
                 return -1;
         }
 
-        if (s->tlsext_opaque_prf_input != NULL) {
-            if (s->s3->client_opaque_prf_input != NULL) {
+        if (s->tlsext_opaque_prf_input != NULL) 
+		{
+            if (s->s3->client_opaque_prf_input != NULL) 
+			{
                 /* shouldn't really happen */
                 OPENSSL_free(s->s3->client_opaque_prf_input);
             }
 
-            if (s->tlsext_opaque_prf_input_len == 0) {
+            if (s->tlsext_opaque_prf_input_len == 0) 
+			{
                 /* dummy byte just to get non-NULL */
                 s->s3->client_opaque_prf_input = OPENSSL_malloc(1);
-            } else {
+            } 
+			else
+			{
                 s->s3->client_opaque_prf_input =
                     BUF_memdup(s->tlsext_opaque_prf_input,
                                s->tlsext_opaque_prf_input_len);
