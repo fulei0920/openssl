@@ -208,7 +208,8 @@ static int ssl_mac_secret_size[SSL_MD_NUM_IDX] =
     0, 0, 0, 0, 0, 0
 };
 
-static int ssl_handshake_digest_flag[SSL_MD_NUM_IDX] = {
+static int ssl_handshake_digest_flag[SSL_MD_NUM_IDX] = 
+{
     SSL_HANDSHAKE_MAC_MD5, SSL_HANDSHAKE_MAC_SHA,
     SSL_HANDSHAKE_MAC_GOST94, 0, SSL_HANDSHAKE_MAC_SHA256,
     SSL_HANDSHAKE_MAC_SHA384
@@ -656,7 +657,8 @@ int ssl_cipher_get_evp(const SSL_SESSION *s, const EVP_CIPHER **enc, const EVP_M
 
 int ssl_get_handshake_digest(int idx, long *mask, const EVP_MD **md)
 {
-    if (idx < 0 || idx >= SSL_MD_NUM_IDX) {
+    if (idx < 0 || idx >= SSL_MD_NUM_IDX) 
+	{
         return 0;
     }
     *mask = ssl_handshake_digest_flag[idx];

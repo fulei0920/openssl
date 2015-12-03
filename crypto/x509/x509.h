@@ -164,7 +164,10 @@ struct X509_pubkey_st
     EVP_PKEY *pkey;
 };
 
-typedef struct X509_sig_st {
+
+/*该结构用来存放摘要或者签名值*/
+typedef struct X509_sig_st 
+{
     X509_ALGOR *algor;
     ASN1_OCTET_STRING *digest;
 } X509_SIG;

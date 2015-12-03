@@ -145,7 +145,6 @@ int BUF_MEM_grow(BUF_MEM *str, size_t len)
 
 /*
 À©Õ¹BUF_MEMµÄÄÚ´æ
-
 */
 int BUF_MEM_grow_clean(BUF_MEM *str, size_t len)
 {

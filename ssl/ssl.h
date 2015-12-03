@@ -427,8 +427,7 @@ struct ssl_method_st
     int (*ssl_renegotiate) (SSL *s);
     int (*ssl_renegotiate_check) (SSL *s);
     long (*ssl_get_message) (SSL *s, int st1, int stn, int mt, long max, int *ok);
-    int (*ssl_read_bytes) (SSL *s, int type, unsigned char *buf, int len,
-                           int peek);
+    int (*ssl_read_bytes) (SSL *s, int type, unsigned char *buf, int len, int peek);
     int (*ssl_write_bytes) (SSL *s, int type, const void *buf_, int len);
     int (*ssl_dispatch_alert) (SSL *s);
     long (*ssl_ctrl) (SSL *s, int cmd, long larg, void *parg);

@@ -121,6 +121,8 @@
 static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned int len, int create_empty_fragment);
 static int ssl3_get_record(SSL *s);
 
+
+/*读取raw packet，存储到rbuf中，通过packet，和packet进行返回*/
 int ssl3_read_n(SSL *s, int n, int max, int extend)
 {
     /*
@@ -230,7 +232,6 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
  		/* ignore max parameter */
         max = n;
 	}
-       
     else 
 	{
         if (max < n)
@@ -309,6 +310,8 @@ int ssl3_read_n(SSL *s, int n, int max, int extend)
  * ssl->s3->rrec.length, - number of bytes
  */
 /* used only by ssl3_read_bytes */
+/*读取原始数据，进行解密，计算mac，解压
+通过rrec返回整个handshake protocol层协议明文数据*/
 static int ssl3_get_record(SSL *s)
 {
     int ssl_major, ssl_minor, al;
@@ -329,6 +332,7 @@ static int ssl3_get_record(SSL *s)
         extra = SSL3_RT_MAX_EXTRA;
     else
         extra = 0;
+	
     if (extra && !s->s3->init_extra)
 	{
         /*
@@ -547,20 +551,24 @@ static int ssl3_get_record(SSL *s)
     }
 
     /* r->length is now just compressed */
-    if (s->expand != NULL) {
-        if (rr->length > SSL3_RT_MAX_COMPRESSED_LENGTH + extra) {
+    if (s->expand != NULL) 
+	{
+        if (rr->length > SSL3_RT_MAX_COMPRESSED_LENGTH + extra)
+		{
             al = SSL_AD_RECORD_OVERFLOW;
             SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_COMPRESSED_LENGTH_TOO_LONG);
             goto f_err;
         }
-        if (!ssl3_do_uncompress(s)) {
+        if (!ssl3_do_uncompress(s)) 
+		{
             al = SSL_AD_DECOMPRESSION_FAILURE;
             SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_BAD_DECOMPRESSION);
             goto f_err;
         }
     }
 
-    if (rr->length > SSL3_RT_MAX_PLAIN_LENGTH + extra) {
+    if (rr->length > SSL3_RT_MAX_PLAIN_LENGTH + extra)
+	{
         al = SSL_AD_RECORD_OVERFLOW;
         SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_DATA_LENGTH_TOO_LONG);
         goto f_err;
@@ -572,8 +580,7 @@ static int ssl3_get_record(SSL *s)
      * ssl->s3->rrec.type   is the type of record
      * ssl->s3->rrec.length == number of bytes in record
      * ssl->s3->rrec.off    == offset to first valid byte
-     * ssl->s3->rrec.data   == where to take bytes from, increment
-     *                         after use :-).
+     * ssl->s3->rrec.data   == where to take bytes from, increment after use :-).
      */
 
     /* we have pulled in a full packet so zero things */
@@ -583,7 +590,8 @@ static int ssl3_get_record(SSL *s)
     if (rr->length == 0) 
 	{
         empty_record_count++;
-        if (empty_record_count > MAX_EMPTY_RECORDS) {
+        if (empty_record_count > MAX_EMPTY_RECORDS)
+		{
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_RECORD_TOO_SMALL);
             goto f_err;
@@ -591,8 +599,7 @@ static int ssl3_get_record(SSL *s)
         goto again;
     }
 #if 0
-    fprintf(stderr, "Ultimate Record type=%d, Length=%d\n", rr->type,
-            rr->length);
+    fprintf(stderr, "Ultimate Record type=%d, Length=%d\n", rr->type, rr->length);
 #endif
 
     return (1);
@@ -1027,6 +1034,11 @@ int ssl3_write_pending(SSL *s, int type, const unsigned char *buf, unsigned int 
  *     Application data protocol
  *             none of our business
  */
+
+/*
+调用ssl3_get_record获取一个完整的handshake protocol报文，
+再从报文中获取指定的字节数
+*/
 int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
 {
     int al, i, j, ret;
@@ -1044,9 +1056,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         return -1;
     }
 
-    if ((type == SSL3_RT_HANDSHAKE) && (s->s3->handshake_fragment_len > 0))
-        /* (partially) satisfy request from storage */
-    {
+    if ((type == SSL3_RT_HANDSHAKE) && (s->s3->handshake_fragment_len > 0))  
+    {	/* (partially) satisfy request from storage */
         unsigned char *src = s->s3->handshake_fragment;
         unsigned char *dst = buf;
         unsigned int k;
@@ -1103,9 +1114,9 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
 
     /* we now have a packet which can be read and processed */
 
-    if (s->s3->change_cipher_spec /* set when we receive ChangeCipherSpec,
-                                   * reset by ssl3_get_finished */
-        && (rr->type != SSL3_RT_HANDSHAKE)) {
+    if (s->s3->change_cipher_spec /* set when we receive ChangeCipherSpec, * reset by ssl3_get_finished */
+        && (rr->type != SSL3_RT_HANDSHAKE)) 
+    {
         al = SSL_AD_UNEXPECTED_MESSAGE;
         SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_DATA_BETWEEN_CCS_AND_FINISHED);
         goto f_err;
@@ -1115,20 +1126,21 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
      * If the other end has shut down, throw anything we read away (even in
      * 'peek' mode)
      */
-    if (s->shutdown & SSL_RECEIVED_SHUTDOWN) {
+    if (s->shutdown & SSL_RECEIVED_SHUTDOWN)
+	{
         rr->length = 0;
         s->rwstate = SSL_NOTHING;
         return (0);
     }
 
-    if (type == rr->type) {     /* SSL3_RT_APPLICATION_DATA or
-                                 * SSL3_RT_HANDSHAKE */
+    if (type == rr->type)  /* SSL3_RT_APPLICATION_DATA or * SSL3_RT_HANDSHAKE */
+	{     
         /*
          * make sure that we are not getting application data when we are
          * doing a handshake for the first time
          */
-        if (SSL_in_init(s) && (type == SSL3_RT_APPLICATION_DATA) &&
-            (s->enc_read_ctx == NULL)) {
+        if (SSL_in_init(s) && (type == SSL3_RT_APPLICATION_DATA) && (s->enc_read_ctx == NULL)) 
+       	{
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_SSL3_READ_BYTES, SSL_R_APP_DATA_IN_HANDSHAKE);
             goto f_err;
@@ -1143,14 +1155,15 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
             n = (unsigned int)len;
 
         memcpy(buf, &(rr->data[rr->off]), n);
-        if (!peek) {
+        if (!peek) 
+		{
             rr->length -= n;
             rr->off += n;
-            if (rr->length == 0) {
+            if (rr->length == 0) 
+			{
                 s->rstate = SSL_ST_READ_HEADER;
                 rr->off = 0;
-                if (s->mode & SSL_MODE_RELEASE_BUFFERS
-                    && s->s3->rbuf.left == 0)
+                if (s->mode & SSL_MODE_RELEASE_BUFFERS && s->s3->rbuf.left == 0)
                     ssl3_release_read_buffer(s);
             }
         }
@@ -1171,11 +1184,14 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         unsigned char *dest = NULL;
         unsigned int *dest_len = NULL;
 
-        if (rr->type == SSL3_RT_HANDSHAKE) {
+        if (rr->type == SSL3_RT_HANDSHAKE) 
+		{
             dest_maxlen = sizeof s->s3->handshake_fragment;
             dest = s->s3->handshake_fragment;
             dest_len = &s->s3->handshake_fragment_len;
-        } else if (rr->type == SSL3_RT_ALERT) {
+        } 
+		else if (rr->type == SSL3_RT_ALERT) 
+       	{
             dest_maxlen = sizeof s->s3->alert_fragment;
             dest = s->s3->alert_fragment;
             dest_len = &s->s3->alert_fragment_len;

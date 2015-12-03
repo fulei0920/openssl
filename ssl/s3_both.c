@@ -329,7 +329,8 @@ static int ssl3_add_cert_to_buf(BUF_MEM *buf, unsigned long *l, X509 *x)
     unsigned char *p;
 
     n = i2d_X509(x, NULL);
-    if (!BUF_MEM_grow_clean(buf, (int)(n + (*l) + 3))) {
+    if (!BUF_MEM_grow_clean(buf, (int)(n + (*l) + 3))) 
+	{
         SSLerr(SSL_F_SSL3_ADD_CERT_TO_BUF, ERR_R_BUF_LIB);
         return (-1);
     }
@@ -356,15 +357,20 @@ unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
 
     /* TLSv1 sends a chain with nothing in it, instead of an alert */
     buf = s->init_buf;
-    if (!BUF_MEM_grow_clean(buf, 10)) {
+    if (!BUF_MEM_grow_clean(buf, 10))
+	{
         SSLerr(SSL_F_SSL3_OUTPUT_CERT_CHAIN, ERR_R_BUF_LIB);
         return (0);
     }
-    if (x != NULL) {
-        if (no_chain) {
+    if (x != NULL) 
+	{
+        if (no_chain)
+		{
             if (ssl3_add_cert_to_buf(buf, &l, x))
                 return (0);
-        } else {
+        } 
+		else 
+		{
             X509_STORE_CTX xs_ctx;
 
             if (!X509_STORE_CTX_init(&xs_ctx, s->ctx->cert_store, x, NULL)) {
@@ -386,7 +392,8 @@ unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
         }
     }
     /* Thawte special :-) */
-    for (i = 0; i < sk_X509_num(s->ctx->extra_certs); i++) {
+    for (i = 0; i < sk_X509_num(s->ctx->extra_certs); i++) 
+	{
         x = sk_X509_value(s->ctx->extra_certs, i);
         if (ssl3_add_cert_to_buf(buf, &l, x))
             return (0);
@@ -408,6 +415,9 @@ unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
  * acceptable body length 'max'. The first four bytes (msg_type and length)
  * are read in state 'st1', the body is read in state 'stn'.
  */
+
+/*获取handshake的playload
+通过init_msg返回首地址*/
 long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 {
     unsigned char *p;
@@ -439,6 +449,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 
         do 
 		{
+			/*读取 handshake protocol 的前4个字节*/
             while (s->init_num < 4) 
 			{
                 i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE, &p[s->init_num], 4 - s->init_num, 0);
@@ -453,33 +464,40 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 
             skip_message = 0;
             if (!s->server)
-                if (p[0] == SSL3_MT_HELLO_REQUEST)
-                    /*
+            {
+	            if (p[0] == SSL3_MT_HELLO_REQUEST)
+	            {
+	            	/*
                      * The server may always send 'Hello Request' messages --
                      * we are doing a handshake anyway now, so ignore them if
                      * their format is correct. Does not count for 'Finished'
                      * MAC.
                      */
-                    if (p[1] == 0 && p[2] == 0 && p[3] == 0) {
+                    if (p[1] == 0 && p[2] == 0 && p[3] == 0)
+					{
                         s->init_num = 0;
                         skip_message = 1;
 
                         if (s->msg_callback)
-                            s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE,
-                                            p, 4, s, s->msg_callback_arg);
+                            s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, p, 4, s, s->msg_callback_arg);
                     }
+				}
+			}
+                
         }
         while (skip_message);
 
         /* s->init_num == 4 */
 
-        if ((mt >= 0) && (*p != mt)) {
+		//检查消息类型是否匹配
+        if ((mt >= 0) && (*p != mt)) 
+		{
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_SSL3_GET_MESSAGE, SSL_R_UNEXPECTED_MESSAGE);
             goto f_err;
         }
-        if ((mt < 0) && (*p == SSL3_MT_CLIENT_HELLO) &&
-            (st1 == SSL3_ST_SR_CERT_A) && (stn == SSL3_ST_SR_CERT_B)) {
+        if ((mt < 0) && (*p == SSL3_MT_CLIENT_HELLO) && (st1 == SSL3_ST_SR_CERT_A) && (stn == SSL3_ST_SR_CERT_B)) 
+        {
             /*
              * At this point we have got an MS SGC second client hello (maybe
              * we should always allow the client to start a new handshake?).
@@ -493,17 +511,20 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
         s->s3->tmp.message_type = *(p++);
 
         n2l3(p, l);
-        if (l > (unsigned long)max) {
+        if (l > (unsigned long)max)
+		{
             al = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_SSL3_GET_MESSAGE, SSL_R_EXCESSIVE_MESSAGE_SIZE);
             goto f_err;
         }
-        if (l > (INT_MAX - 4)) { /* BUF_MEM_grow takes an 'int' parameter */
+        if (l > (INT_MAX - 4))  /* BUF_MEM_grow takes an 'int' parameter */
+		{ 
             al = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_SSL3_GET_MESSAGE, SSL_R_EXCESSIVE_MESSAGE_SIZE);
             goto f_err;
         }
-        if (l && !BUF_MEM_grow_clean(s->init_buf, (int)l + 4)) {
+        if (l && !BUF_MEM_grow_clean(s->init_buf, (int)l + 4)) 
+		{
             SSLerr(SSL_F_SSL3_GET_MESSAGE, ERR_R_BUF_LIB);
             goto err;
         }
@@ -519,9 +540,9 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
     n = s->s3->tmp.message_size - s->init_num;
     while (n > 0) 
 	{
-        i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE, &p[s->init_num],
-                                      n, 0);
-        if (i <= 0) {
+        i = s->method->ssl_read_bytes(s, SSL3_RT_HANDSHAKE, &p[s->init_num], n, 0);
+        if (i <= 0) 
+		{
             s->rwstate = SSL_READING;
             *ok = 0;
             return i;
@@ -532,8 +553,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
 
 #ifndef OPENSSL_NO_NEXTPROTONEG
     /*
-     * If receiving Finished, record MAC of prior handshake messages for
-     * Finished verification.
+     * If receiving Finished, record MAC of prior handshake messages for Finished verification.
      */
     if (*s->init_buf->data == SSL3_MT_FINISHED)
         ssl3_take_mac(s);
@@ -542,8 +562,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
     /* Feed this message into MAC computation. */
     ssl3_finish_mac(s, (unsigned char *)s->init_buf->data, s->init_num + 4);
     if (s->msg_callback)
-        s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, s->init_buf->data,
-                        (size_t)s->init_num + 4, s, s->msg_callback_arg);
+        s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, s->init_buf->data, (size_t)s->init_num + 4, s, s->msg_callback_arg);
     *ok = 1;
     return s->init_num;
  f_err:
