@@ -512,9 +512,7 @@ int ssl_get_new_session(SSL *s, int session)
             SSL_SESSION_free(ss);
             return (0);
         }
-        /*
-         * Don't allow the callback to set the session length to zero. nor set it higher than it was.
-         */
+        /* Don't allow the callback to set the session length to zero. nor set it higher than it was.*/
         if (!tmp || (tmp > ss->session_id_length)) 
 		{
             /* The callback set an illegal length */

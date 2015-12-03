@@ -671,9 +671,7 @@ int ssl3_write_bytes(SSL *s, int type, const void *buf_, int len)
             return i;
         }
 
-        if ((i == (int)n) ||
-            (type == SSL3_RT_APPLICATION_DATA &&
-             (s->mode & SSL_MODE_ENABLE_PARTIAL_WRITE))) 
+        if ((i == (int)n) || (type == SSL3_RT_APPLICATION_DATA && (s->mode & SSL_MODE_ENABLE_PARTIAL_WRITE))) 
         {
             /*
              * next chunk of data should get another prepended empty fragment
@@ -752,7 +750,8 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
          * http://www.openssl.org/~bodo/tls-cbc.txt)
          */
 
-        if (s->s3->need_empty_fragments && type == SSL3_RT_APPLICATION_DATA) {
+        if (s->s3->need_empty_fragments && type == SSL3_RT_APPLICATION_DATA) 
+		{
             /*
              * recursive function call with 'create_empty_fragment' set; this
              * prepares and buffers the data for an empty fragment (these
@@ -795,7 +794,7 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
     }
 	else 
 	{
-#if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD!=0
+#if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD != 0
         align = (long)wb->buf + SSL3_RT_HEADER_LENGTH;
         align = (-align) & (SSL3_ALIGN_PAYLOAD - 1);
 #endif

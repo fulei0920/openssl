@@ -300,7 +300,8 @@ static long buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
 
     ctx = (BIO_F_BUFFER_CTX *)b->ptr;
 
-    switch (cmd) {
+    switch (cmd) 
+	{
     case BIO_CTRL_RESET:
         ctx->ibuf_off = 0;
         ctx->ibuf_len = 0;
@@ -352,43 +353,54 @@ static long buffer_ctrl(BIO *b, int cmd, long num, void *ptr)
         ret = 1;
         break;
     case BIO_C_SET_BUFF_SIZE:
-        if (ptr != NULL) {
+        if (ptr != NULL)
+		{
             ip = (int *)ptr;
-            if (*ip == 0) {
+            if (*ip == 0) 
+			{
                 ibs = (int)num;
                 obs = ctx->obuf_size;
-            } else {            /* if (*ip == 1) */
+            } 
+			else  /* if (*ip == 1) */
+			{           
 
                 ibs = ctx->ibuf_size;
                 obs = (int)num;
             }
-        } else {
+        } 
+		else 
+		{
             ibs = (int)num;
             obs = (int)num;
         }
         p1 = ctx->ibuf;
         p2 = ctx->obuf;
-        if ((ibs > DEFAULT_BUFFER_SIZE) && (ibs != ctx->ibuf_size)) {
+        if ((ibs > DEFAULT_BUFFER_SIZE) && (ibs != ctx->ibuf_size))
+		{
             p1 = (char *)OPENSSL_malloc((int)num);
             if (p1 == NULL)
                 goto malloc_error;
         }
-        if ((obs > DEFAULT_BUFFER_SIZE) && (obs != ctx->obuf_size)) {
+        if ((obs > DEFAULT_BUFFER_SIZE) && (obs != ctx->obuf_size)) 
+		{
             p2 = (char *)OPENSSL_malloc((int)num);
-            if (p2 == NULL) {
+            if (p2 == NULL) 
+			{
                 if (p1 != ctx->ibuf)
                     OPENSSL_free(p1);
                 goto malloc_error;
             }
         }
-        if (ctx->ibuf != p1) {
+        if (ctx->ibuf != p1) 
+		{
             OPENSSL_free(ctx->ibuf);
             ctx->ibuf = p1;
             ctx->ibuf_off = 0;
             ctx->ibuf_len = 0;
             ctx->ibuf_size = ibs;
         }
-        if (ctx->obuf != p2) {
+        if (ctx->obuf != p2) 
+		{
             OPENSSL_free(ctx->obuf);
             ctx->obuf = p2;
             ctx->obuf_off = 0;

@@ -424,12 +424,11 @@ int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx, u
     return 1;
 }
 
-int SSL_set_session_id_context(SSL *ssl, const unsigned char *sid_ctx,
-                               unsigned int sid_ctx_len)
+int SSL_set_session_id_context(SSL *ssl, const unsigned char *sid_ctx, unsigned int sid_ctx_len)
 {
-    if (sid_ctx_len > SSL_MAX_SID_CTX_LENGTH) {
-        SSLerr(SSL_F_SSL_SET_SESSION_ID_CONTEXT,
-               SSL_R_SSL_SESSION_ID_CONTEXT_TOO_LONG);
+    if (sid_ctx_len > SSL_MAX_SID_CTX_LENGTH) 
+	{
+        SSLerr(SSL_F_SSL_SET_SESSION_ID_CONTEXT, SSL_R_SSL_SESSION_ID_CONTEXT_TOO_LONG);
         return 0;
     }
     ssl->sid_ctx_length = sid_ctx_len;
@@ -1421,7 +1420,7 @@ int ssl_cipher_list_to_bytes(SSL *s, STACK_OF(SSL_CIPHER) *sk, unsigned char *p,
 #endif                          /* OPENSSL_NO_KRB5 */
 #ifndef OPENSSL_NO_PSK
         /* with PSK there must be client callback set */
-        if (((c->algorithm_mkey & SSL_kPSK) || (c->algorithm_auth & SSL_aPSK) && s->psk_client_callback == NULL)
+        if (((c->algorithm_mkey & SSL_kPSK) || (c->algorithm_auth & SSL_aPSK) && s->psk_client_callback == NULL))
             continue;
 #endif                          /* OPENSSL_NO_PSK */
 #ifndef OPENSSL_NO_SRP

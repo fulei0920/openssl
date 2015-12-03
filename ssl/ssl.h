@@ -1301,8 +1301,8 @@ struct ssl_st
     int rstate;					/* where we are when reading */
     BUF_MEM *init_buf;          /* buffer used during init */ /*存储接收到的上层数据，或存储待发送的上层数据*/
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
-    int init_num;               /* amount read/written */	/* init_buf中数据的字节数 */
-    int init_off;               /* amount read/written */  	/* init_buf中数据的起始偏移位置 */
+    int init_num;               /* init_buf中数据的字节数 */
+    int init_off;               /* init_buf中数据的起始偏移位置 */
     
     unsigned char *packet;		/* used internally to point at a raw packet */  /*指向接收的原始数据包起始位置*/
     unsigned int packet_length;	/*接收的原始数据包的大小*/
@@ -1348,16 +1348,13 @@ struct ssl_st
     /* client cert? */
     /* This is used to hold the server certificate used */
     struct cert_st  *cert;	/* CERT */
-    /*
-     * the session_id_context is used to ensure sessions are only reused in
-     * the appropriate context
-     */
+    /*the session_id_context is used to ensure sessions are only reused in the appropriate context */
     unsigned int sid_ctx_length;
     unsigned char sid_ctx[SSL_MAX_SID_CTX_LENGTH];
-    /* This can also be in the session once a session is established */
-    SSL_SESSION *session;
-    /* Default generate session ID callback. */
-    GEN_SESSION_CB generate_session_id;
+    
+    SSL_SESSION *session; /* This can also be in the session once a session is established */
+    
+    GEN_SESSION_CB generate_session_id;  /* Default generate session ID callback. */
     /* Used in SSL2 and SSL3 */
     /*
      * 0 don't care about verify failure.
@@ -1402,8 +1399,8 @@ struct ssl_st
     unsigned long mode;
     long max_cert_list;
     int first_packet;
-    /* what was passed, used for SSLv3/TLS rollback check */
-    int client_version;
+    
+    int client_version;	/* what was passed, used for SSLv3/TLS rollback check */
     unsigned int max_send_fragment;
 #  ifndef OPENSSL_NO_TLSEXT
     /* TLS extension debug callback */
@@ -1892,8 +1889,7 @@ long SSL_SESSION_get_timeout(const SSL_SESSION *s);
 long SSL_SESSION_set_timeout(SSL_SESSION *s, long t);
 void SSL_copy_session_id(SSL *to, const SSL *from);
 X509 *SSL_SESSION_get0_peer(SSL_SESSION *s);
-int SSL_SESSION_set1_id_context(SSL_SESSION *s, const unsigned char *sid_ctx,
-                                unsigned int sid_ctx_len);
+int SSL_SESSION_set1_id_context(SSL_SESSION *s, const unsigned char *sid_ctx, unsigned int sid_ctx_len);
 
 SSL_SESSION *SSL_SESSION_new(void);
 const unsigned char *SSL_SESSION_get_id(const SSL_SESSION *s,
@@ -1948,12 +1944,10 @@ void SSL_CTX_set_default_passwd_cb_userdata(SSL_CTX *ctx, void *u);
 int SSL_CTX_check_private_key(const SSL_CTX *ctx);
 int SSL_check_private_key(const SSL *ctx);
 
-int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx,
-                                   unsigned int sid_ctx_len);
+int SSL_CTX_set_session_id_context(SSL_CTX *ctx, const unsigned char *sid_ctx, unsigned int sid_ctx_len);
 
 SSL *SSL_new(SSL_CTX *ctx);
-int SSL_set_session_id_context(SSL *ssl, const unsigned char *sid_ctx,
-                               unsigned int sid_ctx_len);
+int SSL_set_session_id_context(SSL *ssl, const unsigned char *sid_ctx, unsigned int sid_ctx_len);
 
 int SSL_CTX_set_purpose(SSL_CTX *s, int purpose);
 int SSL_set_purpose(SSL *s, int purpose);

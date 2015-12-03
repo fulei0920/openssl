@@ -745,6 +745,7 @@ int ssl3_setup_read_buffer(SSL *s)
 
     if (s->s3->rbuf.buf == NULL) 
 	{
+		/*计算应该申请的buffer的大小*/
         len = SSL3_RT_MAX_PLAIN_LENGTH + SSL3_RT_MAX_ENCRYPTED_OVERHEAD + headerlen + align;
         if (s->options & SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER)
 		{
@@ -755,6 +756,7 @@ int ssl3_setup_read_buffer(SSL *s)
         if (!(s->options & SSL_OP_NO_COMPRESSION))
             len += SSL3_RT_MAX_COMPRESSED_OVERHEAD;
 #endif
+		/*申请buffer*/
         if ((p = freelist_extract(s->ctx, 1, len)) == NULL)
             goto err;
         s->s3->rbuf.buf = p;

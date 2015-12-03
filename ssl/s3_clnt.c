@@ -288,9 +288,7 @@ int ssl3_connect(SSL *s)
             s->ctx->stats.sess_connect++;
             s->init_num = 0;
             s->s3->flags &= ~SSL3_FLAGS_CCS_OK;
-            /*
-             * Should have been reset by ssl3_get_finished, too.
-             */
+            /* Should have been reset by ssl3_get_finished, too. */
             s->s3->change_cipher_spec = 0;
             break;
 
@@ -942,8 +940,8 @@ int ssl3_get_server_hello(SSL *s)
     if (j != 0 && j == s->session->session_id_length
         && memcmp(p, s->session->session_id, j) == 0) 
     {
-        if (s->sid_ctx_length != s->session->sid_ctx_length
-            || memcmp(s->session->sid_ctx, s->sid_ctx, s->sid_ctx_length)) {
+        if (s->sid_ctx_length != s->session->sid_ctx_length || memcmp(s->session->sid_ctx, s->sid_ctx, s->sid_ctx_length)) 
+       {
             /* actually a client application bug */
             al = SSL_AD_ILLEGAL_PARAMETER;
             SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,

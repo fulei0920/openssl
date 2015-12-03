@@ -364,7 +364,8 @@ extern "C" {
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
-typedef struct ssl3_record_st {
+typedef struct ssl3_record_st
+{
     /* type of record */
     /*
      * r
