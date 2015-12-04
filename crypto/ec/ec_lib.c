@@ -427,7 +427,8 @@ int EC_GROUP_get_curve_GF2m(const EC_GROUP *group, BIGNUM *p, BIGNUM *a,
 
 int EC_GROUP_get_degree(const EC_GROUP *group)
 {
-    if (group->meth->group_get_degree == 0) {
+    if (group->meth->group_get_degree == 0) 
+	{
         ECerr(EC_F_EC_GROUP_GET_DEGREE, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
         return 0;
     }

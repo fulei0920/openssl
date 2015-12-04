@@ -2928,19 +2928,21 @@ static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 
     if (!rsa_tmp && ((bn = BN_new()) == NULL))
         BIO_printf(bio_err, "Allocation error in generating RSA key\n");
-    if (!rsa_tmp && bn) {
-        if (!s_quiet) {
-            BIO_printf(bio_err, "Generating temp (%d bit) RSA key...",
-                       keylength);
+    if (!rsa_tmp && bn) 
+	{
+        if (!s_quiet) 
+		{
+            BIO_printf(bio_err, "Generating temp (%d bit) RSA key...", keylength);
             (void)BIO_flush(bio_err);
         }
-        if (!BN_set_word(bn, RSA_F4) || ((rsa_tmp = RSA_new()) == NULL) ||
-            !RSA_generate_key_ex(rsa_tmp, keylength, bn, NULL)) {
+        if (!BN_set_word(bn, RSA_F4) || ((rsa_tmp = RSA_new()) == NULL) || !RSA_generate_key_ex(rsa_tmp, keylength, bn, NULL)) 
+        {
             if (rsa_tmp)
                 RSA_free(rsa_tmp);
             rsa_tmp = NULL;
         }
-        if (!s_quiet) {
+        if (!s_quiet)
+		{
             BIO_printf(bio_err, "\n");
             (void)BIO_flush(bio_err);
         }

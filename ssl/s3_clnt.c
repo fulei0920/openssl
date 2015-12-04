@@ -319,13 +319,18 @@ int ssl3_connect(SSL *s)
 			{
                 s->state = SSL3_ST_CR_FINISHED_A;
 #ifndef OPENSSL_NO_TLSEXT
-                if (s->tlsext_ticket_expected) {
+                if (s->tlsext_ticket_expected)
+				{
                     /* receive renewed session ticket */
                     s->state = SSL3_ST_CR_SESSION_TICKET_A;
                 }
 #endif
-            } else
-                s->state = SSL3_ST_CR_CERT_A;
+            } 
+			else
+			{
+				s->state = SSL3_ST_CR_CERT_A;
+			}
+               
             s->init_num = 0;
             break;
 
@@ -343,12 +348,10 @@ int ssl3_connect(SSL *s)
                 break;
             }
 #endif
-            /* Check if it is anon DH/ECDH, SRP auth */
-            /* or PSK */
-            if (!
-                (s->s3->tmp.
-                 new_cipher->algorithm_auth & (SSL_aNULL | SSL_aSRP))
-                    && !(s->s3->tmp.new_cipher->algorithm_mkey & SSL_kPSK)) {
+            /* Check if it is anon DH/ECDH, SRP auth or PSK */
+            if (!(s->s3->tmp.new_cipher->algorithm_auth & (SSL_aNULL | SSL_aSRP))
+                    && !(s->s3->tmp.new_cipher->algorithm_mkey & SSL_kPSK)) 
+            {
                 ret = ssl3_get_server_certificate(s);
                 if (ret <= 0)
                     goto end;
@@ -357,13 +360,19 @@ int ssl3_connect(SSL *s)
                     s->state = SSL3_ST_CR_CERT_STATUS_A;
                 else
                     s->state = SSL3_ST_CR_KEY_EXCH_A;
-            } else {
+            } 
+			else
+			{
                 skip = 1;
                 s->state = SSL3_ST_CR_KEY_EXCH_A;
             }
 #else
-            } else
-                skip = 1;
+            }
+			else
+			{
+				skip = 1;
+			}
+                
 
             s->state = SSL3_ST_CR_KEY_EXCH_A;
 #endif
@@ -1116,32 +1125,31 @@ int ssl3_get_server_certificate(SSL *s)
     STACK_OF(X509) *sk = NULL;
     SESS_CERT *sc;
     EVP_PKEY *pkey = NULL;
-    int need_cert = 1;          /* VRS: 0=> will allow null cert if auth ==
-                                 * KRB5 */
+    int need_cert = 1;          /* VRS: 0=> will allow null cert if auth == KRB5 */
 
-    n = s->method->ssl_get_message(s,
-                                   SSL3_ST_CR_CERT_A,
-                                   SSL3_ST_CR_CERT_B,
-                                   -1, s->max_cert_list, &ok);
+    n = s->method->ssl_get_message(s, SSL3_ST_CR_CERT_A, SSL3_ST_CR_CERT_B, -1, s->max_cert_list, &ok);
 
     if (!ok)
         return ((int)n);
 
     if ((s->s3->tmp.message_type == SSL3_MT_SERVER_KEY_EXCHANGE) ||
         ((s->s3->tmp.new_cipher->algorithm_auth & SSL_aKRB5) &&
-         (s->s3->tmp.message_type == SSL3_MT_SERVER_DONE))) {
+         (s->s3->tmp.message_type == SSL3_MT_SERVER_DONE))) 
+    {
         s->s3->tmp.reuse_message = 1;
         return (1);
     }
 
-    if (s->s3->tmp.message_type != SSL3_MT_CERTIFICATE) {
+    if (s->s3->tmp.message_type != SSL3_MT_CERTIFICATE) 
+	{
         al = SSL_AD_UNEXPECTED_MESSAGE;
         SSLerr(SSL_F_SSL3_GET_SERVER_CERTIFICATE, SSL_R_BAD_MESSAGE_TYPE);
         goto f_err;
     }
     p = d = (unsigned char *)s->init_msg;
 
-    if ((sk = sk_X509_new_null()) == NULL) {
+    if ((sk = sk_X509_new_null()) == NULL) 
+	{
         SSLerr(SSL_F_SSL3_GET_SERVER_CERTIFICATE, ERR_R_MALLOC_FAILURE);
         goto err;
     }
@@ -1331,7 +1339,8 @@ int ssl3_get_key_exchange(SSL *s)
 
     alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 
-    if (s->s3->tmp.message_type != SSL3_MT_SERVER_KEY_EXCHANGE) {
+    if (s->s3->tmp.message_type != SSL3_MT_SERVER_KEY_EXCHANGE)
+	{
         /*
          * Can't skip server key exchange if this is an ephemeral
          * ciphersuite.
@@ -1359,26 +1368,32 @@ int ssl3_get_key_exchange(SSL *s)
     }
 
     param = p = (unsigned char *)s->init_msg;
-    if (s->session->sess_cert != NULL) {
+    if (s->session->sess_cert != NULL) 
+	{
 #ifndef OPENSSL_NO_RSA
-        if (s->session->sess_cert->peer_rsa_tmp != NULL) {
+        if (s->session->sess_cert->peer_rsa_tmp != NULL) 
+		{
             RSA_free(s->session->sess_cert->peer_rsa_tmp);
             s->session->sess_cert->peer_rsa_tmp = NULL;
         }
 #endif
 #ifndef OPENSSL_NO_DH
-        if (s->session->sess_cert->peer_dh_tmp) {
+        if (s->session->sess_cert->peer_dh_tmp) 
+		{
             DH_free(s->session->sess_cert->peer_dh_tmp);
             s->session->sess_cert->peer_dh_tmp = NULL;
         }
 #endif
 #ifndef OPENSSL_NO_ECDH
-        if (s->session->sess_cert->peer_ecdh_tmp) {
+        if (s->session->sess_cert->peer_ecdh_tmp)
+		{
             EC_KEY_free(s->session->sess_cert->peer_ecdh_tmp);
             s->session->sess_cert->peer_ecdh_tmp = NULL;
         }
 #endif
-    } else {
+    } 
+	else
+	{
         s->session->sess_cert = ssl_sess_cert_new();
     }
 
@@ -1390,7 +1405,8 @@ int ssl3_get_key_exchange(SSL *s)
     al = SSL_AD_DECODE_ERROR;
 
 #ifndef OPENSSL_NO_PSK
-    if (alg_k & SSL_kPSK) {
+    if (alg_k & SSL_kPSK) 
+	{
         param_len = 2;
         if (param_len > n) {
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_LENGTH_TOO_SHORT);
@@ -1428,7 +1444,8 @@ int ssl3_get_key_exchange(SSL *s)
     } else
 #endif                          /* !OPENSSL_NO_PSK */
 #ifndef OPENSSL_NO_SRP
-    if (alg_k & SSL_kSRP) {
+    if (alg_k & SSL_kSRP)
+	{
         param_len = 2;
         if (param_len > n) {
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_LENGTH_TOO_SHORT);
@@ -1527,16 +1544,16 @@ int ssl3_get_key_exchange(SSL *s)
 # ifndef OPENSSL_NO_DSA
         else if (alg_a & SSL_aDSS)
             pkey =
-                X509_get_pubkey(s->session->
-                                sess_cert->peer_pkeys[SSL_PKEY_DSA_SIGN].
-                                x509);
+                X509_get_pubkey(s->session-> sess_cert->peer_pkeys[SSL_PKEY_DSA_SIGN].x509);
 # endif
     } else
 #endif                          /* !OPENSSL_NO_SRP */
 #ifndef OPENSSL_NO_RSA
-    if (alg_k & SSL_kRSA) {
+    if (alg_k & SSL_kRSA)
+	{
         /* Temporary RSA keys only allowed in export ciphersuites */
-        if (!SSL_C_IS_EXPORT(s->s3->tmp.new_cipher)) {
+        if (!SSL_C_IS_EXPORT(s->s3->tmp.new_cipher))
+		{
             al = SSL_AD_UNEXPECTED_MESSAGE;
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_UNEXPECTED_MESSAGE);
             goto f_err;
@@ -1609,8 +1626,10 @@ int ssl3_get_key_exchange(SSL *s)
     if (0) ;
 #endif
 #ifndef OPENSSL_NO_DH
-    else if (alg_k & SSL_kEDH) {
-        if ((dh = DH_new()) == NULL) {
+    else if (alg_k & SSL_kEDH) 
+	{
+        if ((dh = DH_new()) == NULL)
+		{
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, ERR_R_DH_LIB);
             goto err;
         }

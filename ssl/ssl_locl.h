@@ -442,8 +442,7 @@
  * Even though the macros for EXPORT and EXPORT40/56 have similar names,
  * their meaning is different:
  * *_EXPORT macros check the 'exportable' status.
- * *_EXPORT40/56 macros are used to check whether a certain cipher strength
- *          is given.
+ * *_EXPORT40/56 macros are used to check whether a certain cipher strength is given.
  * Since the SSL_IS_EXPORT* and SSL_EXPORT* macros depend on the correct
  * algorithm structure element to be passed (algorithms, algo_strength) and no
  * typechecking can be done as they are all of type unsigned long, their
@@ -606,8 +605,7 @@ typedef struct ssl3_enc_method
     int (*enc) (SSL *, int);
     int (*mac) (SSL *, unsigned char *, int);
     int (*setup_key_block) (SSL *);
-    int (*generate_master_secret) (SSL *, unsigned char *, unsigned char *,
-                                   int);
+    int (*generate_master_secret) (SSL *, unsigned char *, unsigned char *, int);
     int (*change_cipher_state) (SSL *, int);
     int (*final_finish_mac) (SSL *, const char *, int, unsigned char *);
     int finish_mac_length;

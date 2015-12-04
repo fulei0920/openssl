@@ -2447,8 +2447,7 @@ X509 *ssl_get_server_send_cert(const SSL *s)
     return cpk->x509;
 }
 
-EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *cipher,
-                            const EVP_MD **pmd)
+EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *cipher, const EVP_MD **pmd)
 {
     unsigned long alg_a;
     CERT *c;
@@ -2457,23 +2456,31 @@ EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *cipher,
     alg_a = cipher->algorithm_auth;
     c = s->cert;
 
-    if ((alg_a & SSL_aDSS) &&
-        (c->pkeys[SSL_PKEY_DSA_SIGN].privatekey != NULL))
-        idx = SSL_PKEY_DSA_SIGN;
-    else if (alg_a & SSL_aRSA) {
+    if ((alg_a & SSL_aDSS) && (c->pkeys[SSL_PKEY_DSA_SIGN].privatekey != NULL))
+    {
+		idx = SSL_PKEY_DSA_SIGN;
+	} 
+    else if (alg_a & SSL_aRSA) 
+	{
         if (c->pkeys[SSL_PKEY_RSA_SIGN].privatekey != NULL)
             idx = SSL_PKEY_RSA_SIGN;
         else if (c->pkeys[SSL_PKEY_RSA_ENC].privatekey != NULL)
             idx = SSL_PKEY_RSA_ENC;
-    } else if ((alg_a & SSL_aECDSA) &&
-               (c->pkeys[SSL_PKEY_ECC].privatekey != NULL))
-        idx = SSL_PKEY_ECC;
-    if (idx == -1) {
+    } 
+	else if ((alg_a & SSL_aECDSA) && (c->pkeys[SSL_PKEY_ECC].privatekey != NULL))
+    {
+		idx = SSL_PKEY_ECC;
+	}
+        
+    if (idx == -1) 
+	{
         SSLerr(SSL_F_SSL_GET_SIGN_PKEY, ERR_R_INTERNAL_ERROR);
         return (NULL);
     }
+	
     if (pmd)
         *pmd = c->pkeys[idx].digest;
+	
     return c->pkeys[idx].privatekey;
 }
 
@@ -3184,16 +3191,12 @@ int SSL_want(const SSL *s)
  */
 
 #ifndef OPENSSL_NO_RSA
-void SSL_CTX_set_tmp_rsa_callback(SSL_CTX *ctx, RSA *(*cb) (SSL *ssl,
-                                                            int is_export,
-                                                            int keylength))
+void SSL_CTX_set_tmp_rsa_callback(SSL_CTX *ctx, RSA *(*cb) (SSL *ssl, int is_export, int keylength))
 {
     SSL_CTX_callback_ctrl(ctx, SSL_CTRL_SET_TMP_RSA_CB, (void (*)(void))cb);
 }
 
-void SSL_set_tmp_rsa_callback(SSL *ssl, RSA *(*cb) (SSL *ssl,
-                                                    int is_export,
-                                                    int keylength))
+void SSL_set_tmp_rsa_callback(SSL *ssl, RSA *(*cb) (SSL *ssl, int is_export, int keylength))
 {
     SSL_callback_ctrl(ssl, SSL_CTRL_SET_TMP_RSA_CB, (void (*)(void))cb);
 }

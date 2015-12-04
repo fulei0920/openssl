@@ -3396,7 +3396,8 @@ long ssl3_callback_ctrl(SSL *s, int cmd, void (*fp) (void))
     }
 #endif
 
-    switch (cmd) {
+    switch (cmd)
+	{
 #ifndef OPENSSL_NO_RSA
     case SSL_CTRL_SET_TMP_RSA_CB:
         {

@@ -289,7 +289,8 @@ void EC_EX_DATA_clear_free_data(EC_EXTRA_DATA **, void *(*dup_func) (void *),
 void EC_EX_DATA_free_all_data(EC_EXTRA_DATA **);
 void EC_EX_DATA_clear_free_all_data(EC_EXTRA_DATA **);
 
-struct ec_point_st {
+struct ec_point_st 
+{
     const EC_METHOD *meth;
     /*
      * All members except 'meth' are handled by the method functions, even if

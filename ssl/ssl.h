@@ -374,7 +374,8 @@ typedef struct ssl_session_st SSL_SESSION;
 DECLARE_STACK_OF(SSL_CIPHER)
 
 /* SRTP protection profiles for use with the use_srtp extension (RFC 5764)*/
-typedef struct srtp_protection_profile_st {
+typedef struct srtp_protection_profile_st
+{
     const char *name;
     unsigned long id;
 } SRTP_PROTECTION_PROFILE;

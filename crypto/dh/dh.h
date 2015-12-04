@@ -132,7 +132,8 @@ struct dh_method {
                             BN_GENCB *cb);
 };
 
-struct dh_st {
+struct dh_st
+{
     /*
      * This first argument is used to pick up errors when a DH is passed
      * instead of a EVP_PKEY

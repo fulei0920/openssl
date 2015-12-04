@@ -74,8 +74,7 @@ void EVP_SignUpdate(EVP_MD_CTX *ctx, unsigned char *data, unsigned int count)
 }
 #endif
 
-int EVP_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret,
-                  unsigned int *siglen, EVP_PKEY *pkey)
+int EVP_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret, unsigned int *siglen, EVP_PKEY *pkey)
 {
     unsigned char m[EVP_MAX_MD_SIZE];
     unsigned int m_len;
