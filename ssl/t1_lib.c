@@ -2373,7 +2373,8 @@ typedef struct {
     int id;
 } tls12_lookup;
 
-static tls12_lookup tls12_md[] = {
+static tls12_lookup tls12_md[] = 
+{
 # ifndef OPENSSL_NO_MD5
     {NID_md5, TLSEXT_hash_md5},
 # endif
@@ -2390,7 +2391,8 @@ static tls12_lookup tls12_md[] = {
 # endif
 };
 
-static tls12_lookup tls12_sig[] = {
+static tls12_lookup tls12_sig[] = 
+{
 # ifndef OPENSSL_NO_RSA
     {EVP_PKEY_RSA, TLSEXT_signature_rsa},
 # endif
@@ -2424,16 +2426,16 @@ static int tls12_find_nid(int id, tls12_lookup *table, size_t tlen)
 }
 # endif
 
-int tls12_get_sigandhash(unsigned char *p, const EVP_PKEY *pk,
-                         const EVP_MD *md)
+int tls12_get_sigandhash(unsigned char *p, const EVP_PKEY *pk, const EVP_MD *md)
 {
     int sig_id, md_id;
     if (!md)
         return 0;
-    md_id = tls12_find_id(EVP_MD_type(md), tls12_md,
-                          sizeof(tls12_md) / sizeof(tls12_lookup));
+	
+    md_id = tls12_find_id(EVP_MD_type(md), tls12_md, sizeof(tls12_md) / sizeof(tls12_lookup));
     if (md_id == -1)
         return 0;
+	
     sig_id = tls12_get_sigid(pk);
     if (sig_id == -1)
         return 0;
@@ -2444,8 +2446,7 @@ int tls12_get_sigandhash(unsigned char *p, const EVP_PKEY *pk,
 
 int tls12_get_sigid(const EVP_PKEY *pk)
 {
-    return tls12_find_id(pk->type, tls12_sig,
-                         sizeof(tls12_sig) / sizeof(tls12_lookup));
+    return tls12_find_id(pk->type, tls12_sig, sizeof(tls12_sig) / sizeof(tls12_lookup));
 }
 
 const EVP_MD *tls12_get_hash(unsigned char hash_alg)

@@ -113,7 +113,8 @@ int RSA_public_decrypt(int flen, const unsigned char *from, unsigned char *to, R
 {
 #ifdef OPENSSL_FIPS
     if (FIPS_mode() && !(rsa->meth->flags & RSA_FLAG_FIPS_METHOD)
-        && !(rsa->flags & RSA_FLAG_NON_FIPS_ALLOW)) {
+        && !(rsa->flags & RSA_FLAG_NON_FIPS_ALLOW)) 
+    {
         RSAerr(RSA_F_RSA_PUBLIC_DECRYPT, RSA_R_NON_FIPS_RSA_METHOD);
         return -1;
     }

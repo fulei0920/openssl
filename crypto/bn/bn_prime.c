@@ -160,8 +160,11 @@ int BN_GENCB_call(BN_GENCB *cb, int a, int b)
     return 0;
 }
 
-int BN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
-                         const BIGNUM *add, const BIGNUM *rem, BN_GENCB *cb)
+
+/*
+bits -- 素数的位数
+*/
+int BN_generate_prime_ex(BIGNUM *ret, int bits, int safe, const BIGNUM *add, const BIGNUM *rem, BN_GENCB *cb)
 {
     BIGNUM *t;
     int found = 0;
@@ -178,14 +181,20 @@ int BN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
         goto err;
  loop:
     /* make a random number and set the top and bottom bits */
-    if (add == NULL) {
+    if (add == NULL) 
+	{
         if (!probable_prime(ret, bits))
             goto err;
-    } else {
-        if (safe) {
+    } 
+	else 
+	{
+        if (safe)
+		{
             if (!probable_prime_dh_safe(ret, bits, add, rem, ctx))
                 goto err;
-        } else {
+        } 
+		else 
+		{
             if (!probable_prime_dh(ret, bits, add, rem, ctx))
                 goto err;
         }
@@ -389,7 +398,8 @@ static int probable_prime(BIGNUM *rnd, int bits)
         mods[i] = (prime_t) BN_mod_word(rnd, (BN_ULONG)primes[i]);
     maxdelta = BN_MASK2 - primes[NUMPRIMES - 1];
     delta = 0;
- loop:for (i = 1; i < NUMPRIMES; i++) {
+ loop:
+ 	for (i = 1; i < NUMPRIMES; i++) {
         /*
          * check that rnd is not a prime and also that gcd(rnd-1,primes) == 1
          * (except for 2)

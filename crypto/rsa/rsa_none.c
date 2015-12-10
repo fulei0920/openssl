@@ -62,15 +62,16 @@
 #include <openssl/rsa.h>
 #include <openssl/rand.h>
 
-int RSA_padding_add_none(unsigned char *to, int tlen,
-                         const unsigned char *from, int flen)
+int RSA_padding_add_none(unsigned char *to, int tlen, const unsigned char *from, int flen)
 {
-    if (flen > tlen) {
+    if (flen > tlen) 
+	{
         RSAerr(RSA_F_RSA_PADDING_ADD_NONE, RSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE);
         return (0);
     }
 
-    if (flen < tlen) {
+    if (flen < tlen)
+	{
         RSAerr(RSA_F_RSA_PADDING_ADD_NONE, RSA_R_DATA_TOO_SMALL_FOR_KEY_SIZE);
         return (0);
     }
@@ -79,11 +80,11 @@ int RSA_padding_add_none(unsigned char *to, int tlen,
     return (1);
 }
 
-int RSA_padding_check_none(unsigned char *to, int tlen,
-                           const unsigned char *from, int flen, int num)
+int RSA_padding_check_none(unsigned char *to, int tlen, const unsigned char *from, int flen, int num)
 {
 
-    if (flen > tlen) {
+    if (flen > tlen) 
+	{
         RSAerr(RSA_F_RSA_PADDING_CHECK_NONE, RSA_R_DATA_TOO_LARGE);
         return (-1);
     }

@@ -611,7 +611,8 @@ static int rsa_item_sign(EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
     return 2;
 }
 
-const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[] = {
+const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[] = 
+{
     {
      EVP_PKEY_RSA,
      EVP_PKEY_RSA,

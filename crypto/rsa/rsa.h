@@ -85,16 +85,20 @@ extern "C" {
 struct rsa_meth_st 
 {
     const char *name;
+	/*公钥加密函数， padding 为其填充方式，输入数据不能太长，否则无法填充*/
     int (*rsa_pub_enc) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+	/*公钥解密函数， padding 为其去除填充的方式，输入数据长度为 RSA 密钥长度的字节数*/
     int (*rsa_pub_dec) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+	/*私钥加密函数， padding 为其填充方式，输入数据长度不能太长，否则无法填充*/
     int (*rsa_priv_enc) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+	/*私钥解密函数， padding 为其去除填充的方式，输入数据长度为 RSA 密钥长度的字节数*/
     int (*rsa_priv_dec) (int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
-    int (*rsa_mod_exp) (BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);  /* Can be null */
+    int (*rsa_mod_exp) (BIGNUM *r0, const BIGNUM *I, RSA *rsa, BN_CTX *ctx);  					/* Can be null */
     int (*bn_mod_exp) (BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx, BN_MONT_CTX *m_ctx);  /* Can be null */
-    int (*init) (RSA *rsa); /* called at new */
-    int (*finish) (RSA *rsa);  /* called at free */
-    int flags; /* RSA_METHOD_FLAG_* things */
-    char *app_data;  /* may be needed! */
+    int (*init) (RSA *rsa); 			/* called at new */
+    int (*finish) (RSA *rsa);  			/* called at free */
+    int flags;							 /* RSA_METHOD_FLAG_* things */
+    char *app_data;  					/* may be needed! */
     /*
      * New sign and verify functions: some libraries don't allow arbitrary
      * data to be signed/verified: this allows them to be used. Note: for
@@ -103,12 +107,8 @@ struct rsa_meth_st
      * for backwards compatibility this functionality is only enabled if the
      * RSA_FLAG_SIGN_VER option is set in 'flags'.
      */
-    int (*rsa_sign) (int type, const unsigned char *m, unsigned int m_length,
-                     unsigned char *sigret, unsigned int *siglen,
-                     const RSA *rsa);
-    int (*rsa_verify) (int dtype, const unsigned char *m,
-                       unsigned int m_length, const unsigned char *sigbuf,
-                       unsigned int siglen, const RSA *rsa);
+    int (*rsa_sign) (int type, const unsigned char *m, unsigned int m_length, unsigned char *sigret, unsigned int *siglen, const RSA *rsa);
+    int (*rsa_verify) (int dtype, const unsigned char *m, unsigned int m_length, const unsigned char *sigbuf, unsigned int siglen, const RSA *rsa);
     /*
      * If this callback is NULL, the builtin software RSA key-gen will be
      * used. This is for behavioural compatibility whilst the code gets
@@ -135,9 +135,9 @@ struct rsa_st
     BIGNUM *d;
     BIGNUM *p;
     BIGNUM *q;
-    BIGNUM *dmp1;
-    BIGNUM *dmq1;
-    BIGNUM *iqmp;
+    BIGNUM *dmp1;			/* e*dmp1 = 1 (mod (p-1)) */   /*d%(p-1)*/
+    BIGNUM *dmq1;			/* e*dmq1 = 1 (mod (q-1)) */
+    BIGNUM *iqmp;			/* q*iqmp = 1 (mod p ) */
     /* be careful using this if the RSA structure is shared */
     CRYPTO_EX_DATA ex_data;
     int references;
@@ -147,8 +147,7 @@ struct rsa_st
     BN_MONT_CTX *_method_mod_p;
     BN_MONT_CTX *_method_mod_q;
     /*
-     * all BIGNUM values are actually in the following data, if it is not
-     * NULL
+     * all BIGNUM values are actually in the following data, if it is not NULL
      */
     char *bignum_data;
     BN_BLINDING *blinding;
@@ -303,8 +302,7 @@ int RSA_public_encrypt(int flen, const unsigned char *from,
                        unsigned char *to, RSA *rsa, int padding);
 int RSA_private_encrypt(int flen, const unsigned char *from,
                         unsigned char *to, RSA *rsa, int padding);
-int RSA_public_decrypt(int flen, const unsigned char *from,
-                       unsigned char *to, RSA *rsa, int padding);
+int RSA_public_decrypt(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
 int RSA_private_decrypt(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding);
 void RSA_free(RSA *r);
 /* "up" the RSA object's reference count */

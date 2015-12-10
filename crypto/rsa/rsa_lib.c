@@ -229,7 +229,8 @@ void RSA_free(RSA *r)
     if (i > 0)
         return;
 #ifdef REF_CHECK
-    if (i < 0) {
+    if (i < 0) 
+	{
         fprintf(stderr, "RSA_free, bad reference count\n");
         abort();
     }

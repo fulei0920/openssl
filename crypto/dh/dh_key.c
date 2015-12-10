@@ -98,7 +98,8 @@ int DH_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
     return dh->meth->compute_key(key, pub_key, dh);
 }
 
-static DH_METHOD dh_ossl = {
+static DH_METHOD dh_ossl = 
+{
     "OpenSSL DH Method",
     generate_key,
     compute_key,
@@ -128,30 +129,42 @@ static int generate_key(DH *dh)
     if (ctx == NULL)
         goto err;
 
-    if (dh->priv_key == NULL) {
+    if (dh->priv_key == NULL)
+	{
         priv_key = BN_new();
         if (priv_key == NULL)
             goto err;
         generate_new_key = 1;
-    } else
-        priv_key = dh->priv_key;
+    } 
+	else
+	{
+		priv_key = dh->priv_key;
+	}
+        
 
-    if (dh->pub_key == NULL) {
+    if (dh->pub_key == NULL) 
+	{
         pub_key = BN_new();
         if (pub_key == NULL)
             goto err;
-    } else
-        pub_key = dh->pub_key;
+    } 
+	else
+	{
+		pub_key = dh->pub_key;
+	}
+        
 
-    if (dh->flags & DH_FLAG_CACHE_MONT_P) {
-        mont = BN_MONT_CTX_set_locked(&dh->method_mont_p,
-                                      CRYPTO_LOCK_DH, dh->p, ctx);
+    if (dh->flags & DH_FLAG_CACHE_MONT_P)
+	{
+        mont = BN_MONT_CTX_set_locked(&dh->method_mont_p,  CRYPTO_LOCK_DH, dh->p, ctx);
         if (!mont)
             goto err;
     }
 
-    if (generate_new_key) {
-        if (dh->q) {
+    if (generate_new_key) 
+	{
+        if (dh->q) 
+		{
             do {
                 if (!BN_rand_range(priv_key, dh->q))
                     goto err;

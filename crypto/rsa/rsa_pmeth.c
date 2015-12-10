@@ -608,7 +608,8 @@ static int pkey_rsa_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
     RSA_PKEY_CTX *rctx = ctx->data;
     BN_GENCB *pcb, cb;
     int ret;
-    if (!rctx->pub_exp) {
+    if (!rctx->pub_exp) 
+	{
         rctx->pub_exp = BN_new();
         if (!rctx->pub_exp || !BN_set_word(rctx->pub_exp, RSA_F4))
             return 0;

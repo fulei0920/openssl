@@ -121,12 +121,14 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
     int ret = 0, bit, bytes, mask;
     time_t tim;
 
-    if (bits < 0 || (bits == 1 && top > 0)) {
+    if (bits < 0 || (bits == 1 && top > 0)) 
+	{
         BNerr(BN_F_BNRAND, BN_R_BITS_TOO_SMALL);
         return 0;
     }
 
-    if (bits == 0) {
+    if (bits == 0)
+	{
         BN_zero(rnd);
         return 1;
     }
@@ -136,7 +138,8 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
     mask = 0xff << (bit + 1);
 
     buf = (unsigned char *)OPENSSL_malloc(bytes);
-    if (buf == NULL) {
+    if (buf == NULL)
+	{
         BNerr(BN_F_BNRAND, ERR_R_MALLOC_FAILURE);
         goto err;
     }
@@ -145,16 +148,20 @@ static int bnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
     time(&tim);
     RAND_add(&tim, sizeof(tim), 0.0);
 
-    if (pseudorand) {
+    if (pseudorand)
+	{
         if (RAND_pseudo_bytes(buf, bytes) == -1)
             goto err;
-    } else {
+    }
+	else 
+    {
         if (RAND_bytes(buf, bytes) <= 0)
             goto err;
     }
 
 #if 1
-    if (pseudorand == 2) {
+    if (pseudorand == 2) 
+	{
         /*
          * generate patterns that are more likely to trigger BN library bugs
          */

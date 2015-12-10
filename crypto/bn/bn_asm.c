@@ -342,7 +342,8 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
         return ((BN_ULONG)0);
 
 # ifndef OPENSSL_SMALL_FOOTPRINT
-    while (n & ~3) {
+    while (n & ~3)
+	{
         ll += (BN_ULLONG) a[0] + b[0];
         r[0] = (BN_ULONG)ll & BN_MASK2;
         ll >>= BN_BITS2;
@@ -373,8 +374,7 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
     return ((BN_ULONG)ll);
 }
 #else                           /* !BN_LLONG */
-BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
-                      int n)
+BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b, int n)
 {
     BN_ULONG c, l, t;
 
@@ -415,7 +415,8 @@ BN_ULONG bn_add_words(BN_ULONG *r, const BN_ULONG *a, const BN_ULONG *b,
         n -= 4;
     }
 # endif
-    while (n) {
+    while (n) 
+	{
         t = a[0];
         t = (t + c) & BN_MASK2;
         c = (t < c);

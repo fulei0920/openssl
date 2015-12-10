@@ -71,7 +71,8 @@ struct asn1_pctx_st {
 
 /* ASN1 public key method structure */
 
-struct evp_pkey_asn1_method_st {
+struct evp_pkey_asn1_method_st 
+{
     int pkey_id;
     int pkey_base_id;
     unsigned long pkey_flags;

@@ -1721,9 +1721,7 @@ int ssl3_get_key_exchange(SSL *s)
 # ifndef OPENSSL_NO_DSA
         else if (alg_a & SSL_aDSS)
             pkey =
-                X509_get_pubkey(s->session->
-                                sess_cert->peer_pkeys[SSL_PKEY_DSA_SIGN].
-                                x509);
+                X509_get_pubkey(s->session->sess_cert->peer_pkeys[SSL_PKEY_DSA_SIGN].x509);
 # endif
         /* else anonymous DH, so no certificate or pkey. */
 
@@ -1853,7 +1851,8 @@ int ssl3_get_key_exchange(SSL *s)
 
     /* if it was signed, check the signature */
     if (pkey != NULL) {
-        if (TLS1_get_version(s) >= TLS1_2_VERSION) {
+        if (TLS1_get_version(s) >= TLS1_2_VERSION) 
+		{
             int sigalg;
             if (2 > n) {
                 SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_LENGTH_TOO_SHORT);
@@ -1883,10 +1882,15 @@ int ssl3_get_key_exchange(SSL *s)
 #endif
             p += 2;
             n -= 2;
-        } else
-            md = EVP_sha1();
+        } 
+		else
+		{
+			md = EVP_sha1();
+		}
+            
 
-        if (2 > n) {
+        if (2 > n) 
+		{
             SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_LENGTH_TOO_SHORT);
             goto f_err;
         }
@@ -1935,7 +1939,8 @@ int ssl3_get_key_exchange(SSL *s)
                 SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_BAD_SIGNATURE);
                 goto f_err;
             }
-        } else
+        }
+		else
 #endif
         {
             EVP_VerifyInit_ex(&md_ctx, md, NULL);
@@ -1944,7 +1949,8 @@ int ssl3_get_key_exchange(SSL *s)
             EVP_VerifyUpdate(&md_ctx, &(s->s3->server_random[0]),
                              SSL3_RANDOM_SIZE);
             EVP_VerifyUpdate(&md_ctx, param, param_len);
-            if (EVP_VerifyFinal(&md_ctx, p, (int)n, pkey) <= 0) {
+            if (EVP_VerifyFinal(&md_ctx, p, (int)n, pkey) <= 0) 
+			{
                 /* bad signature */
                 al = SSL_AD_DECRYPT_ERROR;
                 SSLerr(SSL_F_SSL3_GET_KEY_EXCHANGE, SSL_R_BAD_SIGNATURE);

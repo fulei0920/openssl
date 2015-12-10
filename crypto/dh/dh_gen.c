@@ -73,8 +73,7 @@
 static int dh_builtin_genparams(DH *ret, int prime_len, int generator,
                                 BN_GENCB *cb);
 
-int DH_generate_parameters_ex(DH *ret, int prime_len, int generator,
-                              BN_GENCB *cb)
+int DH_generate_parameters_ex(DH *ret, int prime_len, int generator, BN_GENCB *cb)
 {
 #ifdef OPENSSL_FIPS
     if (FIPS_mode() && !(ret->meth->flags & DH_FLAG_FIPS_METHOD)

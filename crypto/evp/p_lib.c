@@ -180,7 +180,8 @@ EVP_PKEY *EVP_PKEY_new(void)
     EVP_PKEY *ret;
 
     ret = (EVP_PKEY *)OPENSSL_malloc(sizeof(EVP_PKEY));
-    if (ret == NULL) {
+    if (ret == NULL)
+	{
         EVPerr(EVP_F_EVP_PKEY_NEW, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }

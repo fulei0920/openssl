@@ -75,9 +75,11 @@ int BN_add(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
      * -a +  b      b-a
      * -a + -b      -(a+b)
      */
-    if (a_neg ^ b->neg) {
+    if (a_neg ^ b->neg) 
+	{
         /* only one is negative */
-        if (a_neg) {
+        if (a_neg) 
+		{
             tmp = a;
             a = b;
             b = tmp;
@@ -113,7 +115,8 @@ int BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
     bn_check_top(a);
     bn_check_top(b);
 
-    if (a->top < b->top) {
+    if (a->top < b->top)
+	{
         tmp = a;
         a = b;
         b = tmp;
@@ -136,27 +139,34 @@ int BN_uadd(BIGNUM *r, const BIGNUM *a, const BIGNUM *b)
     ap += min;
     bp += min;
 
-    if (carry) {
-        while (dif) {
+    if (carry) 
+	{
+        while (dif) 
+		{
             dif--;
             t1 = *(ap++);
             t2 = (t1 + 1) & BN_MASK2;
             *(rp++) = t2;
-            if (t2) {
+            if (t2) 
+			{
                 carry = 0;
                 break;
             }
         }
-        if (carry) {
+        if (carry)
+		{
             /* carry != 0 => dif == 0 */
             *rp = 1;
             r->top++;
         }
     }
     if (dif && rp != ap)
+    {
         while (dif--)
             /* copy remaining words if ap != rp */
             *(rp++) = *(ap++);
+	}
+
     r->neg = 0;
     bn_check_top(r);
     return 1;

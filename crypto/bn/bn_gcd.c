@@ -223,8 +223,11 @@ static BIGNUM *BN_mod_inverse_no_branch(BIGNUM *in,
                                         const BIGNUM *a, const BIGNUM *n,
                                         BN_CTX *ctx);
 
-BIGNUM *BN_mod_inverse(BIGNUM *in,
-                       const BIGNUM *a, const BIGNUM *n, BN_CTX *ctx)
+/*
+computes the inverse of a modulo n places the result in r ((a*r)%n==1). 
+If r is NULL, a new BIGNUM is created
+*/
+BIGNUM *BN_mod_inverse(BIGNUM *in, const BIGNUM *a, const BIGNUM *n, BN_CTX *ctx)
 {
     BIGNUM *A, *B, *X, *Y, *M, *D, *T, *R = NULL;
     BIGNUM *ret = NULL;

@@ -519,8 +519,7 @@ BN_MONT_CTX *BN_MONT_CTX_copy(BN_MONT_CTX *to, BN_MONT_CTX *from)
     return (to);
 }
 
-BN_MONT_CTX *BN_MONT_CTX_set_locked(BN_MONT_CTX **pmont, int lock,
-                                    const BIGNUM *mod, BN_CTX *ctx)
+BN_MONT_CTX *BN_MONT_CTX_set_locked(BN_MONT_CTX **pmont, int lock, const BIGNUM *mod, BN_CTX *ctx)
 {
     BN_MONT_CTX *ret;
 
@@ -548,7 +547,8 @@ BN_MONT_CTX *BN_MONT_CTX_set_locked(BN_MONT_CTX **pmont, int lock,
 
     /* The locked compare-and-set, after the local work is done. */
     CRYPTO_w_lock(lock);
-    if (*pmont) {
+    if (*pmont) 
+	{
         BN_MONT_CTX_free(ret);
         ret = *pmont;
     } else

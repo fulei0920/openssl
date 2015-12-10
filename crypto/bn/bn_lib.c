@@ -324,7 +324,8 @@ static BN_ULONG *bn_expand_internal(const BIGNUM *b, int words)
     /* Check if the previous number needs to be copied */
     if (B != NULL)
 	{
-        for (i = b->top >> 2; i > 0; i--, A += 4, B += 4) {
+        for (i = b->top >> 2; i > 0; i--, A += 4, B += 4) 
+		{
             /*
              * The fact that the loop is unrolled
              * 4-wise is a tribute to Intel. It's

@@ -124,8 +124,7 @@ static int RSA_eay_public_decrypt(int flen, const unsigned char *from,
                                   unsigned char *to, RSA *rsa, int padding);
 static int RSA_eay_private_decrypt(int flen, const unsigned char *from,
                                    unsigned char *to, RSA *rsa, int padding);
-static int RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *i, RSA *rsa,
-                           BN_CTX *ctx);
+static int RSA_eay_mod_exp(BIGNUM *r0, const BIGNUM *i, RSA *rsa, BN_CTX *ctx);
 static int RSA_eay_init(RSA *rsa);
 static int RSA_eay_finish(RSA *rsa);
 static RSA_METHOD rsa_pkcs1_eay_meth = 
@@ -171,8 +170,10 @@ static int RSA_eay_public_encrypt(int flen, const unsigned char *from, unsigned 
     }
 
     /* for large moduli, enforce exponent limit */
-    if (BN_num_bits(rsa->n) > OPENSSL_RSA_SMALL_MODULUS_BITS) {
-        if (BN_num_bits(rsa->e) > OPENSSL_RSA_MAX_PUBEXP_BITS) {
+    if (BN_num_bits(rsa->n) > OPENSSL_RSA_SMALL_MODULUS_BITS) 
+	{
+        if (BN_num_bits(rsa->e) > OPENSSL_RSA_MAX_PUBEXP_BITS) 
+		{
             RSAerr(RSA_F_RSA_EAY_PUBLIC_ENCRYPT, RSA_R_BAD_E_VALUE);
             return -1;
         }
@@ -185,12 +186,14 @@ static int RSA_eay_public_encrypt(int flen, const unsigned char *from, unsigned 
     ret = BN_CTX_get(ctx);
     num = BN_num_bytes(rsa->n);
     buf = OPENSSL_malloc(num);
-    if (!f || !ret || !buf) {
+    if (!f || !ret || !buf) 
+	{
         RSAerr(RSA_F_RSA_EAY_PUBLIC_ENCRYPT, ERR_R_MALLOC_FAILURE);
         goto err;
     }
 
-    switch (padding) {
+    switch (padding)
+	{
     case RSA_PKCS1_PADDING:
         i = RSA_padding_add_PKCS1_type_2(buf, num, from, flen);
         break;
@@ -215,16 +218,15 @@ static int RSA_eay_public_encrypt(int flen, const unsigned char *from, unsigned 
     if (BN_bin2bn(buf, num, f) == NULL)
         goto err;
 
-    if (BN_ucmp(f, rsa->n) >= 0) {
+    if (BN_ucmp(f, rsa->n) >= 0) 
+	{
         /* usually the padding functions would catch this */
-        RSAerr(RSA_F_RSA_EAY_PUBLIC_ENCRYPT,
-               RSA_R_DATA_TOO_LARGE_FOR_MODULUS);
+        RSAerr(RSA_F_RSA_EAY_PUBLIC_ENCRYPT, RSA_R_DATA_TOO_LARGE_FOR_MODULUS);
         goto err;
     }
 
     if (rsa->flags & RSA_FLAG_CACHE_PUBLIC)
-        if (!BN_MONT_CTX_set_locked
-            (&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
+        if (!BN_MONT_CTX_set_locked(&rsa->_method_mod_n, CRYPTO_LOCK_RSA, rsa->n, ctx))
             goto err;
 
     if (!rsa->meth->bn_mod_exp(ret, f, rsa->e, rsa->n, ctx, rsa->_method_mod_n))

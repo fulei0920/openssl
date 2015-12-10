@@ -264,7 +264,8 @@ DH *get_dh2048()
         return NULL;
     dh->p=BN_bin2bn(dh2048_p, sizeof(dh2048_p), NULL);
     dh->g=BN_bin2bn(dh2048_g, sizeof(dh2048_g), NULL);
-    if (dh->p == NULL || dh->g == NULL) {
+    if (dh->p == NULL || dh->g == NULL) 
+	{
         DH_free(dh);
         return NULL;
     }
@@ -2928,6 +2929,7 @@ static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 
     if (!rsa_tmp && ((bn = BN_new()) == NULL))
         BIO_printf(bio_err, "Allocation error in generating RSA key\n");
+	
     if (!rsa_tmp && bn) 
 	{
         if (!s_quiet) 

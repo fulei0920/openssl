@@ -201,8 +201,7 @@ BN_ULONG bn_div_words(BN_ULONG h, BN_ULONG l, BN_ULONG d)
     return ret;
 }
 
-BN_ULONG bn_add_words(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp,
-                      int n)
+BN_ULONG bn_add_words(BN_ULONG *rp, const BN_ULONG *ap, const BN_ULONG *bp, int n)
 {
     BN_ULONG ret = 0, i = 0;
 

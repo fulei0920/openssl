@@ -326,7 +326,8 @@ ENGINE *ENGINE_by_id(const char *id)
 {
     ENGINE *iterator;
     char *load_dir = NULL;
-    if (id == NULL) {
+    if (id == NULL) 
+	{
         ENGINEerr(ENGINE_F_ENGINE_BY_ID, ERR_R_PASSED_NULL_PARAMETER);
         return NULL;
     }

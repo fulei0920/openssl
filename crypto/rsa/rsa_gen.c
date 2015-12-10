@@ -148,77 +148,92 @@ static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb)
     /* generate p and q */
     for (;;)
 	{
-        if (!BN_generate_prime_ex(rsa->p, bitsp, 0, NULL, NULL, cb))
+        if (!BN_generate_prime_ex(rsa->p, bitsp, 0, NULL, NULL, cb))   //p = prime
             goto err;
-        if (!BN_sub(r2, rsa->p, BN_value_one()))
+        if (!BN_sub(r2, rsa->p, BN_value_one()))  //r2 = p-1
             goto err;
-        if (!BN_gcd(r1, r2, rsa->e, ctx))
+        if (!BN_gcd(r1, r2, rsa->e, ctx))  // r1 = gcd(r2, e)
             goto err;
-        if (BN_is_one(r1))
+        if (BN_is_one(r1))	// 1= gcd(e, p -1)			
             break;
         if (!BN_GENCB_call(cb, 2, n++))
             goto err;
     }
     if (!BN_GENCB_call(cb, 3, 0))
         goto err;
-    for (;;) {
+	
+    for (;;) 
+	{
         /*
          * When generating ridiculously small keys, we can get stuck
          * continually regenerating the same prime values. Check for this and
          * bail if it happens 3 times.
          */
         unsigned int degenerate = 0;
-        do {
-            if (!BN_generate_prime_ex(rsa->q, bitsq, 0, NULL, NULL, cb))
+        do 
+		{
+            if (!BN_generate_prime_ex(rsa->q, bitsq, 0, NULL, NULL, cb))  // q = prime
                 goto err;
         } while ((BN_cmp(rsa->p, rsa->q) == 0) && (++degenerate < 3));
-        if (degenerate == 3) {
+        if (degenerate == 3)
+		{
             ok = 0;             /* we set our own err */
             RSAerr(RSA_F_RSA_BUILTIN_KEYGEN, RSA_R_KEY_SIZE_TOO_SMALL);
             goto err;
         }
-        if (!BN_sub(r2, rsa->q, BN_value_one()))
+        if (!BN_sub(r2, rsa->q, BN_value_one()))  //r2 = q -1;
             goto err;
-        if (!BN_gcd(r1, r2, rsa->e, ctx))
+        if (!BN_gcd(r1, r2, rsa->e, ctx)) // gcd(r2, e)
             goto err;
-        if (BN_is_one(r1))
+        if (BN_is_one(r1))		// 1= gcd(e, q -1)
             break;
         if (!BN_GENCB_call(cb, 2, n++))
             goto err;
     }
     if (!BN_GENCB_call(cb, 3, 1))
         goto err;
-    if (BN_cmp(rsa->p, rsa->q) < 0) {
+    if (BN_cmp(rsa->p, rsa->q) < 0) 
+	{
         tmp = rsa->p;
         rsa->p = rsa->q;
         rsa->q = tmp;
     }
 
     /* calculate n */
-    if (!BN_mul(rsa->n, rsa->p, rsa->q, ctx))
+    if (!BN_mul(rsa->n, rsa->p, rsa->q, ctx))  // n = p *q
         goto err;
 
     /* calculate d */
-    if (!BN_sub(r1, rsa->p, BN_value_one()))
+    if (!BN_sub(r1, rsa->p, BN_value_one()))  //r1 = p -1
         goto err;               /* p-1 */
-    if (!BN_sub(r2, rsa->q, BN_value_one()))
+    if (!BN_sub(r2, rsa->q, BN_value_one()))  //r2 = q-1
         goto err;               /* q-1 */
-    if (!BN_mul(r0, r1, r2, ctx))
-        goto err;               /* (p-1)(q-1) */
-    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
+    if (!BN_mul(r0, r1, r2, ctx))			/* r0 = (p-1)(q-1) */
+        goto err;               
+    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) 
+	{
         pr0 = &local_r0;
         BN_with_flags(pr0, r0, BN_FLG_CONSTTIME);
-    } else
-        pr0 = r0;
-    if (!BN_mod_inverse(rsa->d, rsa->e, pr0, ctx))
+    } 
+	else
+	{
+		pr0 = r0;
+	}
+        
+    if (!BN_mod_inverse(rsa->d, rsa->e, pr0, ctx))   /*  (e*d)%((p-1)*(q-1)) = 1*/
         goto err;               /* d */
 
     /* set up d for correct BN_FLG_CONSTTIME flag */
-    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
+    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) 
+	{
         d = &local_d;
         BN_with_flags(d, rsa->d, BN_FLG_CONSTTIME);
-    } else
-        d = rsa->d;
+    } 
+	else
+    {
+		d = rsa->d;
+	}
+        
 
     /* calculate d mod (p-1) */
     if (!BN_mod(rsa->dmp1, d, r1, ctx))
@@ -229,11 +244,16 @@ static int rsa_builtin_keygen(RSA *rsa, int bits, BIGNUM *e_value, BN_GENCB *cb)
         goto err;
 
     /* calculate inverse of q mod p */
-    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) {
+    if (!(rsa->flags & RSA_FLAG_NO_CONSTTIME)) 
+	{
         p = &local_p;
         BN_with_flags(p, rsa->p, BN_FLG_CONSTTIME);
-    } else
-        p = rsa->p;
+    } 
+	else
+	{
+		p = rsa->p;
+	}
+        
     if (!BN_mod_inverse(rsa->iqmp, rsa->q, p, ctx))
         goto err;
 

@@ -133,13 +133,15 @@ int BN_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
     int i, bits, ret = 0;
     BIGNUM *v, *rr;
 
-    if (BN_get_flags(p, BN_FLG_CONSTTIME) != 0) {
+    if (BN_get_flags(p, BN_FLG_CONSTTIME) != 0) 
+	{
         /* BN_FLG_CONSTTIME only supported by BN_mod_exp_mont() */
         BNerr(BN_F_BN_EXP, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
         return -1;
     }
 
     BN_CTX_start(ctx);
+	
     if ((r == a) || (r == p))
         rr = BN_CTX_get(ctx);
     else
@@ -150,20 +152,26 @@ int BN_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
 
     if (BN_copy(v, a) == NULL)
         goto err;
+	
     bits = BN_num_bits(p);
 
-    if (BN_is_odd(p)) {
+    if (BN_is_odd(p)) 
+	{
         if (BN_copy(rr, a) == NULL)
             goto err;
-    } else {
+    } 
+	else 
+	{
         if (!BN_one(rr))
             goto err;
     }
 
-    for (i = 1; i < bits; i++) {
+    for (i = 1; i < bits; i++) 
+	{
         if (!BN_sqr(v, v, ctx))
             goto err;
-        if (BN_is_bit_set(p, i)) {
+        if (BN_is_bit_set(p, i))
+		{
             if (!BN_mul(rr, rr, v, ctx))
                 goto err;
         }
@@ -177,8 +185,7 @@ int BN_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, BN_CTX *ctx)
     return (ret);
 }
 
-int BN_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
-               BN_CTX *ctx)
+int BN_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx)
 {
     int ret;
 
@@ -254,8 +261,7 @@ int BN_mod_exp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m,
     return (ret);
 }
 
-int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p,
-                    const BIGNUM *m, BN_CTX *ctx)
+int BN_mod_exp_recp(BIGNUM *r, const BIGNUM *a, const BIGNUM *p, const BIGNUM *m, BN_CTX *ctx)
 {
     int i, j, bits, ret = 0, wstart, wend, window, wvalue;
     int start = 1;
@@ -401,12 +407,14 @@ int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p, const BIGNUM *
     bn_check_top(p);
     bn_check_top(m);
 
-    if (!BN_is_odd(m)) {
+    if (!BN_is_odd(m)) 
+	{
         BNerr(BN_F_BN_MOD_EXP_MONT, BN_R_CALLED_WITH_EVEN_MODULUS);
         return (0);
     }
     bits = BN_num_bits(p);
-    if (bits == 0) {
+    if (bits == 0) 
+	{
         ret = BN_one(rr);
         return ret;
     }
@@ -424,7 +432,8 @@ int BN_mod_exp_mont(BIGNUM *rr, const BIGNUM *a, const BIGNUM *p, const BIGNUM *
 
     if (in_mont != NULL)
         mont = in_mont;
-    else {
+    else 
+	{
         if ((mont = BN_MONT_CTX_new()) == NULL)
             goto err;
         if (!BN_MONT_CTX_set(mont, m, ctx))

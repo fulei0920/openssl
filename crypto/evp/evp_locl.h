@@ -237,7 +237,8 @@ const EVP_CIPHER *EVP_##cname##_ecb(void) { return &cname##_ecb; }
                              EVP_CIPHER_get_asn1_iv, \
                              NULL)
 
-struct evp_pkey_ctx_st {
+struct evp_pkey_ctx_st 
+{
     /* Method associated with this operation */
     const EVP_PKEY_METHOD *pmeth;
     /* Engine that implements this method or NULL if builtin */

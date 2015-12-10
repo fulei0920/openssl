@@ -1884,8 +1884,7 @@ int ssl3_send_server_key_exchange(SSL *s)
                                             POINT_CONVERSION_UNCOMPRESSED,
                                             NULL, 0, NULL);
 
-            encodedPoint = (unsigned char *)
-                OPENSSL_malloc(encodedlen * sizeof(unsigned char));
+            encodedPoint = (unsigned char *) OPENSSL_malloc(encodedlen * sizeof(unsigned char));
             bn_ctx = BN_CTX_new();
             if ((encodedPoint == NULL) || (bn_ctx == NULL))
 			{
@@ -1955,6 +1954,7 @@ int ssl3_send_server_key_exchange(SSL *s)
             SSLerr(SSL_F_SSL3_SEND_SERVER_KEY_EXCHANGE, SSL_R_UNKNOWN_KEY_EXCHANGE_TYPE);
             goto f_err;
         }
+
 
         for (i = 0; i < 4 && r[i] != NULL; i++)
 		{
@@ -2393,7 +2393,8 @@ int ssl3_get_client_key_exchange(SSL *s)
          * protocol version. If SSL_OP_TLS_ROLLBACK_BUG is set, tolerate such
          * clients.
          */
-        if (s->options & SSL_OP_TLS_ROLLBACK_BUG) {
+        if (s->options & SSL_OP_TLS_ROLLBACK_BUG) 
+		{
             unsigned char workaround_good;
             workaround_good =
                 constant_time_eq_8(p[0], (unsigned)(s->version >> 8));
@@ -2490,8 +2491,7 @@ int ssl3_get_client_key_exchange(SSL *s)
 
         BN_clear_free(pub);
         pub = NULL;
-        s->session->master_key_length =
-            s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, i);
+        s->session->master_key_length = s->method->ssl3_enc->generate_master_secret(s, s->session->master_key, p, i);
         OPENSSL_cleanse(p, i);
     } 
 	else
@@ -2697,16 +2697,20 @@ int ssl3_get_client_key_exchange(SSL *s)
         const BIGNUM *priv_key;
 
         /* initialize structures for server's ECDH key pair */
-        if ((srvr_ecdh = EC_KEY_new()) == NULL) {
+        if ((srvr_ecdh = EC_KEY_new()) == NULL) 
+		{
             SSLerr(SSL_F_SSL3_GET_CLIENT_KEY_EXCHANGE, ERR_R_MALLOC_FAILURE);
             goto err;
         }
 
         /* Let's get server private key and group information */
-        if (alg_k & (SSL_kECDHr | SSL_kECDHe)) {
+        if (alg_k & (SSL_kECDHr | SSL_kECDHe))
+		{
             /* use the certificate */
             tkey = s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec;
-        } else {
+        }
+		else 
+		{
             /*
              * use the ephermeral values we saved when generating the
              * ServerKeyExchange msg.

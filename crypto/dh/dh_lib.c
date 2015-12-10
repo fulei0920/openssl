@@ -79,7 +79,8 @@ void DH_set_default_method(const DH_METHOD *meth)
 
 const DH_METHOD *DH_get_default_method(void)
 {
-    if (!default_DH_method) {
+    if (!default_DH_method) 
+	{
 #ifdef OPENSSL_FIPS
         if (FIPS_mode())
             return FIPS_dh_openssl();
@@ -103,7 +104,8 @@ int DH_set_method(DH *dh, const DH_METHOD *meth)
     if (mtmp->finish)
         mtmp->finish(dh);
 #ifndef OPENSSL_NO_ENGINE
-    if (dh->engine) {
+    if (dh->engine) 
+	{
         ENGINE_finish(dh->engine);
         dh->engine = NULL;
     }
@@ -124,15 +126,18 @@ DH *DH_new_method(ENGINE *engine)
     DH *ret;
 
     ret = (DH *)OPENSSL_malloc(sizeof(DH));
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         DHerr(DH_F_DH_NEW_METHOD, ERR_R_MALLOC_FAILURE);
         return (NULL);
     }
 
     ret->meth = DH_get_default_method();
 #ifndef OPENSSL_NO_ENGINE
-    if (engine) {
-        if (!ENGINE_init(engine)) {
+    if (engine) 
+	{
+        if (!ENGINE_init(engine))
+		{
             DHerr(DH_F_DH_NEW_METHOD, ERR_R_ENGINE_LIB);
             OPENSSL_free(ret);
             return NULL;
@@ -140,7 +145,8 @@ DH *DH_new_method(ENGINE *engine)
         ret->engine = engine;
     } else
         ret->engine = ENGINE_get_default_DH();
-    if (ret->engine) {
+    if (ret->engine) 
+	{
         ret->meth = ENGINE_get_DH(ret->engine);
         if (!ret->meth) {
             DHerr(DH_F_DH_NEW_METHOD, ERR_R_ENGINE_LIB);
@@ -167,7 +173,8 @@ DH *DH_new_method(ENGINE *engine)
     ret->references = 1;
     ret->flags = ret->meth->flags & ~DH_FLAG_NON_FIPS_ALLOW;
     CRYPTO_new_ex_data(CRYPTO_EX_INDEX_DH, ret, &ret->ex_data);
-    if ((ret->meth->init != NULL) && !ret->meth->init(ret)) {
+    if ((ret->meth->init != NULL) && !ret->meth->init(ret))
+	{
 #ifndef OPENSSL_NO_ENGINE
         if (ret->engine)
             ENGINE_finish(ret->engine);

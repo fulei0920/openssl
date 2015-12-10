@@ -1923,8 +1923,7 @@ int SSL_CTX_get_verify_mode(const SSL_CTX *ctx);
 int SSL_CTX_get_verify_depth(const SSL_CTX *ctx);
 int (*SSL_CTX_get_verify_callback(const SSL_CTX *ctx)) (int,
                                                         X509_STORE_CTX *);
-void SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
-                        int (*callback) (int, X509_STORE_CTX *));
+void SSL_CTX_set_verify(SSL_CTX *ctx, int mode, int (*callback) (int, X509_STORE_CTX *));
 void SSL_CTX_set_verify_depth(SSL_CTX *ctx, int depth);
 void SSL_CTX_set_cert_verify_callback(SSL_CTX *ctx,
                                       int (*cb) (X509_STORE_CTX *, void *),
