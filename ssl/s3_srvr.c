@@ -629,7 +629,8 @@ int ssl3_accept(SSL *s)
             ret = ssl3_get_client_key_exchange(s);
             if (ret <= 0)
                 goto end;
-            if (ret == 2) {
+            if (ret == 2) 
+			{
                 /*
                  * For the ECDH ciphersuites when the client sends its ECDH
                  * pub key in a certificate, the CertificateVerify message is
@@ -1326,7 +1327,8 @@ int ssl3_get_client_hello(SSL *s)
         }
     }
 
-    if (!s->hit && s->version >= TLS1_VERSION && s->tls_session_secret_cb) {
+    if (!s->hit && s->version >= TLS1_VERSION && s->tls_session_secret_cb) 
+	{
         SSL_CIPHER *pref_cipher = NULL;
 
         s->session->master_key_length = sizeof(s->session->master_key);
@@ -1380,14 +1382,16 @@ int ssl3_get_client_hello(SSL *s)
         int m, comp_id = s->session->compress_meth;
         /* Perform sanity checks on resumed compression algorithm */
         /* Can't disable compression */
-        if (s->options & SSL_OP_NO_COMPRESSION) {
+        if (s->options & SSL_OP_NO_COMPRESSION) 
+		{
             al = SSL_AD_INTERNAL_ERROR;
             SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO,
                    SSL_R_INCONSISTENT_COMPRESSION);
             goto f_err;
         }
         /* Look for resumed compression method */
-        for (m = 0; m < sk_SSL_COMP_num(s->ctx->comp_methods); m++) {
+        for (m = 0; m < sk_SSL_COMP_num(s->ctx->comp_methods); m++) 
+		{
             comp = sk_SSL_COMP_value(s->ctx->comp_methods, m);
             if (comp_id == comp->id) {
                 s->s3->tmp.new_compression = comp;
@@ -1470,8 +1474,8 @@ int ssl3_get_client_hello(SSL *s)
             goto f_err;
         }
         ciphers = NULL;
+		
         c = ssl3_choose_cipher(s, s->session->ciphers, SSL_get_ciphers(s));
-
         if (c == NULL) 
 		{
             al = SSL_AD_HANDSHAKE_FAILURE;
@@ -3182,7 +3186,8 @@ int ssl3_get_cert_verify(SSL *s)
         }
     } else
 #ifndef OPENSSL_NO_RSA
-    if (pkey->type == EVP_PKEY_RSA) {
+    if (pkey->type == EVP_PKEY_RSA)
+	{
         i = RSA_verify(NID_md5_sha1, s->s3->tmp.cert_verify_md,
                        MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH, p, i,
                        pkey->pkey.rsa);

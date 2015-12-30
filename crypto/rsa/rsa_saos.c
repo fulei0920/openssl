@@ -63,10 +63,7 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
-int RSA_sign_ASN1_OCTET_STRING(int type,
-                               const unsigned char *m, unsigned int m_len,
-                               unsigned char *sigret, unsigned int *siglen,
-                               RSA *rsa)
+int RSA_sign_ASN1_OCTET_STRING(int type, const unsigned char *m, unsigned int m_len, unsigned char *sigret, unsigned int *siglen, RSA *rsa)
 {
     ASN1_OCTET_STRING sig;
     int i, j, ret = 1;

@@ -73,7 +73,8 @@ extern const EVP_PKEY_ASN1_METHOD hmac_asn1_meth;
 extern const EVP_PKEY_ASN1_METHOD cmac_asn1_meth;
 
 /* Keep this sorted in type order !! */
-static const EVP_PKEY_ASN1_METHOD *standard_methods[] = {
+static const EVP_PKEY_ASN1_METHOD *standard_methods[] = 
+{
 #ifndef OPENSSL_NO_RSA
     &rsa_asn1_meths[0],
     &rsa_asn1_meths[1],
@@ -191,18 +192,19 @@ const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find(ENGINE **pe, int type)
     return t;
 }
 
-const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find_str(ENGINE **pe,
-                                                   const char *str, int len)
+const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find_str(ENGINE **pe, const char *str, int len)
 {
     int i;
     const EVP_PKEY_ASN1_METHOD *ameth;
     if (len == -1)
         len = strlen(str);
-    if (pe) {
+    if (pe) 
+	{
 #ifndef OPENSSL_NO_ENGINE
         ENGINE *e;
         ameth = ENGINE_pkey_asn1_find_str(&e, str, len);
-        if (ameth) {
+        if (ameth) 
+		{
             /*
              * Convert structural into functional reference
              */
@@ -215,12 +217,13 @@ const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find_str(ENGINE **pe,
 #endif
         *pe = NULL;
     }
-    for (i = 0; i < EVP_PKEY_asn1_get_count(); i++) {
+	
+    for (i = 0; i < EVP_PKEY_asn1_get_count(); i++) 
+	{
         ameth = EVP_PKEY_asn1_get0(i);
         if (ameth->pkey_flags & ASN1_PKEY_ALIAS)
             continue;
-        if (((int)strlen(ameth->pem_str) == len) &&
-            !strncasecmp(ameth->pem_str, str, len))
+        if (((int)strlen(ameth->pem_str) == len) && !strncasecmp(ameth->pem_str, str, len))
             return ameth;
     }
     return NULL;

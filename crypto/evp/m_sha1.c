@@ -197,7 +197,8 @@ static int final512(EVP_MD_CTX *ctx, unsigned char *md)
     return SHA512_Final(md, ctx->md_data);
 }
 
-static const EVP_MD sha384_md = {
+static const EVP_MD sha384_md = 
+{
     NID_sha384,
     NID_sha384WithRSAEncryption,
     SHA384_DIGEST_LENGTH,
@@ -217,7 +218,8 @@ const EVP_MD *EVP_sha384(void)
     return (&sha384_md);
 }
 
-static const EVP_MD sha512_md = {
+static const EVP_MD sha512_md = 
+{
     NID_sha512,
     NID_sha512WithRSAEncryption,
     SHA512_DIGEST_LENGTH,

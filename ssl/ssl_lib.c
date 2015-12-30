@@ -2090,6 +2090,8 @@ void SSL_CTX_set_verify_depth(SSL_CTX *ctx, int depth)
     X509_VERIFY_PARAM_set_depth(ctx->param, depth);
 }
 
+
+/*根据加载的证书设置加密，密钥交换，签名等所能支持的算法掩码位*/
 void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 {
     CERT_PKEY *cpk;
@@ -2115,15 +2117,13 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 
 #ifndef OPENSSL_NO_RSA
     rsa_tmp = (c->rsa_tmp != NULL || c->rsa_tmp_cb != NULL);
-    rsa_tmp_export = (c->rsa_tmp_cb != NULL ||
-                      (rsa_tmp && RSA_size(c->rsa_tmp) * 8 <= kl));
+    rsa_tmp_export = (c->rsa_tmp_cb != NULL || (rsa_tmp && RSA_size(c->rsa_tmp) * 8 <= kl));
 #else
     rsa_tmp = rsa_tmp_export = 0;
 #endif
 #ifndef OPENSSL_NO_DH
     dh_tmp = (c->dh_tmp != NULL || c->dh_tmp_cb != NULL);
-    dh_tmp_export = (c->dh_tmp_cb != NULL ||
-                     (dh_tmp && DH_size(c->dh_tmp) * 8 <= kl));
+    dh_tmp_export = (c->dh_tmp_cb != NULL || (dh_tmp && DH_size(c->dh_tmp) * 8 <= kl));
 #else
     dh_tmp = dh_tmp_export = 0;
 #endif
@@ -2134,17 +2134,22 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     cpk = &(c->pkeys[SSL_PKEY_RSA_ENC]);
     rsa_enc = (cpk->x509 != NULL && cpk->privatekey != NULL);
     rsa_enc_export = (rsa_enc && EVP_PKEY_size(cpk->privatekey) * 8 <= kl);
+	
     cpk = &(c->pkeys[SSL_PKEY_RSA_SIGN]);
     rsa_sign = (cpk->x509 != NULL && cpk->privatekey != NULL);
+	
     cpk = &(c->pkeys[SSL_PKEY_DSA_SIGN]);
     dsa_sign = (cpk->x509 != NULL && cpk->privatekey != NULL);
+	
     cpk = &(c->pkeys[SSL_PKEY_DH_RSA]);
     dh_rsa = (cpk->x509 != NULL && cpk->privatekey != NULL);
     dh_rsa_export = (dh_rsa && EVP_PKEY_size(cpk->privatekey) * 8 <= kl);
+	
     cpk = &(c->pkeys[SSL_PKEY_DH_DSA]);
 /* FIX THIS EAY EAY EAY */
     dh_dsa = (cpk->x509 != NULL && cpk->privatekey != NULL);
     dh_dsa_export = (dh_dsa && EVP_PKEY_size(cpk->privatekey) * 8 <= kl);
+	
     cpk = &(c->pkeys[SSL_PKEY_ECC]);
 #ifndef OPENSSL_NO_EC
     have_ecc_cert = (cpk->x509 != NULL && cpk->privatekey != NULL);
@@ -2155,19 +2160,20 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     emask_a = 0;
 
 #ifdef CIPHER_DEBUG
-    fprintf(stderr,
-            "rt=%d rte=%d dht=%d ecdht=%d re=%d ree=%d rs=%d ds=%d dhr=%d dhd=%d\n",
-            rsa_tmp, rsa_tmp_export, dh_tmp, have_ecdh_tmp, rsa_enc,
-            rsa_enc_export, rsa_sign, dsa_sign, dh_rsa, dh_dsa);
+    fprintf(stderr, "rt=%d rte=%d dht=%d ecdht=%d re=%d ree=%d rs=%d ds=%d dhr=%d dhd=%d\n",
+            rsa_tmp, rsa_tmp_export, dh_tmp, have_ecdh_tmp, rsa_enc, rsa_enc_export, rsa_sign, dsa_sign, dh_rsa, dh_dsa);
 #endif
 
     cpk = &(c->pkeys[SSL_PKEY_GOST01]);
-    if (cpk->x509 != NULL && cpk->privatekey != NULL) {
+    if (cpk->x509 != NULL && cpk->privatekey != NULL) 
+	{
         mask_k |= SSL_kGOST;
         mask_a |= SSL_aGOST01;
     }
+	
     cpk = &(c->pkeys[SSL_PKEY_GOST94]);
-    if (cpk->x509 != NULL && cpk->privatekey != NULL) {
+    if (cpk->x509 != NULL && cpk->privatekey != NULL) 
+	{
         mask_k |= SSL_kGOST;
         mask_a |= SSL_aGOST94;
     }
@@ -2227,7 +2233,8 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
      * depending on the key usage extension.
      */
 #ifndef OPENSSL_NO_EC
-    if (have_ecc_cert) {
+    if (have_ecc_cert) 
+	{
         /* This call populates extension flags (ex_flags) */
         x = (c->pkeys[SSL_PKEY_ECC]).x509;
         X509_check_purpose(x, -1, 0);

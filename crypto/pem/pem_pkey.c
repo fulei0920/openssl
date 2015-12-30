@@ -128,7 +128,9 @@ EVP_PKEY *PEM_read_bio_PrivateKey(BIO *bp, EVP_PKEY **x, pem_password_cb *cb, vo
             *x = ret;
         }
         PKCS8_PRIV_KEY_INFO_free(p8inf);
-    } else if ((slen = pem_check_suffix(nm, "PRIVATE KEY")) > 0) {
+    } 
+	else if ((slen = pem_check_suffix(nm, "PRIVATE KEY")) > 0) 
+	{
         const EVP_PKEY_ASN1_METHOD *ameth;
         ameth = EVP_PKEY_asn1_find_str(NULL, nm, slen);
         if (!ameth || !ameth->old_priv_decode)

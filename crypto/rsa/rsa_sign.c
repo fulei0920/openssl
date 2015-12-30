@@ -67,8 +67,17 @@
 /* Size of an SSL signature: MD5+SHA1 */
 #define SSL_SIG_LENGTH  36
 
-int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
-             unsigned char *sigret, unsigned int *siglen, RSA *rsa)
+/*
+RSA_sign() signs the message digest m of size m_len using the private key rsa as specified in PKCS #1 v2.0. 
+It stores the signature in sigret and the signature size in siglen. sigret must point to RSA_size(rsa) bytes of memory. 
+Note that PKCS #1 adds meta-data, placing limits on the size of the key that can be used. 
+See RSA_private_encrypt for lower-level operations.
+
+type denotes the message digest algorithm that was used to generate m. 
+If type is NID_md5_sha1, an SSL signature (MD5 and SHA1 message digests with PKCS #1 padding and no algorithm identifier) is created.
+*/
+
+int RSA_sign(int type, const unsigned char *m, unsigned int m_len, unsigned char *sigret, unsigned int *siglen, RSA *rsa)
 {
     X509_SIG sig;
     ASN1_TYPE parameter;
@@ -79,32 +88,39 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
     ASN1_OCTET_STRING digest;
 #ifdef OPENSSL_FIPS
     if (FIPS_mode() && !(rsa->meth->flags & RSA_FLAG_FIPS_METHOD)
-        && !(rsa->flags & RSA_FLAG_NON_FIPS_ALLOW)) {
+        && !(rsa->flags & RSA_FLAG_NON_FIPS_ALLOW)) 
+    {
         RSAerr(RSA_F_RSA_SIGN, RSA_R_NON_FIPS_RSA_METHOD);
         return 0;
     }
 #endif
-    if ((rsa->flags & RSA_FLAG_SIGN_VER) && rsa->meth->rsa_sign) {
+    if ((rsa->flags & RSA_FLAG_SIGN_VER) && rsa->meth->rsa_sign) 
+	{
         return rsa->meth->rsa_sign(type, m, m_len, sigret, siglen, rsa);
     }
     /* Special case: SSL signature, just check the length */
-    if (type == NID_md5_sha1) {
-        if (m_len != SSL_SIG_LENGTH) {
+    if (type == NID_md5_sha1)
+	{
+        if (m_len != SSL_SIG_LENGTH) 
+		{
             RSAerr(RSA_F_RSA_SIGN, RSA_R_INVALID_MESSAGE_LENGTH);
             return (0);
         }
         i = SSL_SIG_LENGTH;
         s = m;
-    } else {
+    }
+	else 
+	{
         sig.algor = &algor;
         sig.algor->algorithm = OBJ_nid2obj(type);
-        if (sig.algor->algorithm == NULL) {
+        if (sig.algor->algorithm == NULL)
+		{
             RSAerr(RSA_F_RSA_SIGN, RSA_R_UNKNOWN_ALGORITHM_TYPE);
             return (0);
         }
-        if (sig.algor->algorithm->length == 0) {
-            RSAerr(RSA_F_RSA_SIGN,
-                   RSA_R_THE_ASN1_OBJECT_IDENTIFIER_IS_NOT_KNOWN_FOR_THIS_MD);
+        if (sig.algor->algorithm->length == 0) 
+		{
+            RSAerr(RSA_F_RSA_SIGN, RSA_R_THE_ASN1_OBJECT_IDENTIFIER_IS_NOT_KNOWN_FOR_THIS_MD);
             return (0);
         }
         parameter.type = V_ASN1_NULL;
@@ -118,13 +134,16 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
         i = i2d_X509_SIG(&sig, NULL);
     }
     j = RSA_size(rsa);
-    if (i > (j - RSA_PKCS1_PADDING_SIZE)) {
+    if (i > (j - RSA_PKCS1_PADDING_SIZE)) 
+	{
         RSAerr(RSA_F_RSA_SIGN, RSA_R_DIGEST_TOO_BIG_FOR_RSA_KEY);
         return (0);
     }
-    if (type != NID_md5_sha1) {
+    if (type != NID_md5_sha1) 
+	{
         tmps = (unsigned char *)OPENSSL_malloc((unsigned int)j + 1);
-        if (tmps == NULL) {
+        if (tmps == NULL) 
+		{
             RSAerr(RSA_F_RSA_SIGN, ERR_R_MALLOC_FAILURE);
             return (0);
         }
@@ -132,13 +151,15 @@ int RSA_sign(int type, const unsigned char *m, unsigned int m_len,
         i2d_X509_SIG(&sig, &p);
         s = tmps;
     }
+	
     i = RSA_private_encrypt(i, s, sigret, rsa, RSA_PKCS1_PADDING);
     if (i <= 0)
         ret = 0;
     else
         *siglen = i;
 
-    if (type != NID_md5_sha1) {
+    if (type != NID_md5_sha1) 
+	{
         OPENSSL_cleanse(tmps, (unsigned int)j + 1);
         OPENSSL_free(tmps);
     }

@@ -69,7 +69,8 @@
 # define ERR_FUNC(func) ERR_PACK(ERR_LIB_ECDSA,func,0)
 # define ERR_REASON(reason) ERR_PACK(ERR_LIB_ECDSA,0,reason)
 
-static ERR_STRING_DATA ECDSA_str_functs[] = {
+static ERR_STRING_DATA ECDSA_str_functs[] = 
+{
     {ERR_FUNC(ECDSA_F_ECDSA_CHECK), "ECDSA_CHECK"},
     {ERR_FUNC(ECDSA_F_ECDSA_DATA_NEW_METHOD), "ECDSA_DATA_NEW_METHOD"},
     {ERR_FUNC(ECDSA_F_ECDSA_DO_SIGN), "ECDSA_do_sign"},
@@ -78,7 +79,8 @@ static ERR_STRING_DATA ECDSA_str_functs[] = {
     {0, NULL}
 };
 
-static ERR_STRING_DATA ECDSA_str_reasons[] = {
+static ERR_STRING_DATA ECDSA_str_reasons[] = 
+{
     {ERR_REASON(ECDSA_R_BAD_SIGNATURE), "bad signature"},
     {ERR_REASON(ECDSA_R_DATA_TOO_LARGE_FOR_KEY_SIZE),
      "data too large for key size"},

@@ -114,18 +114,20 @@ static void pkey_ec_cleanup(EVP_PKEY_CTX *ctx)
     }
 }
 
-static int pkey_ec_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                        const unsigned char *tbs, size_t tbslen)
+static int pkey_ec_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, const unsigned char *tbs, size_t tbslen)
 {
     int ret, type;
     unsigned int sltmp;
     EC_PKEY_CTX *dctx = ctx->data;
     EC_KEY *ec = ctx->pkey->pkey.ec;
 
-    if (!sig) {
+    if (!sig) 
+	{
         *siglen = ECDSA_size(ec);
         return 1;
-    } else if (*siglen < (size_t)ECDSA_size(ec)) {
+    } 
+	else if (*siglen < (size_t)ECDSA_size(ec)) 
+	{
         ECerr(EC_F_PKEY_EC_SIGN, EC_R_BUFFER_TOO_SMALL);
         return 0;
     }

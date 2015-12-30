@@ -83,6 +83,8 @@ int EVP_SignFinal(EVP_MD_CTX *ctx, unsigned char *sigret, unsigned int *siglen, 
     EVP_PKEY_CTX *pkctx = NULL;
 
     *siglen = 0;
+
+	//计算摘要的结果
     EVP_MD_CTX_init(&tmp_ctx);
     if (!EVP_MD_CTX_copy_ex(&tmp_ctx, ctx))
         goto err;

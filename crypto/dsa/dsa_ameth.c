@@ -617,58 +617,64 @@ static int dsa_pkey_ctrl(EVP_PKEY *pkey, int op, long arg1, void *arg2)
 
 /* NB these are sorted in pkey_id order, lowest first */
 
-const EVP_PKEY_ASN1_METHOD dsa_asn1_meths[] = {
+const EVP_PKEY_ASN1_METHOD dsa_asn1_meths[] = 
+{
 
     {
-     EVP_PKEY_DSA2,
-     EVP_PKEY_DSA,
-     ASN1_PKEY_ALIAS},
+		EVP_PKEY_DSA2,
+		EVP_PKEY_DSA,
+		ASN1_PKEY_ALIAS
+    },
 
     {
-     EVP_PKEY_DSA1,
-     EVP_PKEY_DSA,
-     ASN1_PKEY_ALIAS},
+		EVP_PKEY_DSA1,
+		EVP_PKEY_DSA,
+		ASN1_PKEY_ALIAS
+    },
 
     {
-     EVP_PKEY_DSA4,
-     EVP_PKEY_DSA,
-     ASN1_PKEY_ALIAS},
+		EVP_PKEY_DSA4,
+		EVP_PKEY_DSA,
+		ASN1_PKEY_ALIAS
+    },
 
     {
-     EVP_PKEY_DSA3,
-     EVP_PKEY_DSA,
-     ASN1_PKEY_ALIAS},
+		EVP_PKEY_DSA3,
+		EVP_PKEY_DSA,
+		ASN1_PKEY_ALIAS
+    },
 
     {
-     EVP_PKEY_DSA,
-     EVP_PKEY_DSA,
-     0,
+		EVP_PKEY_DSA,
+		EVP_PKEY_DSA,
+		0,
 
-     "DSA",
-     "OpenSSL DSA method",
+		"DSA",
+		"OpenSSL DSA method",
 
-     dsa_pub_decode,
-     dsa_pub_encode,
-     dsa_pub_cmp,
-     dsa_pub_print,
+		dsa_pub_decode,
+		dsa_pub_encode,
+		dsa_pub_cmp,
+		dsa_pub_print,
 
-     dsa_priv_decode,
-     dsa_priv_encode,
-     dsa_priv_print,
+		dsa_priv_decode,
+		dsa_priv_encode,
+		dsa_priv_print,
 
-     int_dsa_size,
-     dsa_bits,
+		int_dsa_size,
+		dsa_bits,
 
-     dsa_param_decode,
-     dsa_param_encode,
-     dsa_missing_parameters,
-     dsa_copy_parameters,
-     dsa_cmp_parameters,
-     dsa_param_print,
-     dsa_sig_print,
+		dsa_param_decode,
+		dsa_param_encode,
+		dsa_missing_parameters,
+		dsa_copy_parameters,
+		dsa_cmp_parameters,
+		dsa_param_print,
+		dsa_sig_print,
 
-     int_dsa_free,
-     dsa_pkey_ctrl,
-     old_dsa_priv_decode,
-     old_dsa_priv_encode}
+		int_dsa_free,
+		dsa_pkey_ctrl,
+		old_dsa_priv_decode,
+		old_dsa_priv_encode
+    }
 };

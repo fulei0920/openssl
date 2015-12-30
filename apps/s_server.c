@@ -1075,7 +1075,8 @@ int MAIN(int argc, char *argv[])
     argc--;
     argv++;
 
-    while (argc >= 1) {
+    while (argc >= 1) 
+	{
         if ((strcmp(*argv, "-port") == 0) || (strcmp(*argv, "-accept") == 0)) {
             if (--argc < 1)
                 goto bad;
@@ -1113,7 +1114,9 @@ int MAIN(int argc, char *argv[])
             if (--argc < 1)
                 goto bad;
             s_key_file = *(++argv);
-        } else if (strcmp(*argv, "-keyform") == 0) {
+        }
+		else if (strcmp(*argv, "-keyform") == 0) 
+		{
             if (--argc < 1)
                 goto bad;
             s_key_format = str2fmt(*(++argv));
@@ -1402,20 +1405,23 @@ int MAIN(int argc, char *argv[])
         argc--;
         argv++;
     }
-    if (badop) {
+    if (badop)
+	{
  bad:
         sv_usage();
         goto end;
     }
 #ifndef OPENSSL_NO_DTLS1
-    if (www && socket_type == SOCK_DGRAM) {
+    if (www && socket_type == SOCK_DGRAM) 
+	{
         BIO_printf(bio_err, "Can't use -HTTP, -www or -WWW with DTLS\n");
         goto end;
     }
 #endif
 
 #if !defined(OPENSSL_NO_JPAKE) && !defined(OPENSSL_NO_PSK)
-    if (jpake_secret) {
+    if (jpake_secret)
+	{
         if (psk_key) {
             BIO_printf(bio_err, "Can't use JPAKE and PSK together\n");
             goto end;
@@ -1436,7 +1442,8 @@ int MAIN(int argc, char *argv[])
     e = setup_engine(bio_err, engine_id, 1);
 #endif
 
-    if (!app_passwd(bio_err, passarg, dpassarg, &pass, &dpass)) {
+    if (!app_passwd(bio_err, passarg, dpassarg, &pass, &dpass))
+	{
         BIO_printf(bio_err, "Error getting password\n");
         goto end;
     }
@@ -1448,34 +1455,35 @@ int MAIN(int argc, char *argv[])
         s_key_file2 = s_cert_file2;
 #endif
 
-    if (nocert == 0) {
-        s_key = load_key(bio_err, s_key_file, s_key_format, 0, pass, e,
-                         "server certificate private key file");
-        if (!s_key) {
+    if (nocert == 0)
+	{
+        s_key = load_key(bio_err, s_key_file, s_key_format, 0, pass, e, "server certificate private key file");
+        if (!s_key) 
+		{
             ERR_print_errors(bio_err);
             goto end;
         }
 
-        s_cert = load_cert(bio_err, s_cert_file, s_cert_format,
-                           NULL, e, "server certificate file");
-
-        if (!s_cert) {
+        s_cert = load_cert(bio_err, s_cert_file, s_cert_format, NULL, e, "server certificate file");
+        if (!s_cert) 
+		{
             ERR_print_errors(bio_err);
             goto end;
         }
 #ifndef OPENSSL_NO_TLSEXT
-        if (tlsextcbp.servername) {
-            s_key2 = load_key(bio_err, s_key_file2, s_key_format, 0, pass, e,
-                              "second server certificate private key file");
-            if (!s_key2) {
+        if (tlsextcbp.servername) 
+		{
+            s_key2 = load_key(bio_err, s_key_file2, s_key_format, 0, pass, e, "second server certificate private key file");
+            if (!s_key2) 
+			{
                 ERR_print_errors(bio_err);
                 goto end;
             }
 
-            s_cert2 = load_cert(bio_err, s_cert_file2, s_cert_format,
-                                NULL, e, "second server certificate file");
+            s_cert2 = load_cert(bio_err, s_cert_file2, s_cert_format, NULL, e, "second server certificate file");
 
-            if (!s_cert2) {
+            if (!s_cert2)
+			{
                 ERR_print_errors(bio_err);
                 goto end;
             }
@@ -1704,7 +1712,8 @@ int MAIN(int argc, char *argv[])
 #endif
 
 #ifndef OPENSSL_NO_ECDH
-    if (!no_ecdhe) {
+    if (!no_ecdhe) 
+	{
         EC_KEY *ecdh = NULL;
 
         if (named_curve) {
@@ -2283,8 +2292,10 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                     break;
             }
         }
-        if (read_from_sslcon) {
-            if (!SSL_is_init_finished(con)) {
+        if (read_from_sslcon) 
+		{
+            if (!SSL_is_init_finished(con))
+			{
                 i = init_ssl_connection(con);
 
                 if (i < 0) {

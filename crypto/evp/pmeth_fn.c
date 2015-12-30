@@ -98,21 +98,21 @@ int EVP_PKEY_sign_init(EVP_PKEY_CTX *ctx)
     return ret;
 }
 
-int EVP_PKEY_sign(EVP_PKEY_CTX *ctx,
-                  unsigned char *sig, size_t *siglen,
-                  const unsigned char *tbs, size_t tbslen)
+int EVP_PKEY_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, const unsigned char *tbs, size_t tbslen)
 {
-    if (!ctx || !ctx->pmeth || !ctx->pmeth->sign) {
-        EVPerr(EVP_F_EVP_PKEY_SIGN,
-               EVP_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE);
+    if (!ctx || !ctx->pmeth || !ctx->pmeth->sign) 
+	{
+        EVPerr(EVP_F_EVP_PKEY_SIGN, EVP_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE);
         return -2;
     }
-    if (ctx->operation != EVP_PKEY_OP_SIGN) {
+    if (ctx->operation != EVP_PKEY_OP_SIGN)
+	{
         EVPerr(EVP_F_EVP_PKEY_SIGN, EVP_R_OPERATON_NOT_INITIALIZED);
         return -1;
     }
+	
     M_check_autoarg(ctx, sig, siglen, EVP_F_EVP_PKEY_SIGN)
-        return ctx->pmeth->sign(ctx, sig, siglen, tbs, tbslen);
+    return ctx->pmeth->sign(ctx, sig, siglen, tbs, tbslen);
 }
 
 int EVP_PKEY_verify_init(EVP_PKEY_CTX *ctx)
@@ -136,12 +136,13 @@ int EVP_PKEY_verify(EVP_PKEY_CTX *ctx,
                     const unsigned char *sig, size_t siglen,
                     const unsigned char *tbs, size_t tbslen)
 {
-    if (!ctx || !ctx->pmeth || !ctx->pmeth->verify) {
-        EVPerr(EVP_F_EVP_PKEY_VERIFY,
-               EVP_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE);
+    if (!ctx || !ctx->pmeth || !ctx->pmeth->verify) 
+	{
+        EVPerr(EVP_F_EVP_PKEY_VERIFY, EVP_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE);
         return -2;
     }
-    if (ctx->operation != EVP_PKEY_OP_VERIFY) {
+    if (ctx->operation != EVP_PKEY_OP_VERIFY) 
+	{
         EVPerr(EVP_F_EVP_PKEY_VERIFY, EVP_R_OPERATON_NOT_INITIALIZED);
         return -1;
     }

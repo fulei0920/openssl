@@ -614,37 +614,39 @@ static int rsa_item_sign(EVP_MD_CTX *ctx, const ASN1_ITEM *it, void *asn,
 const EVP_PKEY_ASN1_METHOD rsa_asn1_meths[] = 
 {
     {
-     EVP_PKEY_RSA,
-     EVP_PKEY_RSA,
-     ASN1_PKEY_SIGPARAM_NULL,
+		EVP_PKEY_RSA,
+		EVP_PKEY_RSA,
+		ASN1_PKEY_SIGPARAM_NULL,
 
-     "RSA",
-     "OpenSSL RSA method",
+		"RSA",
+		"OpenSSL RSA method",
 
-     rsa_pub_decode,
-     rsa_pub_encode,
-     rsa_pub_cmp,
-     rsa_pub_print,
+		rsa_pub_decode,
+		rsa_pub_encode,
+		rsa_pub_cmp,
+		rsa_pub_print,
 
-     rsa_priv_decode,
-     rsa_priv_encode,
-     rsa_priv_print,
+		rsa_priv_decode,
+		rsa_priv_encode,
+		rsa_priv_print,
 
-     int_rsa_size,
-     rsa_bits,
+		int_rsa_size,
+		rsa_bits,
 
-     0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0,
 
-     rsa_sig_print,
-     int_rsa_free,
-     rsa_pkey_ctrl,
-     old_rsa_priv_decode,
-     old_rsa_priv_encode,
-     rsa_item_verify,
-     rsa_item_sign},
+		rsa_sig_print,
+		int_rsa_free,
+		rsa_pkey_ctrl,
+		old_rsa_priv_decode,
+		old_rsa_priv_encode,
+		rsa_item_verify,
+		rsa_item_sign
+    },
 
     {
-     EVP_PKEY_RSA2,
-     EVP_PKEY_RSA,
-     ASN1_PKEY_ALIAS}
+		EVP_PKEY_RSA2,
+		EVP_PKEY_RSA,
+		ASN1_PKEY_ALIAS
+    }
 };

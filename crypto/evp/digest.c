@@ -155,11 +155,10 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
      * previous handle, re-querying for an ENGINE, and having a
      * reinitialisation, when it may all be unecessary.
      */
-    if (ctx->engine && ctx->digest && (!type ||
-                                       (type
-                                        && (type->type == ctx->digest->type))))
+    if (ctx->engine && ctx->digest && (!type || (type && (type->type == ctx->digest->type))))
         goto skip_to_init;
-    if (type) {
+    if (type)
+	{
         /*
          * Ensure an ENGINE left lying around from last time is cleared (the
          * previous check attempted to avoid this if the same ENGINE and
@@ -167,18 +166,23 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
          */
         if (ctx->engine)
             ENGINE_finish(ctx->engine);
-        if (impl) {
-            if (!ENGINE_init(impl)) {
+        if (impl)
+		{
+            if (!ENGINE_init(impl))
+			{
                 EVPerr(EVP_F_EVP_DIGESTINIT_EX, EVP_R_INITIALIZATION_ERROR);
                 return 0;
             }
-        } else
+        }
+		else
             /* Ask if an ENGINE is reserved for this job */
             impl = ENGINE_get_digest_engine(type->type);
-        if (impl) {
+        if (impl)
+		{
             /* There's an ENGINE for this job ... (apparently) */
             const EVP_MD *d = ENGINE_get_digest(impl, type->type);
-            if (!d) {
+            if (!d) 
+			{
                 /* Same comment from evp_enc.c */
                 EVPerr(EVP_F_EVP_DIGESTINIT_EX, EVP_R_INITIALIZATION_ERROR);
                 ENGINE_finish(impl);
@@ -193,8 +197,11 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
             ctx->engine = impl;
         } else
             ctx->engine = NULL;
-    } else {
-        if (!ctx->digest) {
+    }
+	else 
+	{
+        if (!ctx->digest) 
+		{
             EVPerr(EVP_F_EVP_DIGESTINIT_EX, EVP_R_NO_DIGEST_SET);
             return 0;
         }
@@ -203,8 +210,10 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
 #endif
     if (ctx->digest != type) 
 	{
+		//ÊÍ·Å¾ÉµÄ
         if (ctx->digest && ctx->digest->ctx_size)
             OPENSSL_free(ctx->md_data);
+		
         ctx->digest = type;
         if (!(ctx->flags & EVP_MD_CTX_FLAG_NO_INIT) && type->ctx_size) 
 		{
@@ -230,7 +239,8 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
     if (ctx->flags & EVP_MD_CTX_FLAG_NO_INIT)
         return 1;
 #ifdef OPENSSL_FIPS
-    if (FIPS_mode()) {
+    if (FIPS_mode())
+	{
 	
         if (FIPS_digestinit(ctx, type))
             return 1;

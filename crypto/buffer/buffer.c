@@ -88,7 +88,8 @@ void BUF_MEM_free(BUF_MEM *a)
     if (a == NULL)
         return;
 
-    if (a->data != NULL) {
+    if (a->data != NULL) 
+	{
         OPENSSL_cleanse(a->data, a->max);
         OPENSSL_free(a->data);
     }

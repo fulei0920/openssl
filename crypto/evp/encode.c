@@ -262,8 +262,7 @@ void EVP_DecodeInit(EVP_ENCODE_CTX *ctx)
  *   - There is extra trailing padding, or data after padding.
  *   - B64_EOF is detected after an incomplete base64 block.
  */
-int EVP_DecodeUpdate(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl,
-                     const unsigned char *in, int inl)
+int EVP_DecodeUpdate(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl, const unsigned char *in, int inl)
 {
     int seof = 0, eof = 0, rv = -1, ret = 0, i, v, tmp, n, decoded_len;
     unsigned char *d;
@@ -271,22 +270,26 @@ int EVP_DecodeUpdate(EVP_ENCODE_CTX *ctx, unsigned char *out, int *outl,
     n = ctx->num;
     d = ctx->enc_data;
 
-    if (n > 0 && d[n - 1] == '=') {
+    if (n > 0 && d[n - 1] == '=') 
+	{
         eof++;
         if (n > 1 && d[n - 2] == '=')
             eof++;
     }
 
      /* Legacy behaviour: an empty input chunk signals end of input. */
-    if (inl == 0) {
+    if (inl == 0) 
+	{
         rv = 0;
         goto end;
     }
 
-    for (i = 0; i < inl; i++) {
+    for (i = 0; i < inl; i++) 
+	{
         tmp = *(in++);
         v = conv_ascii2bin(tmp);
-        if (v == B64_ERROR) {
+        if (v == B64_ERROR) 
+		{
             rv = -1;
             goto end;
         }

@@ -76,7 +76,8 @@ STACK_OF(EVP_PKEY_METHOD) *app_pkey_methods = NULL;
 extern const EVP_PKEY_METHOD rsa_pkey_meth, dh_pkey_meth, dsa_pkey_meth;
 extern const EVP_PKEY_METHOD ec_pkey_meth, hmac_pkey_meth, cmac_pkey_meth;
 
-static const EVP_PKEY_METHOD *standard_methods[] = {
+static const EVP_PKEY_METHOD *standard_methods[] = 
+{
 #ifndef OPENSSL_NO_RSA
     &rsa_pkey_meth,
 #endif
@@ -110,15 +111,15 @@ const EVP_PKEY_METHOD *EVP_PKEY_meth_find(int type)
     EVP_PKEY_METHOD tmp;
     const EVP_PKEY_METHOD *t = &tmp, **ret;
     tmp.pkey_id = type;
-    if (app_pkey_methods) {
+    if (app_pkey_methods) 
+	{
         int idx;
         idx = sk_EVP_PKEY_METHOD_find(app_pkey_methods, &tmp);
         if (idx >= 0)
             return sk_EVP_PKEY_METHOD_value(app_pkey_methods, idx);
     }
-    ret = OBJ_bsearch_pmeth(&t, standard_methods,
-                            sizeof(standard_methods) /
-                            sizeof(EVP_PKEY_METHOD *));
+	
+    ret = OBJ_bsearch_pmeth(&t, standard_methods, sizeof(standard_methods) / sizeof(EVP_PKEY_METHOD *));
     if (!ret || !*ret)
         return NULL;
     return *ret;
@@ -128,12 +129,14 @@ static EVP_PKEY_CTX *int_ctx_new(EVP_PKEY *pkey, ENGINE *e, int id)
 {
     EVP_PKEY_CTX *ret;
     const EVP_PKEY_METHOD *pmeth;
+	
     if (id == -1)
 	{
         if (!pkey || !pkey->ameth)
             return NULL;
         id = pkey->ameth->pkey_id;
     }
+	
 #ifndef OPENSSL_NO_ENGINE
     if (pkey && pkey->engine)
         e = pkey->engine;
@@ -184,8 +187,10 @@ static EVP_PKEY_CTX *int_ctx_new(EVP_PKEY *pkey, ENGINE *e, int id)
         CRYPTO_add(&pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
     ret->data = NULL;
 
-    if (pmeth->init) {
-        if (pmeth->init(ret) <= 0) {
+    if (pmeth->init) 
+	{
+        if (pmeth->init(ret) <= 0) 
+		{
             EVP_PKEY_CTX_free(ret);
             return NULL;
         }
@@ -291,6 +296,9 @@ void EVP_PKEY_meth_free(EVP_PKEY_METHOD *pmeth)
         OPENSSL_free(pmeth);
 }
 
+/*
+allocates public key algorithm context using the algorithm specified in pkey and ENGINE e.
+*/
 EVP_PKEY_CTX *EVP_PKEY_CTX_new(EVP_PKEY *pkey, ENGINE *e)
 {
     return int_ctx_new(pkey, e, -1);

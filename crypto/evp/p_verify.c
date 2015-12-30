@@ -62,8 +62,7 @@
 #include <openssl/objects.h>
 #include <openssl/x509.h>
 
-int EVP_VerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sigbuf,
-                    unsigned int siglen, EVP_PKEY *pkey)
+int EVP_VerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sigbuf, unsigned int siglen, EVP_PKEY *pkey)
 {
     unsigned char m[EVP_MAX_MD_SIZE];
     unsigned int m_len;
@@ -78,7 +77,8 @@ int EVP_VerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sigbuf,
         goto err;
     EVP_MD_CTX_cleanup(&tmp_ctx);
 
-    if (ctx->digest->flags & EVP_MD_FLAG_PKEY_METHOD_SIGNATURE) {
+    if (ctx->digest->flags & EVP_MD_FLAG_PKEY_METHOD_SIGNATURE) 
+	{
         i = -1;
         pkctx = EVP_PKEY_CTX_new(pkey, NULL);
         if (!pkctx)
@@ -111,6 +111,5 @@ int EVP_VerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sigbuf,
         return (0);
     }
 
-    return (ctx->digest->verify(ctx->digest->type, m, m_len,
-                                sigbuf, siglen, pkey->pkey.ptr));
+    return (ctx->digest->verify(ctx->digest->type, m, m_len, sigbuf, siglen, pkey->pkey.ptr));
 }

@@ -157,7 +157,8 @@ int DSA_sign(int type, const unsigned char *dgst, int dlen,
     DSA_SIG *s;
     RAND_seed(dgst, dlen);
     s = DSA_do_sign(dgst, dlen, dsa);
-    if (s == NULL) {
+    if (s == NULL) 
+	{
         *siglen = 0;
         return (0);
     }

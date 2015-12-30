@@ -84,8 +84,7 @@ int RSA_public_encrypt(int flen, const unsigned char *from, unsigned char *to, R
     return (rsa->meth->rsa_pub_enc(flen, from, to, rsa, padding));
 }
 
-int RSA_private_encrypt(int flen, const unsigned char *from,
-                        unsigned char *to, RSA *rsa, int padding)
+int RSA_private_encrypt(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
 {
 #ifdef OPENSSL_FIPS
     if (FIPS_mode() && !(rsa->meth->flags & RSA_FLAG_FIPS_METHOD)

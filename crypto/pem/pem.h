@@ -401,9 +401,7 @@ int PEM_read_bio(BIO *bp, char **name, char **header,
                  unsigned char **data, long *len);
 int PEM_write_bio(BIO *bp, const char *name, char *hdr, unsigned char *data,
                   long len);
-int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm,
-                       const char *name, BIO *bp, pem_password_cb *cb,
-                       void *u);
+int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm, const char *name, BIO *bp, pem_password_cb *cb, void *u);
 void *PEM_ASN1_read_bio(d2i_of_void *d2i, const char *name, BIO *bp, void **x,
                         pem_password_cb *cb, void *u);
 int PEM_ASN1_write_bio(i2d_of_void *i2d, const char *name, BIO *bp, void *x,

@@ -422,7 +422,8 @@ struct evp_cipher_st
 /* Length of tag for TLS */
 # define EVP_GCM_TLS_TAG_LEN                             16
 
-typedef struct evp_cipher_info_st {
+typedef struct evp_cipher_info_st 
+{
     const EVP_CIPHER *cipher;
     unsigned char iv[EVP_MAX_IV_LENGTH];
 } EVP_CIPHER_INFO;
@@ -453,7 +454,8 @@ struct evp_cipher_ctx_st
     unsigned char final[EVP_MAX_BLOCK_LENGTH]; /* possible final block */
 } /* EVP_CIPHER_CTX */ ;
 
-typedef struct evp_Encode_Ctx_st {
+typedef struct evp_Encode_Ctx_st 
+{
     /* number saved in a partial encode/decode */
     int num;
     /*

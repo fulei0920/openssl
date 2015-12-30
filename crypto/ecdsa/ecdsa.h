@@ -127,9 +127,7 @@ ECDSA_SIG *ECDSA_do_sign(const unsigned char *dgst, int dgst_len,
  *  \param  eckey    EC_KEY object containing a private EC key
  *  \return pointer to a ECDSA_SIG structure or NULL if an error occurred
  */
-ECDSA_SIG *ECDSA_do_sign_ex(const unsigned char *dgst, int dgstlen,
-                            const BIGNUM *kinv, const BIGNUM *rp,
-                            EC_KEY *eckey);
+ECDSA_SIG *ECDSA_do_sign_ex(const unsigned char *dgst, int dgstlen, const BIGNUM *kinv, const BIGNUM *rp, EC_KEY *eckey);
 
 /** Verifies that the supplied signature is a valid ECDSA
  *  signature of the supplied hash value using the supplied public key.

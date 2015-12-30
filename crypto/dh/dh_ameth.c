@@ -459,7 +459,8 @@ int DHparams_print(BIO *bp, const DH *x)
     return do_dh_print(bp, x, 4, NULL, 0);
 }
 
-const EVP_PKEY_ASN1_METHOD dh_asn1_meth = {
+const EVP_PKEY_ASN1_METHOD dh_asn1_meth = 
+{
     EVP_PKEY_DH,
     EVP_PKEY_DH,
     0,

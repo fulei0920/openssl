@@ -743,9 +743,7 @@ int add_oid_section(BIO *err, CONF *conf)
     return 1;
 }
 
-static int load_pkcs12(BIO *err, BIO *in, const char *desc,
-                       pem_password_cb *pem_cb, void *cb_data,
-                       EVP_PKEY **pkey, X509 **cert, STACK_OF(X509) **ca)
+static int load_pkcs12(BIO *err, BIO *in, const char *desc, pem_password_cb *pem_cb, void *cb_data, EVP_PKEY **pkey, X509 **cert, STACK_OF(X509) **ca)
 {
     const char *pass;
     char tpass[PEM_BUFSIZE];
@@ -847,8 +845,7 @@ X509 *load_cert(BIO *err, const char *file, int format,
     return (x);
 }
 
-EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
-                   const char *pass, ENGINE *e, const char *key_descrip)
+EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin, const char *pass, ENGINE *e, const char *key_descrip)
 {
     BIO *key = NULL;
     EVP_PKEY *pkey = NULL;
@@ -857,12 +854,14 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
     cb_data.password = pass;
     cb_data.prompt_info = file;
 
-    if (file == NULL && (!maybe_stdin || format == FORMAT_ENGINE)) {
+    if (file == NULL && (!maybe_stdin || format == FORMAT_ENGINE)) 
+	{
         BIO_printf(err, "no keyfile specified\n");
         goto end;
     }
 #ifndef OPENSSL_NO_ENGINE
-    if (format == FORMAT_ENGINE) {
+    if (format == FORMAT_ENGINE) 
+	{
         if (!e)
             BIO_printf(err, "no engine specified\n");
         else {
@@ -876,37 +875,43 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin,
     }
 #endif
     key = BIO_new(BIO_s_file());
-    if (key == NULL) {
+    if (key == NULL) 
+	{
         ERR_print_errors(err);
         goto end;
     }
-    if (file == NULL && maybe_stdin) {
+    if (file == NULL && maybe_stdin) 
+	{
 #ifdef _IONBF
 # ifndef OPENSSL_NO_SETVBUF_IONBF
         setvbuf(stdin, NULL, _IONBF, 0);
 # endif                         /* ndef OPENSSL_NO_SETVBUF_IONBF */
 #endif
         BIO_set_fp(key, stdin, BIO_NOCLOSE);
-    } else if (BIO_read_filename(key, file) <= 0) {
+    } 
+	else if (BIO_read_filename(key, file) <= 0)
+	{
         BIO_printf(err, "Error opening %s %s\n", key_descrip, file);
         ERR_print_errors(err);
         goto end;
     }
-    if (format == FORMAT_ASN1) {
+    if (format == FORMAT_ASN1)
+	{
         pkey = d2i_PrivateKey_bio(key, NULL);
-    } else if (format == FORMAT_PEM) {
-        pkey = PEM_read_bio_PrivateKey(key, NULL,
-                                       (pem_password_cb *)password_callback,
-                                       &cb_data);
+    } 
+	else if (format == FORMAT_PEM) 
+	{
+        pkey = PEM_read_bio_PrivateKey(key, NULL, (pem_password_cb *)password_callback, &cb_data);
     }
 #if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_RSA)
     else if (format == FORMAT_NETSCAPE || format == FORMAT_IISSGC)
-        pkey = load_netscape_key(err, key, file, key_descrip, format);
+    {
+		pkey = load_netscape_key(err, key, file, key_descrip, format);
+	}
 #endif
-    else if (format == FORMAT_PKCS12) {
-        if (!load_pkcs12(err, key, key_descrip,
-                         (pem_password_cb *)password_callback, &cb_data,
-                         &pkey, NULL, NULL))
+    else if (format == FORMAT_PKCS12) 
+	{
+        if (!load_pkcs12(err, key, key_descrip, (pem_password_cb *)password_callback, &cb_data, &pkey, NULL, NULL))
             goto end;
     }
 #if !defined(OPENSSL_NO_RSA) && !defined(OPENSSL_NO_DSA) && !defined (OPENSSL_NO_RC4)
@@ -1475,7 +1480,8 @@ int load_config(BIO *err, CONF *cnf)
 
     OPENSSL_load_builtin_modules();
 
-    if (CONF_modules_load(cnf, NULL, 0) <= 0) {
+    if (CONF_modules_load(cnf, NULL, 0) <= 0) 
+	{
         BIO_printf(err, "Error configuring OpenSSL\n");
         ERR_print_errors(err);
         return 0;

@@ -312,8 +312,7 @@ int MAIN(int argc, char **argv)
 #endif
 
             BIO_printf(bio_err, "Cipher Types\n");
-            OBJ_NAME_do_all_sorted(OBJ_NAME_TYPE_CIPHER_METH,
-                                   show_ciphers, bio_err);
+            OBJ_NAME_do_all_sorted(OBJ_NAME_TYPE_CIPHER_METH, show_ciphers, bio_err);
             BIO_printf(bio_err, "\n");
 
             goto end;

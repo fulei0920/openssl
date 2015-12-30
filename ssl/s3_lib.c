@@ -3792,34 +3792,37 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
 #endif
 
 #ifdef CIPHER_DEBUG
-    fprintf(stderr, "Server has %d from %p:\n", sk_SSL_CIPHER_num(srvr),
-            (void *)srvr);
-    for (i = 0; i < sk_SSL_CIPHER_num(srvr); ++i) {
+    fprintf(stderr, "Server has %d from %p:\n", sk_SSL_CIPHER_num(srvr), (void *)srvr);
+    for (i = 0; i < sk_SSL_CIPHER_num(srvr); ++i)
+	{
         c = sk_SSL_CIPHER_value(srvr, i);
         fprintf(stderr, "%p:%s\n", (void *)c, c->name);
     }
-    fprintf(stderr, "Client sent %d from %p:\n", sk_SSL_CIPHER_num(clnt),
-            (void *)clnt);
-    for (i = 0; i < sk_SSL_CIPHER_num(clnt); ++i) {
+    fprintf(stderr, "Client sent %d from %p:\n", sk_SSL_CIPHER_num(clnt), (void *)clnt);
+    for (i = 0; i < sk_SSL_CIPHER_num(clnt); ++i) 
+	{
         c = sk_SSL_CIPHER_value(clnt, i);
         fprintf(stderr, "%p:%s\n", (void *)c, c->name);
     }
 #endif
 
-    if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE) {
+    if (s->options & SSL_OP_CIPHER_SERVER_PREFERENCE)
+	{
         prio = srvr;
         allow = clnt;
-    } else {
+    } 
+	else 
+	{
         prio = clnt;
         allow = srvr;
     }
 
-    for (i = 0; i < sk_SSL_CIPHER_num(prio); i++) {
+    for (i = 0; i < sk_SSL_CIPHER_num(prio); i++) 
+	{
         c = sk_SSL_CIPHER_value(prio, i);
 
         /* Skip TLS v1.2 only ciphersuites if lower than v1.2 */
-        if ((c->algorithm_ssl & SSL_TLSV1_2) &&
-            (TLS1_get_version(s) < TLS1_2_VERSION))
+        if ((c->algorithm_ssl & SSL_TLSV1_2) && (TLS1_get_version(s) < TLS1_2_VERSION))
             continue;
 
         ssl_set_cert_masks(cert, c);
@@ -3828,7 +3831,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
         emask_k = cert->export_mask_k;
         emask_a = cert->export_mask_a;
 #ifndef OPENSSL_NO_SRP
-        if (s->srp_ctx.srp_Mask & SSL_kSRP) {
+        if (s->srp_ctx.srp_Mask & SSL_kSRP) 
+		{
             mask_k |= SSL_kSRP;
             emask_k |= SSL_kSRP;
             mask_a |= SSL_aSRP;
@@ -3858,17 +3862,18 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
             continue;
 #endif                          /* OPENSSL_NO_PSK */
 
-        if (SSL_C_IS_EXPORT(c)) {
+        if (SSL_C_IS_EXPORT(c))
+		{
             ok = (alg_k & emask_k) && (alg_a & emask_a);
 #ifdef CIPHER_DEBUG
-            fprintf(stderr, "%d:[%08lX:%08lX:%08lX:%08lX]%p:%s (export)\n",
-                    ok, alg_k, alg_a, emask_k, emask_a, (void *)c, c->name);
+            fprintf(stderr, "%d:[%08lX:%08lX:%08lX:%08lX]%p:%s (export)\n", ok, alg_k, alg_a, emask_k, emask_a, (void *)c, c->name);
 #endif
-        } else {
+        } 
+		else 
+		{
             ok = (alg_k & mask_k) && (alg_a & mask_a);
 #ifdef CIPHER_DEBUG
-            fprintf(stderr, "%d:[%08lX:%08lX:%08lX:%08lX]%p:%s\n", ok, alg_k,
-                    alg_a, mask_k, mask_a, (void *)c, c->name);
+            fprintf(stderr, "%d:[%08lX:%08lX:%08lX:%08lX]%p:%s\n", ok, alg_k, alg_a, mask_k, mask_a, (void *)c, c->name);
 #endif
         }
 
@@ -3907,7 +3912,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
                      POINT_CONVERSION_COMPRESSED + 1)
                    )
                )
-            ) {
+            ) 
+       {
             ec_ok = 0;
             /*
              * if our certificate's curve is over a field type that the
@@ -4069,7 +4075,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
         if (!ok)
             continue;
         ii = sk_SSL_CIPHER_find(allow, c);
-        if (ii >= 0) {
+        if (ii >= 0) 
+		{
 #if !defined(OPENSSL_NO_EC) && !defined(OPENSSL_NO_TLSEXT)
             if ((alg_k & SSL_kEECDH) && (alg_a & SSL_aECDSA)
                 && s->s3->is_probably_safari) {

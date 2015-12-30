@@ -186,8 +186,7 @@ struct rsa_st
 # define RSA_FLAG_EXT_PKEY               0x0020
 
 /*
- * This flag in the RSA_METHOD enables the new rsa_sign, rsa_verify
- * functions.
+ * This flag in the RSA_METHOD enables the new rsa_sign, rsa_verify functions.
  */
 # define RSA_FLAG_SIGN_VER               0x0040
 

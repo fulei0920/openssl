@@ -218,7 +218,8 @@ typedef struct args_st
 } ARGS;
 
 # define PW_MIN_LENGTH 4
-typedef struct pw_cb_data {
+typedef struct pw_cb_data 
+{
     const void *password;
     const char *prompt_info;
 } PW_CB_DATA;

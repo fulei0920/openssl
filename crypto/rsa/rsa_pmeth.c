@@ -181,9 +181,7 @@ static int pkey_fips_check_ctx(EVP_PKEY_CTX *ctx)
 }
 #endif
 
-static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig,
-                         size_t *siglen, const unsigned char *tbs,
-                         size_t tbslen)
+static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, const unsigned char *tbs, size_t tbslen)
 {
     int ret;
     RSA_PKEY_CTX *rctx = ctx->data;
@@ -197,13 +195,16 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig,
     }
 #endif
 
-    if (rctx->md) {
-        if (tbslen != (size_t)EVP_MD_size(rctx->md)) {
+    if (rctx->md) 
+	{
+        if (tbslen != (size_t)EVP_MD_size(rctx->md))
+		{
             RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_INVALID_DIGEST_LENGTH);
             return -1;
         }
 #ifdef OPENSSL_FIPS
-        if (ret > 0) {
+        if (ret > 0) 
+		{
             unsigned int slen;
             ret = FIPS_rsa_sign_digest(rsa, tbs, tbslen, rctx->md,
                                        rctx->pad_mode,
@@ -217,37 +218,43 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig,
         }
 #endif
 
-        if (EVP_MD_type(rctx->md) == NID_mdc2) {
+        if (EVP_MD_type(rctx->md) == NID_mdc2) 
+		{
             unsigned int sltmp;
             if (rctx->pad_mode != RSA_PKCS1_PADDING)
                 return -1;
-            ret = RSA_sign_ASN1_OCTET_STRING(NID_mdc2,
-                                             tbs, tbslen, sig, &sltmp, rsa);
+            ret = RSA_sign_ASN1_OCTET_STRING(NID_mdc2, tbs, tbslen, sig, &sltmp, rsa);
 
             if (ret <= 0)
                 return ret;
             ret = sltmp;
-        } else if (rctx->pad_mode == RSA_X931_PADDING) {
-            if ((size_t)EVP_PKEY_size(ctx->pkey) < tbslen + 1) {
+        } 
+		else if (rctx->pad_mode == RSA_X931_PADDING) 
+       	{
+            if ((size_t)EVP_PKEY_size(ctx->pkey) < tbslen + 1)
+			{
                 RSAerr(RSA_F_PKEY_RSA_SIGN, RSA_R_KEY_SIZE_TOO_SMALL);
                 return -1;
             }
-            if (!setup_tbuf(rctx, ctx)) {
+            if (!setup_tbuf(rctx, ctx))
+			{
                 RSAerr(RSA_F_PKEY_RSA_SIGN, ERR_R_MALLOC_FAILURE);
                 return -1;
             }
             memcpy(rctx->tbuf, tbs, tbslen);
             rctx->tbuf[tbslen] = RSA_X931_hash_id(EVP_MD_type(rctx->md));
-            ret = RSA_private_encrypt(tbslen + 1, rctx->tbuf,
-                                      sig, rsa, RSA_X931_PADDING);
-        } else if (rctx->pad_mode == RSA_PKCS1_PADDING) {
+            ret = RSA_private_encrypt(tbslen + 1, rctx->tbuf, sig, rsa, RSA_X931_PADDING);
+        }
+		else if (rctx->pad_mode == RSA_PKCS1_PADDING)
+       	{
             unsigned int sltmp;
-            ret = RSA_sign(EVP_MD_type(rctx->md),
-                           tbs, tbslen, sig, &sltmp, rsa);
+            ret = RSA_sign(EVP_MD_type(rctx->md), tbs, tbslen, sig, &sltmp, rsa);
             if (ret <= 0)
                 return ret;
             ret = sltmp;
-        } else if (rctx->pad_mode == RSA_PKCS1_PSS_PADDING) {
+        } 
+		else if (rctx->pad_mode == RSA_PKCS1_PSS_PADDING)
+		{
             if (!setup_tbuf(rctx, ctx))
                 return -1;
             if (!RSA_padding_add_PKCS1_PSS_mgf1(rsa,
@@ -259,9 +266,9 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig,
                                       sig, rsa, RSA_NO_PADDING);
         } else
             return -1;
-    } else
-        ret = RSA_private_encrypt(tbslen, tbs, sig, ctx->pkey->pkey.rsa,
-                                  rctx->pad_mode);
+    } 
+	else
+        ret = RSA_private_encrypt(tbslen, tbs, sig, ctx->pkey->pkey.rsa, rctx->pad_mode);
     if (ret < 0)
         return ret;
     *siglen = ret;
@@ -332,9 +339,11 @@ static int pkey_rsa_verify(EVP_PKEY_CTX *ctx,
         return -1;
     }
 #endif
-    if (rctx->md) {
+    if (rctx->md)
+	{
 #ifdef OPENSSL_FIPS
-        if (rv > 0) {
+        if (rv > 0) 
+		{
             return FIPS_rsa_verify_digest(rsa,
                                           tbs, tbslen,
                                           rctx->md,
@@ -345,8 +354,7 @@ static int pkey_rsa_verify(EVP_PKEY_CTX *ctx,
         }
 #endif
         if (rctx->pad_mode == RSA_PKCS1_PADDING)
-            return RSA_verify(EVP_MD_type(rctx->md), tbs, tbslen,
-                              sig, siglen, rsa);
+            return RSA_verify(EVP_MD_type(rctx->md), tbs, tbslen, sig, siglen, rsa);
         if (rctx->pad_mode == RSA_X931_PADDING) {
             if (pkey_rsa_verifyrecover(ctx, NULL, &rslen, sig, siglen) <= 0)
                 return 0;
@@ -630,7 +638,8 @@ static int pkey_rsa_keygen(EVP_PKEY_CTX *ctx, EVP_PKEY *pkey)
     return ret;
 }
 
-const EVP_PKEY_METHOD rsa_pkey_meth = {
+const EVP_PKEY_METHOD rsa_pkey_meth = 
+{
     EVP_PKEY_RSA,
     EVP_PKEY_FLAG_AUTOARGLEN,
     pkey_rsa_init,
