@@ -118,10 +118,8 @@ int EVP_read_pw_string_min(char *buf, int min, int len, const char *prompt,
     return ret;
 }
 
-int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
-                   const unsigned char *salt, const unsigned char *data,
-                   int datal, int count, unsigned char *key,
-                   unsigned char *iv)
+int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md, const unsigned char *salt, const unsigned char *data,
+                   int datal, int count, unsigned char *key, unsigned char *iv)
 {
     EVP_MD_CTX c;
     unsigned char md_buf[EVP_MAX_MD_SIZE];
@@ -137,21 +135,30 @@ int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
         return (nkey);
 
     EVP_MD_CTX_init(&c);
-    for (;;) {
+    for (;;) 
+	{
         if (!EVP_DigestInit_ex(&c, md, NULL))
             goto err;
         if (addmd++)
+        {	
             if (!EVP_DigestUpdate(&c, &(md_buf[0]), mds))
                 goto err;
+		}
+
         if (!EVP_DigestUpdate(&c, data, datal))
             goto err;
+		
         if (salt != NULL)
+        {
             if (!EVP_DigestUpdate(&c, salt, PKCS5_SALT_LEN))
                 goto err;
+		}
+
         if (!EVP_DigestFinal_ex(&c, &(md_buf[0]), &mds))
             goto err;
 
-        for (i = 1; i < (unsigned int)count; i++) {
+        for (i = 1; i < (unsigned int)count; i++) 
+		{
             if (!EVP_DigestInit_ex(&c, md, NULL))
                 goto err;
             if (!EVP_DigestUpdate(&c, &(md_buf[0]), mds))
@@ -160,8 +167,10 @@ int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
                 goto err;
         }
         i = 0;
-        if (nkey) {
-            for (;;) {
+        if (nkey)
+		{
+            for (;;)
+			{
                 if (nkey == 0)
                     break;
                 if (i == mds)
@@ -172,8 +181,10 @@ int EVP_BytesToKey(const EVP_CIPHER *type, const EVP_MD *md,
                 i++;
             }
         }
-        if (niv && (i != mds)) {
-            for (;;) {
+        if (niv && (i != mds)) 
+		{
+            for (;;)
+			{
                 if (niv == 0)
                     break;
                 if (i == mds)

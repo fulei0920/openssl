@@ -67,7 +67,8 @@
 #  undef _
 # endif
 
-struct ui_method_st {
+struct ui_method_st 
+{
     char *name;
     /*
      * All the functions return 1 or non-NULL for success and 0 or NULL for

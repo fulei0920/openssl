@@ -157,6 +157,7 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
      */
     if (ctx->engine && ctx->digest && (!type || (type && (type->type == ctx->digest->type))))
         goto skip_to_init;
+	
     if (type)
 	{
         /*
@@ -175,8 +176,11 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
             }
         }
 		else
+		{
             /* Ask if an ENGINE is reserved for this job */
             impl = ENGINE_get_digest_engine(type->type);
+		}
+
         if (impl)
 		{
             /* There's an ENGINE for this job ... (apparently) */
@@ -195,8 +199,12 @@ int EVP_DigestInit_ex(EVP_MD_CTX *ctx, const EVP_MD *type, ENGINE *impl)
              * from an ENGINE and we need to release it when done.
              */
             ctx->engine = impl;
-        } else
-            ctx->engine = NULL;
+        } 
+		else
+		{
+			ctx->engine = NULL;
+		}
+            
     }
 	else 
 	{

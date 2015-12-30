@@ -79,7 +79,8 @@ UI *UI_new_method(const UI_METHOD *method)
     UI *ret;
 
     ret = (UI *)OPENSSL_malloc(sizeof(UI));
-    if (ret == NULL) {
+    if (ret == NULL) 
+	{
         UIerr(UI_F_UI_NEW_METHOD, ERR_R_MALLOC_FAILURE);
         return NULL;
     }
@@ -229,12 +230,9 @@ static int general_allocate_boolean(UI *ui,
  * Returns the index to the place in the stack or -1 for error.  Uses a
  * direct reference to the prompt.
  */
-int UI_add_input_string(UI *ui, const char *prompt, int flags,
-                        char *result_buf, int minsize, int maxsize)
+int UI_add_input_string(UI *ui, const char *prompt, int flags, char *result_buf, int minsize, int maxsize)
 {
-    return general_allocate_string(ui, prompt, 0,
-                                   UIT_PROMPT, flags, result_buf, minsize,
-                                   maxsize, NULL);
+    return general_allocate_string(ui, prompt, 0, UIT_PROMPT, flags, result_buf, minsize, maxsize, NULL);
 }
 
 /* Same as UI_add_input_string(), excepts it takes a copy of the prompt */
@@ -392,14 +390,16 @@ int UI_dup_error_string(UI *ui, const char *text)
                                    0, 0, NULL);
 }
 
-char *UI_construct_prompt(UI *ui, const char *object_desc,
-                          const char *object_name)
+char *UI_construct_prompt(UI *ui, const char *object_desc, const char *object_name)
 {
     char *prompt = NULL;
 
     if (ui->meth->ui_construct_prompt)
-        prompt = ui->meth->ui_construct_prompt(ui, object_desc, object_name);
-    else {
+    {
+		 prompt = ui->meth->ui_construct_prompt(ui, object_desc, object_name);
+	}
+    else 
+	{
         char prompt1[] = "Enter ";
         char prompt2[] = " for ";
         char prompt3[] = ":";
@@ -415,7 +415,8 @@ char *UI_construct_prompt(UI *ui, const char *object_desc,
         prompt = (char *)OPENSSL_malloc(len + 1);
         BUF_strlcpy(prompt, prompt1, len + 1);
         BUF_strlcat(prompt, object_desc, len + 1);
-        if (object_name) {
+        if (object_name) 
+		{
             BUF_strlcat(prompt, prompt2, len + 1);
             BUF_strlcat(prompt, object_name, len + 1);
         }
@@ -521,11 +522,13 @@ int UI_process(UI *ui)
 
 int UI_ctrl(UI *ui, int cmd, long i, void *p, void (*f) (void))
 {
-    if (ui == NULL) {
+    if (ui == NULL) 
+	{
         UIerr(UI_F_UI_CTRL, ERR_R_PASSED_NULL_PARAMETER);
         return -1;
     }
-    switch (cmd) {
+    switch (cmd)
+	{
     case UI_CTRL_PRINT_ERRORS:
         {
             int save_flag = ! !(ui->flags & UI_FLAG_PRINT_ERRORS);

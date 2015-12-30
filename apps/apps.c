@@ -546,14 +546,16 @@ int password_callback(char *buf, int bufsiz, int verify, PW_CB_DATA *cb_tmp)
     const char *password = NULL;
     PW_CB_DATA *cb_data = (PW_CB_DATA *)cb_tmp;
 
-    if (cb_data) {
+    if (cb_data)
+	{
         if (cb_data->password)
             password = cb_data->password;
         if (cb_data->prompt_info)
             prompt_info = cb_data->prompt_info;
     }
 
-    if (password) {
+    if (password) 
+	{
         res = strlen(password);
         if (res > bufsiz)
             res = bufsiz;
@@ -562,14 +564,16 @@ int password_callback(char *buf, int bufsiz, int verify, PW_CB_DATA *cb_tmp)
     }
 
     ui = UI_new_method(ui_method);
-    if (ui) {
+    if (ui)
+	{
         int ok = 0;
         char *buff = NULL;
         int ui_flags = 0;
         char *prompt = NULL;
 
         prompt = UI_construct_prompt(ui, "pass phrase", prompt_info);
-        if (!prompt) {
+        if (!prompt) 
+		{
             BIO_printf(bio_err, "Out of memory\n");
             UI_free(ui);
             return 0;
@@ -579,11 +583,12 @@ int password_callback(char *buf, int bufsiz, int verify, PW_CB_DATA *cb_tmp)
         UI_ctrl(ui, UI_CTRL_PRINT_ERRORS, 1, 0, 0);
 
         if (ok >= 0)
-            ok = UI_add_input_string(ui, prompt, ui_flags, buf,
-                                     PW_MIN_LENGTH, bufsiz - 1);
-        if (ok >= 0 && verify) {
+            ok = UI_add_input_string(ui, prompt, ui_flags, buf, PW_MIN_LENGTH, bufsiz - 1);
+        if (ok >= 0 && verify) 
+		{
             buff = (char *)OPENSSL_malloc(bufsiz);
-            if (!buff) {
+            if (!buff) 
+			{
                 BIO_printf(bio_err, "Out of memory\n");
                 UI_free(ui);
                 OPENSSL_free(prompt);

@@ -249,10 +249,10 @@ ENGINE *engine_table_select_tmp(ENGINE_TABLE **table, int nid, const char *f, in
     ENGINE_PILE tmplate, *fnd = NULL;
     int initres, loop = 0;
 
-    if (!(*table)) {
+    if (!(*table)) 
+	{
 #ifdef ENGINE_TABLE_DEBUG
-        fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, nothing "
-                "registered!\n", f, l, nid);
+        fprintf(stderr, "engine_table_dbg: %s:%d, nid=%d, nothing registered!\n", f, l, nid);
 #endif
         return NULL;
     }

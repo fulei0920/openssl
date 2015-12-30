@@ -98,8 +98,7 @@ int EVP_CipherInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, const unsigned
     return EVP_CipherInit_ex(ctx, cipher, NULL, key, iv, enc);
 }
 
-int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl, const unsigned char *key,
-                      const unsigned char *iv, int enc)
+int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl, const unsigned char *key, const unsigned char *iv, int enc)
 {
     if (enc == -1)
 	{
@@ -140,15 +139,22 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *imp
             ctx->flags = flags;
         }
 #ifndef OPENSSL_NO_ENGINE
-        if (impl) {
-            if (!ENGINE_init(impl)) {
+        if (impl) 
+		{
+            if (!ENGINE_init(impl))
+			{
                 EVPerr(EVP_F_EVP_CIPHERINIT_EX, EVP_R_INITIALIZATION_ERROR);
                 return 0;
             }
-        } else
+        } 
+		else
+		{
             /* Ask if an ENGINE is reserved for this job */
             impl = ENGINE_get_cipher_engine(cipher->nid);
-        if (impl) {
+		}
+
+        if (impl) 
+		{
             /* There's an ENGINE for this job ... (apparently) */
             const EVP_CIPHER *c = ENGINE_get_cipher(impl, cipher->nid);
             if (!c) {
@@ -167,8 +173,12 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *imp
              * from an ENGINE and we need to release it when done.
              */
             ctx->engine = impl;
-        } else
-            ctx->engine = NULL;
+        } 
+		else
+		{
+			ctx->engine = NULL;
+		}
+            
 #endif
 
 #ifdef OPENSSL_FIPS
@@ -213,13 +223,12 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *imp
         return FIPS_cipherinit(ctx, cipher, key, iv, enc);
 #endif
     /* we assume block size is a power of 2 in *cryptUpdate */
-    OPENSSL_assert(ctx->cipher->block_size == 1
-                   || ctx->cipher->block_size == 8
-                   || ctx->cipher->block_size == 16);
+    OPENSSL_assert(ctx->cipher->block_size == 1 || ctx->cipher->block_size == 8 || ctx->cipher->block_size == 16);
 
     if (!(EVP_CIPHER_CTX_flags(ctx) & EVP_CIPH_CUSTOM_IV))
 	{
-        switch (EVP_CIPHER_CTX_mode(ctx)) {
+        switch (EVP_CIPHER_CTX_mode(ctx))
+		{
 
         case EVP_CIPH_STREAM_CIPHER:
         case EVP_CIPH_ECB_MODE:
@@ -233,8 +242,7 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *imp
 
         case EVP_CIPH_CBC_MODE:
 
-            OPENSSL_assert(EVP_CIPHER_CTX_iv_length(ctx) <=
-                           (int)sizeof(ctx->iv));
+            OPENSSL_assert(EVP_CIPHER_CTX_iv_length(ctx) <= (int)sizeof(ctx->iv));
             if (iv)
                 memcpy(ctx->oiv, iv, EVP_CIPHER_CTX_iv_length(ctx));
             memcpy(ctx->iv, ctx->oiv, EVP_CIPHER_CTX_iv_length(ctx));
@@ -253,7 +261,8 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *imp
         }
     }
 
-    if (key || (ctx->cipher->flags & EVP_CIPH_ALWAYS_CALL_INIT)) {
+    if (key || (ctx->cipher->flags & EVP_CIPH_ALWAYS_CALL_INIT))
+	{
         if (!ctx->cipher->init(ctx, key, iv, enc))
             return 0;
     }
@@ -301,14 +310,12 @@ int EVP_EncryptInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
     return EVP_CipherInit_ex(ctx, cipher, impl, key, iv, 1);
 }
 
-int EVP_DecryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
-                    const unsigned char *key, const unsigned char *iv)
+int EVP_DecryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, const unsigned char *key, const unsigned char *iv)
 {
     return EVP_CipherInit(ctx, cipher, key, iv, 0);
 }
 
-int EVP_DecryptInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
-		ENGINE *impl, const unsigned char *key, const unsigned char *iv)
+int EVP_DecryptInit_ex(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher, ENGINE *impl, const unsigned char *key, const unsigned char *iv)
 {
     return EVP_CipherInit_ex(ctx, cipher, impl, key, iv, 0);
 }
@@ -425,8 +432,7 @@ int EVP_EncryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl)
     return ret;
 }
 
-int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl,
-                      const unsigned char *in, int inl)
+int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, const unsigned char *in, int inl)
 {
     int fix_len;
     unsigned int b;
