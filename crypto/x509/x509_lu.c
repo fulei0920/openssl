@@ -339,12 +339,14 @@ int X509_STORE_add_cert(X509_STORE *ctx, X509 *x)
 
     if (x == NULL)
         return 0;
+	
     obj = (X509_OBJECT *)OPENSSL_malloc(sizeof(X509_OBJECT));
     if (obj == NULL) 
 	{
         X509err(X509_F_X509_STORE_ADD_CERT, ERR_R_MALLOC_FAILURE);
         return 0;
     }
+	
     obj->type = X509_LU_X509;
     obj->data.x509 = x;
 
@@ -409,7 +411,8 @@ int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x)
 
 void X509_OBJECT_up_ref_count(X509_OBJECT *a)
 {
-    switch (a->type) {
+    switch (a->type) 
+	{
     case X509_LU_X509:
         CRYPTO_add(&a->data.x509->references, 1, CRYPTO_LOCK_X509);
         break;
@@ -577,8 +580,7 @@ STACK_OF(X509_CRL) *X509_STORE_get1_crls(X509_STORE_CTX *ctx, X509_NAME *nm)
     return sk;
 }
 
-X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) *h,
-                                        X509_OBJECT *x)
+X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) *h, X509_OBJECT *x)
 {
     int idx, i;
     X509_OBJECT *obj;

@@ -198,7 +198,8 @@ const EVP_PKEY_ASN1_METHOD *ENGINE_get_pkey_asn1_meth_str(ENGINE *e,
     return NULL;
 }
 
-typedef struct {
+typedef struct
+{
     ENGINE *e;
     const EVP_PKEY_ASN1_METHOD *ameth;
     const char *str;
@@ -224,19 +225,19 @@ static void look_str_cb(int nid, STACK_OF(ENGINE) *sk, ENGINE *def, void *arg)
     }
 }
 
-const EVP_PKEY_ASN1_METHOD *ENGINE_pkey_asn1_find_str(ENGINE **pe,
-                                                      const char *str,
-                                                      int len)
+const EVP_PKEY_ASN1_METHOD *ENGINE_pkey_asn1_find_str(ENGINE **pe, const char *str, int len)
 {
     ENGINE_FIND_STR fstr;
     fstr.e = NULL;
     fstr.ameth = NULL;
     fstr.str = str;
     fstr.len = len;
+	
     CRYPTO_w_lock(CRYPTO_LOCK_ENGINE);
     engine_table_doall(pkey_asn1_meth_table, look_str_cb, &fstr);
     /* If found obtain a structural reference to engine */
-    if (fstr.e) {
+    if (fstr.e) 
+	{
         fstr.e->struct_ref++;
         engine_ref_debug(fstr.e, 0, 1)
     }

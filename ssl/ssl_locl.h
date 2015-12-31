@@ -287,7 +287,7 @@
  * ONLY ONE BIT PER MASK CAN BE SET AT A TIME.
  */
 
-/* Bits for algorithm_mkey (密钥交换算法) */
+/* Bits for algorithm_mkey (key exchange algorithm) */
 /* RSA key exchange */
 # define SSL_kRSA                0x00000001L
 /* DH cert, RSA CA cert */
@@ -507,16 +507,13 @@ typedef struct cert_pkey_st
 
 typedef struct cert_st 
 {
-    /* Current active set */
-    /*
-     * ALWAYS points to an element of the pkeys array
-     * Probably it would make more sense to store an index, not a pointer.
-     */
+    //Current active set */
+	//ALWAYS points to an element of the pkeys array. 
+	//Probably it would make more sense to store an index, not a pointer.
     CERT_PKEY *key;
-    /*
-     * The following masks are for the key and auth algorithms that are
-     * supported by the certs below
-     */
+    
+	//The following masks are for the key and auth algorithms that are
+	//supported by the certs below
     int valid;
     unsigned long mask_k;
     unsigned long mask_a;
@@ -524,17 +521,21 @@ typedef struct cert_st
     unsigned long export_mask_a;
 # ifndef OPENSSL_NO_RSA
     RSA *rsa_tmp;
+	//Callback for generating ephemeral RSA keys
     RSA *(*rsa_tmp_cb) (SSL *ssl, int is_export, int keysize);
 # endif
 # ifndef OPENSSL_NO_DH
     DH *dh_tmp;
+	//Callback for generating ephemeral DH keys
     DH *(*dh_tmp_cb) (SSL *ssl, int is_export, int keysize);
 # endif
 # ifndef OPENSSL_NO_ECDH
     EC_KEY *ecdh_tmp;
-    EC_KEY *(*ecdh_tmp_cb) (SSL *ssl, int is_export, int keysize); /* Callback for generating ephemeral ECDH keys */
+	//Callback for generating ephemeral ECDH keys
+    EC_KEY *(*ecdh_tmp_cb) (SSL *ssl, int is_export, int keysize); 
 # endif
-    CERT_PKEY pkeys[SSL_PKEY_NUM];  /* 存储不同加密算法下的证书和对应私钥及签名算法 */
+	//存储加载的不同类型的证书和对应私钥及签名算法 
+    CERT_PKEY pkeys[SSL_PKEY_NUM];  
     int references;             /* >1 only if SSL_copy_session_id is used */
 } CERT;
 

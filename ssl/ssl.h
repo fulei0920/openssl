@@ -395,17 +395,25 @@ typedef int (*tls_session_secret_cb_fn) (SSL *s, void *secret,
 /* used to hold info on the particular ciphers used */
 struct ssl_cipher_st 
 {
-    int valid;					/* 表明是否合法加密套件 */
-    const char *name;           /* 加密套件的名字 */
-    unsigned long id;           /* id, 4 bytes, first is version */  /*加 密 套 件 ID*/
+	//表明是否合法加密套件
+    int valid;					
+	//加密套件的名字
+    const char *name;  
+	/* id, 4 bytes, first is version */  /*加 密 套 件 ID*/
+    unsigned long id;           
     /*
      * changed in 0.9.9: these four used to be portions of a single value 'algorithms'
      */
-    unsigned long algorithm_mkey; 	/* key exchange algorithm */
-    unsigned long algorithm_auth; 	/* server authentication */
-    unsigned long algorithm_enc; 	/* symmetric encryption */
-    unsigned long algorithm_mac; 	/* symmetric authentication */
-    unsigned long algorithm_ssl; 	/* (major) protocol version */
+	//key exchange algorithm 
+    unsigned long algorithm_mkey; 	
+	//server authentication 
+    unsigned long algorithm_auth; 	
+	//symmetric encryption 
+    unsigned long algorithm_enc; 	
+	//symmetric authentication 
+    unsigned long algorithm_mac; 	
+	//(major) protocol version 
+    unsigned long algorithm_ssl; 	
     unsigned long algo_strength; 	/* strength and export flags */
     unsigned long algorithm2;   	/* Extra flags */
     int strength_bits;          	/* Number of bits really used */
@@ -447,7 +455,9 @@ struct ssl_method_st
 	*/
     int (*put_cipher_by_char) (const SSL_CIPHER *cipher, unsigned char *ptr);
     int (*ssl_pending) (const SSL *s);
+	//协议支持的加密套件个数
     int (*num_ciphers) (void);
+	//根据索引获取对应的加密套件
     const SSL_CIPHER *(*get_cipher) (unsigned ncipher);
     const struct ssl_method_st *(*get_ssl_method) (int version);
     long (*get_timeout) (void);

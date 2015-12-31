@@ -375,11 +375,14 @@ static int get_optional_pkey_id(const char *pkey_name)
     ENGINE *tmpeng = NULL;
     int pkey_id = 0;
     ameth = EVP_PKEY_asn1_find_str(&tmpeng, pkey_name, -1);
-    if (ameth) {
+    if (ameth) 
+	{
         EVP_PKEY_asn1_get0_info(&pkey_id, NULL, NULL, NULL, NULL, ameth);
     }
+	
     if (tmpeng)
         ENGINE_finish(tmpeng);
+	
     return pkey_id;
 }
 
@@ -672,9 +675,8 @@ int ssl_get_handshake_digest(int idx, long *mask, const EVP_MD **md)
 #define ITEM_SEP(a) \
         (((a) == ':') || ((a) == ' ') || ((a) == ';') || ((a) == ','))
 
-/*
-将curr指向的对象放在链表尾部
-*/
+
+//将curr指向的对象放在链表尾部
 static void ll_append_tail(CIPHER_ORDER **head, CIPHER_ORDER *curr, CIPHER_ORDER **tail)
 {
     if (curr == *tail)
@@ -691,19 +693,22 @@ static void ll_append_tail(CIPHER_ORDER **head, CIPHER_ORDER *curr, CIPHER_ORDER
     *tail = curr;
 }
 
-/*
-将curr指向的对象放在链表头部
-*/
+
+//将curr指向的对象放在链表头部
 static void ll_append_head(CIPHER_ORDER **head, CIPHER_ORDER *curr, CIPHER_ORDER **tail)
 {
     if (curr == *head)
         return;
+	
     if (curr == *tail)
         *tail = curr->prev;
+	
     if (curr->next != NULL)
         curr->next->prev = curr->prev;
+	
     if (curr->prev != NULL)
         curr->prev->next = curr->next;
+	
     (*head)->prev = curr;
     curr->next = *head;
     curr->prev = NULL;
@@ -749,21 +754,19 @@ static void ssl_cipher_get_disabled(unsigned long *mkey, unsigned long *auth, un
 #ifdef OPENSSL_NO_SRP
     *mkey |= SSL_kSRP;
 #endif
-    /*
-     * Check for presence of GOST 34.10 algorithms, and if they do not
-     * present, disable appropriate auth and key exchange
-     */
+  
+    //Check for presence of GOST 34.10 algorithms, and if they do not present, disable appropriate auth and key exchange
     if (!get_optional_pkey_id("gost94")) 
 	{
         *auth |= SSL_aGOST94;
     }
+	
     if (!get_optional_pkey_id("gost2001"))
 	{
         *auth |= SSL_aGOST01;
     }
-    /*
-     * Disable GOST key exchange if no GOST signature algs are available *
-     */
+    
+    //Disable GOST key exchange if no GOST signature algs are available 
     if ((*auth & (SSL_aGOST94 | SSL_aGOST01)) == (SSL_aGOST94 | SSL_aGOST01))
 	{
         *mkey |= SSL_kGOST;
@@ -808,20 +811,18 @@ static void ssl_cipher_collect_ciphers(const SSL_METHOD *ssl_method, int num_of_
      */
 
     /* Get the initial list of ciphers */
-    co_list_num = 0;            /* actual count of ciphers */
+    co_list_num = 0;         /* actual count of ciphers */
     for (i = 0; i < num_of_ciphers; i++)
 	{
         c = ssl_method->get_cipher(i);
+		
         /* drop those that use any of that is not available */
         if ((c != NULL) && c->valid &&
 #ifdef OPENSSL_FIPS
             (!FIPS_mode() || (c->algo_strength & SSL_FIPS)) &&
 #endif
-            !(c->algorithm_mkey & disabled_mkey) &&
-            !(c->algorithm_auth & disabled_auth) &&
-            !(c->algorithm_enc & disabled_enc) &&
-            !(c->algorithm_mac & disabled_mac) &&
-            !(c->algorithm_ssl & disabled_ssl))
+            !(c->algorithm_mkey & disabled_mkey) && !(c->algorithm_auth & disabled_auth) &&
+            !(c->algorithm_enc & disabled_enc) && !(c->algorithm_mac & disabled_mac) && !(c->algorithm_ssl & disabled_ssl))
 		{
             co_list[co_list_num].cipher = c;
             co_list[co_list_num].next = NULL;
@@ -1373,8 +1374,8 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
     return (retval);
 }
 
-STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK_OF(SSL_CIPHER)
-		**cipher_list, STACK_OF(SSL_CIPHER) **cipher_list_by_id, const char *rule_str)
+STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK_OF(SSL_CIPHER) **cipher_list, 
+		STACK_OF(SSL_CIPHER) **cipher_list_by_id, const char *rule_str)
 {
     int ok, num_of_ciphers, num_of_alias_max, num_of_group_aliases;
     unsigned long disabled_mkey, disabled_auth, disabled_enc, disabled_mac, disabled_ssl;
@@ -1383,27 +1384,22 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
     CIPHER_ORDER *co_list = NULL, *head = NULL, *tail = NULL, *curr;
     const SSL_CIPHER **ca_list = NULL;
 
-    /*
-     * Return with error if nothing to do.
-     */
+    //Return with error if nothing to do.
     if (rule_str == NULL || cipher_list == NULL || cipher_list_by_id == NULL)
         return NULL;
 
-    /*
-     * To reduce the work to do we only want to process the compiled
-     * in algorithms, so we first get the mask of disabled ciphers.
-     */
+	//To reduce the work to do we only want to process the compiled
+	//in algorithms, so we first get the mask of disabled ciphers.
     ssl_cipher_get_disabled(&disabled_mkey, &disabled_auth, &disabled_enc, &disabled_mac, &disabled_ssl);
 
-    /*
-     * Now we have to collect the available ciphers from the compiled
-     * in ciphers. We cannot get more than the number compiled in, so
-     * it is used for allocation.
-     */
+    
+	//Now we have to collect the available ciphers from the compiled in ciphers. We cannot get
+	//more than the number compiled in, so it is used for allocation.
     num_of_ciphers = ssl_method->num_ciphers();
 #ifdef KSSL_DEBUG
+	 /* KSSL_DEBUG */
     fprintf(stderr, "ssl_create_cipher_list() for %d ciphers\n", num_of_ciphers);
-#endif                          /* KSSL_DEBUG */
+#endif                         
     co_list = (CIPHER_ORDER *)OPENSSL_malloc(sizeof(CIPHER_ORDER) * num_of_ciphers);
     if (co_list == NULL) 
 	{

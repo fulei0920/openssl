@@ -97,7 +97,8 @@ void X509_INFO_free(X509_INFO *x)
     if (i > 0)
         return;
 #ifdef REF_CHECK
-    if (i < 0) {
+    if (i < 0) 
+	{
         fprintf(stderr, "X509_INFO_free, bad reference count\n");
         abort();
     }

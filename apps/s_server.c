@@ -227,7 +227,8 @@ static void s_server_init(void);
 #endif
 
 #ifndef OPENSSL_NO_DH
-static unsigned char dh2048_p[] = {
+static unsigned char dh2048_p[] = 
+{
     0xF6,0x42,0x57,0xB7,0x08,0x7F,0x08,0x17,0x72,0xA2,0xBA,0xD6,
     0xA9,0x42,0xF3,0x05,0xE8,0xF9,0x53,0x11,0x39,0x4F,0xB6,0xF1,
     0x6E,0xB9,0x4B,0x38,0x20,0xDA,0x01,0xA7,0x56,0xA3,0x14,0xE9,
@@ -252,7 +253,8 @@ static unsigned char dh2048_p[] = {
     0xE9,0x32,0x0B,0x3B,
 };
 
-static unsigned char dh2048_g[] = {
+static unsigned char dh2048_g[] = 
+{
     0x02,
 };
 
@@ -806,7 +808,8 @@ static int ebcdic_puts(BIO *bp, const char *str)
 #ifndef OPENSSL_NO_TLSEXT
 
 /* This is a context that we pass to callbacks */
-typedef struct tlsextctx_st {
+typedef struct tlsextctx_st 
+{
     char *servername;
     BIO *biodebug;
     int extension_error;
@@ -1130,7 +1133,8 @@ int MAIN(int argc, char *argv[])
             dhfile = *(++argv);
         }
 #ifndef OPENSSL_NO_ECDH
-        else if (strcmp(*argv, "-named_curve") == 0) {
+        else if (strcmp(*argv, "-named_curve") == 0) 
+		{
             if (--argc < 1)
                 goto bad;
             named_curve = *(++argv);
@@ -1158,13 +1162,17 @@ int MAIN(int argc, char *argv[])
             s_dkey_file = *(++argv);
         } else if (strcmp(*argv, "-nocert") == 0) {
             nocert = 1;
-        } else if (strcmp(*argv, "-CApath") == 0) {
+        }
+		else if (strcmp(*argv, "-CApath") == 0)
+       	{
             if (--argc < 1)
                 goto bad;
             CApath = *(++argv);
-        } else if (strcmp(*argv, "-no_cache") == 0)
+        } 
+		else if (strcmp(*argv, "-no_cache") == 0)
             no_cache = 1;
-        else if (args_verify(&argv, &argc, &badarg, bio_err, &vpm)) {
+        else if (args_verify(&argv, &argc, &badarg, bio_err, &vpm))
+		{
             if (badarg)
                 goto bad;
             continue;
@@ -1237,13 +1245,18 @@ int MAIN(int argc, char *argv[])
             s_quiet = 1;
         } else if (strcmp(*argv, "-bugs") == 0) {
             bugs = 1;
-        } else if (strcmp(*argv, "-no_tmp_rsa") == 0) {
+        } 
+		else if (strcmp(*argv, "-no_tmp_rsa") == 0)
+		{
             no_tmp_rsa = 1;
-        } else if (strcmp(*argv, "-no_dhe") == 0) {
+        } 
+		else if (strcmp(*argv, "-no_dhe") == 0) 
+		{
             no_dhe = 1;
         }
 #ifndef OPENSSL_NO_ECDH
-        else if (strcmp(*argv, "-no_ecdhe") == 0) {
+        else if (strcmp(*argv, "-no_ecdhe") == 0)
+		{
             no_ecdhe = 1;
         }
 #endif
@@ -1353,13 +1366,18 @@ int MAIN(int argc, char *argv[])
             inrand = *(++argv);
         }
 #ifndef OPENSSL_NO_TLSEXT
-        else if (strcmp(*argv, "-servername") == 0) {
+        else if (strcmp(*argv, "-servername") == 0)
+		{
             if (--argc < 1)
                 goto bad;
             tlsextcbp.servername = *(++argv);
-        } else if (strcmp(*argv, "-servername_fatal") == 0) {
+        } 
+		else if (strcmp(*argv, "-servername_fatal") == 0)
+		{
             tlsextcbp.extension_error = SSL_TLSEXT_ERR_ALERT_FATAL;
-        } else if (strcmp(*argv, "-cert2") == 0) {
+        }
+		else if (strcmp(*argv, "-cert2") == 0) 
+       	{
             if (--argc < 1)
                 goto bad;
             s_cert_file2 = *(++argv);
@@ -1497,20 +1515,22 @@ int MAIN(int argc, char *argv[])
     }
 	
 #if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
-    if (next_proto_neg_in) {
+    if (next_proto_neg_in) 
+	{
         unsigned short len;
         next_proto.data = next_protos_parse(&len, next_proto_neg_in);
         if (next_proto.data == NULL)
             goto end;
         next_proto.len = len;
-    } else {
+    } 
+	else 
+	{
         next_proto.data = NULL;
     }
 #endif
 
     if (s_dcert_file) 
 	{
-
         if (s_dkey_file == NULL)
             s_dkey_file = s_dcert_file;
 
@@ -1530,11 +1550,11 @@ int MAIN(int argc, char *argv[])
 
     }
 
-    if (!app_RAND_load_file(NULL, bio_err, 1) && inrand == NULL
-        && !RAND_status()) {
-        BIO_printf(bio_err,
-                   "warning, not much extra random data, consider using the -rand option\n");
+    if (!app_RAND_load_file(NULL, bio_err, 1) && inrand == NULL && !RAND_status()) 
+    {
+        BIO_printf(bio_err, "warning, not much extra random data, consider using the -rand option\n");
     }
+	
     if (inrand != NULL)
         BIO_printf(bio_err, "%ld semi-random bytes loaded\n", app_RAND_load_files(inrand));
 
@@ -1634,9 +1654,11 @@ int MAIN(int argc, char *argv[])
         SSL_CTX_set1_param(ctx, vpm);
 
 #ifndef OPENSSL_NO_TLSEXT
-    if (s_cert2) {
+    if (s_cert2) 
+	{
         ctx2 = SSL_CTX_new(meth);
-        if (ctx2 == NULL) {
+        if (ctx2 == NULL)
+		{
             ERR_print_errors(bio_err);
             goto end;
         }
@@ -1689,7 +1711,8 @@ int MAIN(int argc, char *argv[])
 #endif
 
 #ifndef OPENSSL_NO_DH
-    if (!no_dhe) {
+    if (!no_dhe)
+	{
         DH *dh = NULL;
 
         if (dhfile)
@@ -1697,12 +1720,16 @@ int MAIN(int argc, char *argv[])
         else if (s_cert_file)
             dh = load_dh_param(s_cert_file);
 
-        if (dh != NULL) {
+        if (dh != NULL) 
+		{
             BIO_printf(bio_s_out, "Setting temp DH parameters\n");
-        } else {
+        } 
+		else 
+		{
             BIO_printf(bio_s_out, "Using default temp DH parameters\n");
             dh = get_dh2048();
-            if (dh == NULL) {
+            if (dh == NULL)
+			{
                 ERR_print_errors(bio_err);
                 goto end;
             }
@@ -1711,10 +1738,13 @@ int MAIN(int argc, char *argv[])
 
         SSL_CTX_set_tmp_dh(ctx, dh);
 # ifndef OPENSSL_NO_TLSEXT
-        if (ctx2) {
-            if (!dhfile) {
+        if (ctx2) 
+		{
+            if (!dhfile) 
+			{
                 DH *dh2 = load_dh_param(s_cert_file2);
-                if (dh2 != NULL) {
+                if (dh2 != NULL) 
+				{
                     BIO_printf(bio_s_out, "Setting temp DH parameters\n");
                     (void)BIO_flush(bio_s_out);
 
@@ -1734,27 +1764,33 @@ int MAIN(int argc, char *argv[])
 	{
         EC_KEY *ecdh = NULL;
 
-        if (named_curve) {
+        if (named_curve) 
+		{
             int nid = OBJ_sn2nid(named_curve);
-
-            if (nid == 0) {
+            if (nid == 0) 
+			{
                 BIO_printf(bio_err, "unknown curve name (%s)\n", named_curve);
                 goto end;
             }
+			
             ecdh = EC_KEY_new_by_curve_name(nid);
-            if (ecdh == NULL) {
-                BIO_printf(bio_err, "unable to create curve (%s)\n",
-                           named_curve);
+            if (ecdh == NULL) 
+			{
+                BIO_printf(bio_err, "unable to create curve (%s)\n", named_curve);
                 goto end;
             }
         }
 
-        if (ecdh != NULL) {
+        if (ecdh != NULL)
+		{
             BIO_printf(bio_s_out, "Setting temp ECDH parameters\n");
-        } else {
+        } 
+		else 
+		{
             BIO_printf(bio_s_out, "Using default temp ECDH parameters\n");
             ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-            if (ecdh == NULL) {
+            if (ecdh == NULL) 
+			{
                 BIO_printf(bio_err, "unable to create curve (nistp256)\n");
                 goto end;
             }
@@ -1772,10 +1808,12 @@ int MAIN(int argc, char *argv[])
 
     if (!set_cert_key_stuff(ctx, s_cert, s_key))
         goto end;
+	
 #ifndef OPENSSL_NO_TLSEXT
     if (ctx2 && !set_cert_key_stuff(ctx2, s_cert2, s_key2))
         goto end;
 #endif
+
     if (s_dcert != NULL) 
 	{
         if (!set_cert_key_stuff(ctx, s_dcert, s_dkey))
@@ -1783,7 +1821,8 @@ int MAIN(int argc, char *argv[])
     }
 #ifndef OPENSSL_NO_RSA
 # if 1
-    if (!no_tmp_rsa) {
+    if (!no_tmp_rsa) 
+	{
         SSL_CTX_set_tmp_rsa_callback(ctx, tmp_rsa_cb);
 #  ifndef OPENSSL_NO_TLSEXT
         if (ctx2)
@@ -1791,7 +1830,8 @@ int MAIN(int argc, char *argv[])
 #  endif
     }
 # else
-    if (!no_tmp_rsa && SSL_CTX_need_tmp_RSA(ctx)) {
+    if (!no_tmp_rsa && SSL_CTX_need_tmp_RSA(ctx)) 
+	{
         RSA *rsa;
 
         BIO_printf(bio_s_out, "Generating temp (512 bit) RSA key...");
@@ -1825,26 +1865,30 @@ int MAIN(int argc, char *argv[])
 # endif
     {
         if (s_debug)
-            BIO_printf(bio_s_out,
-                       "PSK key given or JPAKE in use, setting server callback\n");
+            BIO_printf(bio_s_out, "PSK key given or JPAKE in use, setting server callback\n");
+		
         SSL_CTX_set_psk_server_callback(ctx, psk_server_cb);
     }
 
-    if (!SSL_CTX_use_psk_identity_hint(ctx, psk_identity_hint)) {
+    if (!SSL_CTX_use_psk_identity_hint(ctx, psk_identity_hint))
+	{
         BIO_printf(bio_err, "error setting PSK identity hint to context\n");
         ERR_print_errors(bio_err);
         goto end;
     }
 #endif
 
-    if (cipher != NULL) {
-        if (!SSL_CTX_set_cipher_list(ctx, cipher)) {
+    if (cipher != NULL) 
+	{
+        if (!SSL_CTX_set_cipher_list(ctx, cipher)) 
+		{
             BIO_printf(bio_err, "error setting cipher list\n");
             ERR_print_errors(bio_err);
             goto end;
         }
 #ifndef OPENSSL_NO_TLSEXT
-        if (ctx2 && !SSL_CTX_set_cipher_list(ctx2, cipher)) {
+        if (ctx2 && !SSL_CTX_set_cipher_list(ctx2, cipher))
+		{
             BIO_printf(bio_err, "error setting cipher list\n");
             ERR_print_errors(bio_err);
             goto end;
@@ -2527,7 +2571,9 @@ static DH *load_dh_param(const char *dhfile)
 
     if ((bio = BIO_new_file(dhfile, "r")) == NULL)
         goto err;
+	
     ret = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+	
  err:
     if (bio != NULL)
         BIO_free(bio);

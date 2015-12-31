@@ -192,12 +192,16 @@ const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find(ENGINE **pe, int type)
     return t;
 }
 
+//根据字符串名从pkey_asn1_meth_table中获取EVP_PKEY_ASN1_METHOD和ENGINE
+//若获取不到，则从standard_methods和app_methods中获取EVP_PKEY_ASN1_METHOD
 const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find_str(ENGINE **pe, const char *str, int len)
 {
     int i;
     const EVP_PKEY_ASN1_METHOD *ameth;
+	
     if (len == -1)
         len = strlen(str);
+	
     if (pe) 
 	{
 #ifndef OPENSSL_NO_ENGINE
@@ -210,6 +214,7 @@ const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find_str(ENGINE **pe, const char *str,
              */
             if (!ENGINE_init(e))
                 ameth = NULL;
+			
             ENGINE_free(e);
             *pe = e;
             return ameth;
@@ -221,8 +226,10 @@ const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find_str(ENGINE **pe, const char *str,
     for (i = 0; i < EVP_PKEY_asn1_get_count(); i++) 
 	{
         ameth = EVP_PKEY_asn1_get0(i);
+		
         if (ameth->pkey_flags & ASN1_PKEY_ALIAS)
             continue;
+		
         if (((int)strlen(ameth->pem_str) == len) && !strncasecmp(ameth->pem_str, str, len))
             return ameth;
     }

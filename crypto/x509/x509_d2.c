@@ -69,11 +69,13 @@ int X509_STORE_set_default_paths(X509_STORE *ctx)
     lookup = X509_STORE_add_lookup(ctx, X509_LOOKUP_file());
     if (lookup == NULL)
         return (0);
+	
     X509_LOOKUP_load_file(lookup, NULL, X509_FILETYPE_DEFAULT);
 
     lookup = X509_STORE_add_lookup(ctx, X509_LOOKUP_hash_dir());
     if (lookup == NULL)
         return (0);
+	
     X509_LOOKUP_add_dir(lookup, NULL, X509_FILETYPE_DEFAULT);
 
     /* clear any errors */

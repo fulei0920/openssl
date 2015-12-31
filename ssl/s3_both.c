@@ -583,6 +583,7 @@ int ssl_cert_type(X509 *x, EVP_PKEY *pkey)
         pk = X509_get_pubkey(x);
     else
         pk = pkey;
+	
     if (pk == NULL)
         goto err;
 

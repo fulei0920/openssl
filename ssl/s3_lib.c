@@ -166,7 +166,7 @@ const char ssl3_version_str[] = "SSLv3" OPENSSL_VERSION_PTEXT;
 
 #define SSL3_NUM_CIPHERS        (sizeof(ssl3_ciphers)/sizeof(SSL_CIPHER))
 
-/* list of available SSLv3 ciphers (sorted by id) */
+//SSLV3支持的加密套件，按id排序
 OPENSSL_GLOBAL SSL_CIPHER ssl3_ciphers[] = 
 {
 
@@ -3486,12 +3486,15 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             DH *new = NULL, *dh;
 
             dh = (DH *)parg;
-            if ((new = DHparams_dup(dh)) == NULL) {
+            if ((new = DHparams_dup(dh)) == NULL) 
+			{
                 SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_DH_LIB);
                 return 0;
             }
-            if (!(ctx->options & SSL_OP_SINGLE_DH_USE)) {
-                if (!DH_generate_key(new)) {
+            if (!(ctx->options & SSL_OP_SINGLE_DH_USE))
+			{
+                if (!DH_generate_key(new)) 
+				{
                     SSLerr(SSL_F_SSL3_CTX_CTRL, ERR_R_DH_LIB);
                     DH_free(new);
                     return 0;

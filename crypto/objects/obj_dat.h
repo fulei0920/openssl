@@ -4228,7 +4228,8 @@ static const unsigned int ln_objs[NUM_LN]={
 125,	/* "zlib compression" */
 };
 
-static const unsigned int obj_objs[NUM_OBJ]={
+static const unsigned int obj_objs[NUM_OBJ]=
+{
  0,	/* OBJ_undef                        0 */
 181,	/* OBJ_iso                          1 */
 393,	/* OBJ_joint_iso_ccitt              OBJ_joint_iso_itu_t */

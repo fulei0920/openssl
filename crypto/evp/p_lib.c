@@ -132,6 +132,7 @@ int EVP_PKEY_copy_parameters(EVP_PKEY *to, const EVP_PKEY *from)
         EVPerr(EVP_F_EVP_PKEY_COPY_PARAMETERS, EVP_R_MISSING_PARAMETERS);
         goto err;
     }
+	
     if (from->ameth && from->ameth->param_copy)
         return from->ameth->param_copy(to, from);
  err:
@@ -163,7 +164,8 @@ int EVP_PKEY_cmp(const EVP_PKEY *a, const EVP_PKEY *b)
 	{
         int ret;
         /* Compare parameters if the algorithm has them */
-        if (a->ameth->param_cmp) {
+        if (a->ameth->param_cmp) 
+		{
             ret = a->ameth->param_cmp(a, b);
             if (ret <= 0)
                 return ret;
@@ -205,6 +207,7 @@ static int pkey_set_type(EVP_PKEY *pkey, int type, const char *str, int len)
 {
     const EVP_PKEY_ASN1_METHOD *ameth;
     ENGINE *e = NULL;
+	
     if (pkey) 
 	{
         if (pkey->pkey.ptr)
@@ -224,10 +227,12 @@ static int pkey_set_type(EVP_PKEY *pkey, int type, const char *str, int len)
         }
 #endif
     }
+	
     if (str)
         ameth = EVP_PKEY_asn1_find_str(&e, str, len);
     else
         ameth = EVP_PKEY_asn1_find(&e, type);
+	
 #ifndef OPENSSL_NO_ENGINE
     if (!pkey && e)
         ENGINE_finish(e);
@@ -237,6 +242,7 @@ static int pkey_set_type(EVP_PKEY *pkey, int type, const char *str, int len)
         EVPerr(EVP_F_PKEY_SET_TYPE, EVP_R_UNSUPPORTED_ALGORITHM);
         return 0;
     }
+	
     if (pkey)
 	{
         pkey->ameth = ameth;
@@ -262,7 +268,9 @@ int EVP_PKEY_assign(EVP_PKEY *pkey, int type, void *key)
 {
     if (pkey == NULL || !EVP_PKEY_set_type(pkey, type))
         return 0;
+	
     pkey->pkey.ptr = key;
+	
     return (key != NULL);
 }
 
@@ -396,7 +404,8 @@ void EVP_PKEY_free(EVP_PKEY *x)
     if (i > 0)
         return;
 #ifdef REF_CHECK
-    if (i < 0) {
+    if (i < 0)
+	{
         fprintf(stderr, "EVP_PKEY_free, bad reference count\n");
         abort();
     }

@@ -25,8 +25,7 @@ int SPKI_set_pubkey(NETSCAPE_SPKI *x, EVP_PKEY *pkey);
 /* These are defined in the next version of SSLeay */
 int EVP_PKEY_assign(EVP_PKEY *pkey, int type, char *key);
 #define RSA_F4  0x10001
-#define EVP_PKEY_assign_RSA(pkey,rsa) EVP_PKEY_assign((pkey),EVP_PKEY_RSA,\
-                                        (char *)(rsa))
+#define EVP_PKEY_assign_RSA(pkey,rsa) EVP_PKEY_assign((pkey),EVP_PKEY_RSA, (char *)(rsa))
 
 int main(argc, argv)
 int argc;

@@ -2289,7 +2289,8 @@ typedef struct _ec_list_element_st {
     const char *comment;
 } ec_list_element;
 
-static const ec_list_element curve_list[] = {
+static const ec_list_element curve_list[] = 
+{
     /* prime field curves */
     /* secg curves */
     {NID_secp112r1, &_EC_SECG_PRIME_112R1.h, 0,

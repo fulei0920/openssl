@@ -150,31 +150,40 @@ EVP_PKEY *X509_PUBKEY_get(X509_PUBKEY *key)
         goto error;
     }
 
-    if (!EVP_PKEY_set_type(ret, OBJ_obj2nid(key->algor->algorithm))) {
+    if (!EVP_PKEY_set_type(ret, OBJ_obj2nid(key->algor->algorithm))) 
+	{
         X509err(X509_F_X509_PUBKEY_GET, X509_R_UNSUPPORTED_ALGORITHM);
         goto error;
     }
 
-    if (ret->ameth->pub_decode) {
-        if (!ret->ameth->pub_decode(ret, key)) {
+    if (ret->ameth->pub_decode) 
+	{
+        if (!ret->ameth->pub_decode(ret, key)) 
+		{
             X509err(X509_F_X509_PUBKEY_GET, X509_R_PUBLIC_KEY_DECODE_ERROR);
             goto error;
         }
-    } else {
+    } 
+	else 
+	{
         X509err(X509_F_X509_PUBKEY_GET, X509_R_METHOD_NOT_SUPPORTED);
         goto error;
     }
 
     /* Check to see if another thread set key->pkey first */
     CRYPTO_w_lock(CRYPTO_LOCK_EVP_PKEY);
-    if (key->pkey) {
+    if (key->pkey) 
+	{
         CRYPTO_w_unlock(CRYPTO_LOCK_EVP_PKEY);
         EVP_PKEY_free(ret);
         ret = key->pkey;
-    } else {
+    } 
+	else
+	{
         key->pkey = ret;
         CRYPTO_w_unlock(CRYPTO_LOCK_EVP_PKEY);
     }
+	
     CRYPTO_add(&ret->references, 1, CRYPTO_LOCK_EVP_PKEY);
 
     return ret;
@@ -364,16 +373,17 @@ int X509_PUBKEY_set0_param(X509_PUBKEY *pub, ASN1_OBJECT *aobj,
     return 1;
 }
 
-int X509_PUBKEY_get0_param(ASN1_OBJECT **ppkalg,
-                           const unsigned char **pk, int *ppklen,
-                           X509_ALGOR **pa, X509_PUBKEY *pub)
+int X509_PUBKEY_get0_param(ASN1_OBJECT **ppkalg, const unsigned char **pk, int *ppklen, X509_ALGOR **pa, X509_PUBKEY *pub)
 {
     if (ppkalg)
         *ppkalg = pub->algor->algorithm;
-    if (pk) {
+	
+    if (pk) 
+	{
         *pk = pub->public_key->data;
         *ppklen = pub->public_key->length;
     }
+	
     if (pa)
         *pa = pub->algor;
     return 1;

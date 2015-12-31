@@ -2172,8 +2172,7 @@ X509_NAME *parse_name(char *subject, long chtype, int multirdn)
     return NULL;
 }
 
-int args_verify(char ***pargs, int *pargc,
-                int *badarg, BIO *err, X509_VERIFY_PARAM **pm)
+int args_verify(char ***pargs, int *pargc, int *badarg, BIO *err, X509_VERIFY_PARAM **pm)
 {
     ASN1_OBJECT *otmp = NULL;
     unsigned long flags = 0;

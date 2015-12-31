@@ -323,7 +323,7 @@ ASN1_BIT_STRING *X509_get0_pubkey_bitstr(const X509 *x)
     return x->cert_info->key->public_key;
 }
 
-/*检查证书与私钥是否相匹配*/
+//检查证书与私钥是否相匹配，其实也就是检查证书中的公钥和私钥是否匹配
 int X509_check_private_key(X509 *x, EVP_PKEY *k)
 {
     EVP_PKEY *xk;
@@ -336,7 +336,8 @@ int X509_check_private_key(X509 *x, EVP_PKEY *k)
     else
         ret = -2;
 
-    switch (ret) {
+    switch (ret) 
+	{
     case 1:
         break;
     case 0:
@@ -348,6 +349,7 @@ int X509_check_private_key(X509 *x, EVP_PKEY *k)
     case -2:
         X509err(X509_F_X509_CHECK_PRIVATE_KEY, X509_R_UNKNOWN_KEY_TYPE);
     }
+	
     if (xk)
         EVP_PKEY_free(xk);
     if (ret > 0)

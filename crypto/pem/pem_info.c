@@ -321,8 +321,8 @@ STACK_OF(X509_INFO) *PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) *sk, pe
      * if the last one hasn't been pushed yet and there is anything in it
      * then add it to the stack ...
      */
-    if ((xi->x509 != NULL) || (xi->crl != NULL) ||
-        (xi->x_pkey != NULL) || (xi->enc_data != NULL)) {
+    if ((xi->x509 != NULL) || (xi->crl != NULL) || (xi->x_pkey != NULL) || (xi->enc_data != NULL))
+    {
         if (!sk_X509_INFO_push(ret, xi))
             goto err;
         xi = NULL;
@@ -331,13 +331,17 @@ STACK_OF(X509_INFO) *PEM_X509_INFO_read_bio(BIO *bp, STACK_OF(X509_INFO) *sk, pe
  err:
     if (xi != NULL)
         X509_INFO_free(xi);
-    if (!ok) {
-        for (i = 0; ((int)i) < sk_X509_INFO_num(ret); i++) {
+    if (!ok)
+	{
+        for (i = 0; ((int)i) < sk_X509_INFO_num(ret); i++)
+		{
             xi = sk_X509_INFO_value(ret, i);
             X509_INFO_free(xi);
         }
+		
         if (ret != sk)
             sk_X509_INFO_free(ret);
+		
         ret = NULL;
     }
 
