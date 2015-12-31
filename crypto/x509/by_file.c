@@ -89,12 +89,15 @@ X509_LOOKUP_METHOD *X509_LOOKUP_file(void)
     return (&x509_file_lookup);
 }
 
+//argp -- 文件路径名
+//argl -- 文件格式
 static int by_file_ctrl(X509_LOOKUP *ctx, int cmd, const char *argp, long argl, char **ret)
 {
     int ok = 0;
     char *file;
 
-    switch (cmd) {
+    switch (cmd) 
+	{
     case X509_L_FILE_LOAD:
         if (argl == X509_FILETYPE_DEFAULT) 
 		{
@@ -244,21 +247,27 @@ int X509_load_cert_crl_file(X509_LOOKUP *ctx, const char *file, int type)
     X509_INFO *itmp;
     BIO *in;
     int i, count = 0;
+	
     if (type != X509_FILETYPE_PEM)
         return X509_load_cert_file(ctx, file, type);
+	
     in = BIO_new_file(file, "r");
     if (!in) 
 	{
         X509err(X509_F_X509_LOAD_CERT_CRL_FILE, ERR_R_SYS_LIB);
         return 0;
     }
+	
     inf = PEM_X509_INFO_read_bio(in, NULL, NULL, NULL);
+	
     BIO_free(in);
+	
     if (!inf) 
 	{
         X509err(X509_F_X509_LOAD_CERT_CRL_FILE, ERR_R_PEM_LIB);
         return 0;
     }
+	
     for (i = 0; i < sk_X509_INFO_num(inf); i++) 
 	{
         itmp = sk_X509_INFO_value(inf, i);

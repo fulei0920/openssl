@@ -112,17 +112,14 @@ void main()
 }
 #endif
 
-DECLARE_OBJ_BSEARCH_CMP_FN(const EVP_PKEY_ASN1_METHOD *,
-                           const EVP_PKEY_ASN1_METHOD *, ameth);
+DECLARE_OBJ_BSEARCH_CMP_FN(const EVP_PKEY_ASN1_METHOD *, const EVP_PKEY_ASN1_METHOD *, ameth);
 
-static int ameth_cmp(const EVP_PKEY_ASN1_METHOD *const *a,
-                     const EVP_PKEY_ASN1_METHOD *const *b)
+static int ameth_cmp(const EVP_PKEY_ASN1_METHOD *const *a, const EVP_PKEY_ASN1_METHOD *const *b)
 {
     return ((*a)->pkey_id - (*b)->pkey_id);
 }
 
-IMPLEMENT_OBJ_BSEARCH_CMP_FN(const EVP_PKEY_ASN1_METHOD *,
-                             const EVP_PKEY_ASN1_METHOD *, ameth);
+IMPLEMENT_OBJ_BSEARCH_CMP_FN(const EVP_PKEY_ASN1_METHOD *, const EVP_PKEY_ASN1_METHOD *, ameth);
 
 int EVP_PKEY_asn1_get_count(void)
 {
@@ -148,14 +145,14 @@ static const EVP_PKEY_ASN1_METHOD *pkey_asn1_find(int type)
     EVP_PKEY_ASN1_METHOD tmp;
     const EVP_PKEY_ASN1_METHOD *t = &tmp, **ret;
     tmp.pkey_id = type;
-    if (app_methods) {
+    if (app_methods) 
+	{
         int idx;
         idx = sk_EVP_PKEY_ASN1_METHOD_find(app_methods, &tmp);
         if (idx >= 0)
             return sk_EVP_PKEY_ASN1_METHOD_value(app_methods, idx);
     }
-    ret = OBJ_bsearch_ameth(&t, standard_methods, sizeof(standard_methods)
-                            / sizeof(EVP_PKEY_ASN1_METHOD *));
+    ret = OBJ_bsearch_ameth(&t, standard_methods, sizeof(standard_methods) / sizeof(EVP_PKEY_ASN1_METHOD *));
     if (!ret || !*ret)
         return NULL;
     return *ret;
@@ -171,18 +168,21 @@ const EVP_PKEY_ASN1_METHOD *EVP_PKEY_asn1_find(ENGINE **pe, int type)
 {
     const EVP_PKEY_ASN1_METHOD *t;
 
-    for (;;) {
+    for (;;)
+	{
         t = pkey_asn1_find(type);
         if (!t || !(t->pkey_flags & ASN1_PKEY_ALIAS))
             break;
         type = t->pkey_base_id;
     }
-    if (pe) {
+    if (pe)
+	{
 #ifndef OPENSSL_NO_ENGINE
         ENGINE *e;
         /* type will contain the final unaliased type */
         e = ENGINE_get_pkey_asn1_meth_engine(type);
-        if (e) {
+        if (e) 
+		{
             *pe = e;
             return ENGINE_get_pkey_asn1_meth(e, type);
         }

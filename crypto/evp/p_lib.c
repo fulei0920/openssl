@@ -201,12 +201,12 @@ EVP_PKEY *EVP_PKEY_new(void)
  * Setup a public key ASN1 method and ENGINE from a NID or a string. If pkey
  * is NULL just return 1 or 0 if the algorithm exists.
  */
-
 static int pkey_set_type(EVP_PKEY *pkey, int type, const char *str, int len)
 {
     const EVP_PKEY_ASN1_METHOD *ameth;
     ENGINE *e = NULL;
-    if (pkey) {
+    if (pkey) 
+	{
         if (pkey->pkey.ptr)
             EVP_PKEY_free_it(pkey);
         /*
@@ -217,7 +217,8 @@ static int pkey_set_type(EVP_PKEY *pkey, int type, const char *str, int len)
             return 1;
 #ifndef OPENSSL_NO_ENGINE
         /* If we have an ENGINE release it */
-        if (pkey->engine) {
+        if (pkey->engine) 
+		{
             ENGINE_finish(pkey->engine);
             pkey->engine = NULL;
         }
@@ -231,11 +232,13 @@ static int pkey_set_type(EVP_PKEY *pkey, int type, const char *str, int len)
     if (!pkey && e)
         ENGINE_finish(e);
 #endif
-    if (!ameth) {
+    if (!ameth) 
+	{
         EVPerr(EVP_F_PKEY_SET_TYPE, EVP_R_UNSUPPORTED_ALGORITHM);
         return 0;
     }
-    if (pkey) {
+    if (pkey)
+	{
         pkey->ameth = ameth;
         pkey->engine = e;
 
@@ -406,12 +409,14 @@ void EVP_PKEY_free(EVP_PKEY *x)
 
 static void EVP_PKEY_free_it(EVP_PKEY *x)
 {
-    if (x->ameth && x->ameth->pkey_free) {
+    if (x->ameth && x->ameth->pkey_free) 
+	{
         x->ameth->pkey_free(x);
         x->pkey.ptr = NULL;
     }
 #ifndef OPENSSL_NO_ENGINE
-    if (x->engine) {
+    if (x->engine) 
+	{
         ENGINE_finish(x->engine);
         x->engine = NULL;
     }

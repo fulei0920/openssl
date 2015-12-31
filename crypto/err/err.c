@@ -251,7 +251,8 @@ static ERR_STATE *int_thread_set_item(ERR_STATE *);
 static void int_thread_del_item(const ERR_STATE *);
 static int int_err_get_next_lib(void);
 /* The static ERR_FNS table using these defaults functions */
-static const ERR_FNS err_defaults = {
+static const ERR_FNS err_defaults = 
+{
     int_err_get,
     int_err_del,
     int_err_get_item,

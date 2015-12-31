@@ -323,8 +323,7 @@ void MS_CALLBACK apps_ssl_info_callback(const SSL *s, int where, int ret)
             BIO_printf(bio_err, "%s:failed in %s\n",
                        str, SSL_state_string_long(s));
         else if (ret < 0) {
-            BIO_printf(bio_err, "%s:error in %s\n",
-                       str, SSL_state_string_long(s));
+            BIO_printf(bio_err, "%s:error in %s\n", str, SSL_state_string_long(s));
         }
     }
 }

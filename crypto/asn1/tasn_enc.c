@@ -97,8 +97,7 @@ int ASN1_item_i2d(ASN1_VALUE *val, unsigned char **out, const ASN1_ITEM *it)
  * allocated and populated with the encoding.
  */
 
-static int asn1_item_flags_i2d(ASN1_VALUE *val, unsigned char **out,
-                               const ASN1_ITEM *it, int flags)
+static int asn1_item_flags_i2d(ASN1_VALUE *val, unsigned char **out, const ASN1_ITEM *it, int flags)
 {
     if (out && !*out) {
         unsigned char *p, *buf;

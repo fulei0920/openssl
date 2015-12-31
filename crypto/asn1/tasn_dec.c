@@ -134,9 +134,7 @@ unsigned long ASN1_tag2bit(int tag)
  * this will simply be a special case.
  */
 
-ASN1_VALUE *ASN1_item_d2i(ASN1_VALUE **pval,
-                          const unsigned char **in, long len,
-                          const ASN1_ITEM *it)
+ASN1_VALUE *ASN1_item_d2i(ASN1_VALUE **pval, const unsigned char **in, long len, const ASN1_ITEM *it)
 {
     ASN1_TLC c;
     ASN1_VALUE *ptmpval = NULL;
@@ -163,8 +161,7 @@ int ASN1_template_d2i(ASN1_VALUE **pval,
  */
 
 int ASN1_item_ex_d2i(ASN1_VALUE **pval, const unsigned char **in, long len,
-                     const ASN1_ITEM *it,
-                     int tag, int aclass, char opt, ASN1_TLC *ctx)
+		const ASN1_ITEM *it, int tag, int aclass, char opt, ASN1_TLC *ctx)
 {
     const ASN1_TEMPLATE *tt, *errtt = NULL;
     const ASN1_COMPAT_FUNCS *cf;
@@ -187,9 +184,11 @@ int ASN1_item_ex_d2i(ASN1_VALUE **pval, const unsigned char **in, long len,
     else
         asn1_cb = 0;
 
-    switch (it->itype) {
+    switch (it->itype) 
+	{
     case ASN1_ITYPE_PRIMITIVE:
-        if (it->templates) {
+        if (it->templates) 
+		{
             /*
              * tagging or OPTIONAL is currently illegal on an item template
              * because the flags can't get passed down. In practice this

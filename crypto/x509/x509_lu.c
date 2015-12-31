@@ -116,6 +116,7 @@ int X509_LOOKUP_ctrl(X509_LOOKUP *ctx, int cmd, const char *argc, long argl, cha
 {
     if (ctx->method == NULL)
         return -1;
+	
     if (ctx->method->ctrl != NULL)
         return ctx->method->ctrl(ctx, cmd, argc, argl, ret);
     else

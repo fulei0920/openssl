@@ -787,8 +787,7 @@ static int load_pkcs12(BIO *err, BIO *in, const char *desc, pem_password_cb *pem
     return ret;
 }
 
-X509 *load_cert(BIO *err, const char *file, int format,
-                const char *pass, ENGINE *e, const char *cert_descrip)
+X509 *load_cert(BIO *err, const char *file, int format, const char *pass, ENGINE *e, const char *cert_descrip)
 {
     X509 *x = NULL;
     BIO *cert;
@@ -864,14 +863,19 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin, cons
         BIO_printf(err, "no keyfile specified\n");
         goto end;
     }
+	
 #ifndef OPENSSL_NO_ENGINE
     if (format == FORMAT_ENGINE) 
 	{
         if (!e)
-            BIO_printf(err, "no engine specified\n");
-        else {
+        {
+			BIO_printf(err, "no engine specified\n");
+		}
+        else 
+		{
             pkey = ENGINE_load_private_key(e, file, ui_method, &cb_data);
-            if (!pkey) {
+            if (!pkey) 
+			{
                 BIO_printf(err, "cannot load %s from engine\n", key_descrip);
                 ERR_print_errors(err);
             }
@@ -879,12 +883,14 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin, cons
         goto end;
     }
 #endif
+
     key = BIO_new(BIO_s_file());
     if (key == NULL) 
 	{
         ERR_print_errors(err);
         goto end;
     }
+	
     if (file == NULL && maybe_stdin) 
 	{
 #ifdef _IONBF
@@ -900,6 +906,7 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin, cons
         ERR_print_errors(err);
         goto end;
     }
+	
     if (format == FORMAT_ASN1)
 	{
         pkey = d2i_PrivateKey_bio(key, NULL);
@@ -921,19 +928,24 @@ EVP_PKEY *load_key(BIO *err, const char *file, int format, int maybe_stdin, cons
     }
 #if !defined(OPENSSL_NO_RSA) && !defined(OPENSSL_NO_DSA) && !defined (OPENSSL_NO_RC4)
     else if (format == FORMAT_MSBLOB)
-        pkey = b2i_PrivateKey_bio(key);
+    {
+		pkey = b2i_PrivateKey_bio(key);
+	}   
     else if (format == FORMAT_PVK)
-        pkey = b2i_PVK_bio(key, (pem_password_cb *)password_callback,
-                           &cb_data);
+    {
+		pkey = b2i_PVK_bio(key, (pem_password_cb *)password_callback, &cb_data);
+	}
 #endif
-    else {
+    else 
+	{
         BIO_printf(err, "bad input format specified for key file\n");
         goto end;
     }
  end:
     if (key != NULL)
         BIO_free(key);
-    if (pkey == NULL) {
+    if (pkey == NULL) 
+	{
         BIO_printf(err, "unable to load %s\n", key_descrip);
         ERR_print_errors(err);
     }
@@ -1020,7 +1032,8 @@ EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
     else if (format == FORMAT_MSBLOB)
         pkey = b2i_PublicKey_bio(key);
 #endif
-    else {
+    else
+	{
         BIO_printf(err, "bad input format specified for key file\n");
         goto end;
     }
@@ -1033,8 +1046,7 @@ EVP_PKEY *load_pubkey(BIO *err, const char *file, int format, int maybe_stdin,
 }
 
 #if !defined(OPENSSL_NO_RC4) && !defined(OPENSSL_NO_RSA)
-static EVP_PKEY *load_netscape_key(BIO *err, BIO *key, const char *file,
-                                   const char *key_descrip, int format)
+static EVP_PKEY *load_netscape_key(BIO *err, BIO *key, const char *file, const char *key_descrip, int format)
 {
     EVP_PKEY *pkey;
     BUF_MEM *buf;

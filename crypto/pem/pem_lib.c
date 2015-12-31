@@ -288,8 +288,10 @@ int PEM_bytes_read_bio(unsigned char **pdata, long *plen, char **pnm, const char
                 ERR_add_error_data(2, "Expecting: ", name);
             return 0;
         }
+		
         if (check_pem(nm, name))
             break;
+		
         OPENSSL_free(nm);
         OPENSSL_free(header);
         OPENSSL_free(data);
@@ -456,11 +458,13 @@ int PEM_do_header(EVP_CIPHER_INFO *cipher, unsigned char *data, long *plen, pem_
         klen = PEM_def_callback(buf, PEM_BUFSIZE, 0, u);
     else
         klen = callback(buf, PEM_BUFSIZE, 0, u);
+	
     if (klen <= 0) 
 	{
         PEMerr(PEM_F_PEM_DO_HEADER, PEM_R_BAD_PASSWORD_READ);
         return (0);
     }
+	
 #ifdef CHARSET_EBCDIC
     /* Convert the pass phrase from EBCDIC */
     ebcdic2ascii(buf, buf, klen);
@@ -477,8 +481,10 @@ int PEM_do_header(EVP_CIPHER_INFO *cipher, unsigned char *data, long *plen, pem_
     if (o)
         o = EVP_DecryptFinal_ex(&ctx, &(data[i]), &j);
     EVP_CIPHER_CTX_cleanup(&ctx);
+	
     OPENSSL_cleanse((char *)buf, sizeof(buf));
     OPENSSL_cleanse((char *)key, sizeof(key));
+	
     j += i;
     if (!o)
 	{

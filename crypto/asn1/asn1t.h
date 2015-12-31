@@ -440,7 +440,8 @@ extern "C" {
  * structure, various flags such as OPTIONAL and the field name.
  */
 
-struct ASN1_TEMPLATE_st {
+struct ASN1_TEMPLATE_st 
+{
     unsigned long flags;        /* Various flags */
     long tag;                   /* tag, not used if no tagging */
     unsigned long offset;       /* Offset of this field in structure */
@@ -560,12 +561,12 @@ struct ASN1_ADB_TABLE_st {
 
 /* This is the actual ASN1 item itself */
 
-struct ASN1_ITEM_st {
+struct ASN1_ITEM_st
+{
     char itype;                 /* The item type, primitive, SEQUENCE, CHOICE
                                  * or extern */
     long utype;                 /* underlying type */
-    const ASN1_TEMPLATE *templates; /* If SEQUENCE or CHOICE this contains
-                                     * the contents */
+    const ASN1_TEMPLATE *templates; /* If SEQUENCE or CHOICE this contains the contents */
     long tcount;                /* Number of templates if SEQUENCE or CHOICE */
     const void *funcs;          /* functions that handle this type */
     long size;                  /* Structure size (usually) */

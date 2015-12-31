@@ -569,7 +569,8 @@ typedef struct PBKDF2PARAM_st {
 
 /* PKCS#8 private key info structure */
 
-struct pkcs8_priv_key_info_st {
+struct pkcs8_priv_key_info_st 
+{
     /* Flag for various broken formats */
     int broken;
 # define PKCS8_OK                0

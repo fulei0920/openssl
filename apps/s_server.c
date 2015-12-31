@@ -1174,11 +1174,14 @@ int MAIN(int argc, char *argv[])
             off |= SSL_OP_CIPHER_SERVER_PREFERENCE;
         } else if (strcmp(*argv, "-legacy_renegotiation") == 0)
             off |= SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION;
-        else if (strcmp(*argv, "-cipher") == 0) {
+        else if (strcmp(*argv, "-cipher") == 0)
+		{
             if (--argc < 1)
                 goto bad;
             cipher = *(++argv);
-        } else if (strcmp(*argv, "-CAfile") == 0) {
+        } 
+		else if (strcmp(*argv, "-CAfile") == 0)
+		{
             if (--argc < 1)
                 goto bad;
             CAfile = *(++argv);
@@ -1470,6 +1473,7 @@ int MAIN(int argc, char *argv[])
             ERR_print_errors(bio_err);
             goto end;
         }
+		
 #ifndef OPENSSL_NO_TLSEXT
         if (tlsextcbp.servername) 
 		{
@@ -1489,7 +1493,9 @@ int MAIN(int argc, char *argv[])
             }
         }
 #endif
+
     }
+	
 #if !defined(OPENSSL_NO_TLSEXT) && !defined(OPENSSL_NO_NEXTPROTONEG)
     if (next_proto_neg_in) {
         unsigned short len;
@@ -1502,22 +1508,22 @@ int MAIN(int argc, char *argv[])
     }
 #endif
 
-    if (s_dcert_file) {
+    if (s_dcert_file) 
+	{
 
         if (s_dkey_file == NULL)
             s_dkey_file = s_dcert_file;
 
-        s_dkey = load_key(bio_err, s_dkey_file, s_dkey_format,
-                          0, dpass, e, "second certificate private key file");
-        if (!s_dkey) {
+        s_dkey = load_key(bio_err, s_dkey_file, s_dkey_format, 0, dpass, e, "second certificate private key file");
+        if (!s_dkey) 
+		{
             ERR_print_errors(bio_err);
             goto end;
         }
 
-        s_dcert = load_cert(bio_err, s_dcert_file, s_dcert_format,
-                            NULL, e, "second server certificate file");
-
-        if (!s_dcert) {
+        s_dcert = load_cert(bio_err, s_dcert_file, s_dcert_format, NULL, e, "second server certificate file");
+        if (!s_dcert) 
+		{
             ERR_print_errors(bio_err);
             goto end;
         }
@@ -1530,8 +1536,7 @@ int MAIN(int argc, char *argv[])
                    "warning, not much extra random data, consider using the -rand option\n");
     }
     if (inrand != NULL)
-        BIO_printf(bio_err, "%ld semi-random bytes loaded\n",
-                   app_RAND_load_files(inrand));
+        BIO_printf(bio_err, "%ld semi-random bytes loaded\n", app_RAND_load_files(inrand));
 
     if (bio_s_out == NULL) {
         if (s_quiet && !s_debug && !s_msg) {
@@ -1556,33 +1561,46 @@ int MAIN(int argc, char *argv[])
     }
 
     ctx = SSL_CTX_new(meth);
-    if (ctx == NULL) {
+    if (ctx == NULL)
+	{
         ERR_print_errors(bio_err);
         goto end;
     }
-    if (session_id_prefix) {
+	
+    if (session_id_prefix)
+	{
         if (strlen(session_id_prefix) >= 32)
-            BIO_printf(bio_err,
-                       "warning: id_prefix is too long, only one new session will be possible\n");
+        {
+			BIO_printf(bio_err, "warning: id_prefix is too long, only one new session will be possible\n");
+		}      
         else if (strlen(session_id_prefix) >= 16)
-            BIO_printf(bio_err,
-                       "warning: id_prefix is too long if you use SSLv2\n");
-        if (!SSL_CTX_set_generate_session_id(ctx, generate_session_id)) {
+        {
+			BIO_printf(bio_err, "warning: id_prefix is too long if you use SSLv2\n");
+		}
+		
+        if (!SSL_CTX_set_generate_session_id(ctx, generate_session_id)) 
+		{
             BIO_printf(bio_err, "error setting 'id_prefix'\n");
             ERR_print_errors(bio_err);
             goto end;
         }
+		
         BIO_printf(bio_err, "id_prefix '%s' set.\n", session_id_prefix);
     }
+	
     SSL_CTX_set_quiet_shutdown(ctx, 1);
+	
     if (bugs)
         SSL_CTX_set_options(ctx, SSL_OP_ALL);
+	
     if (hack)
         SSL_CTX_set_options(ctx, SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG);
+	
     SSL_CTX_set_options(ctx, off);
 
     if (state)
         SSL_CTX_set_info_callback(ctx, apps_ssl_info_callback);
+	
     if (no_cache)
         SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
     else
@@ -1606,8 +1624,8 @@ int MAIN(int argc, char *argv[])
     }
 #endif
 
-    if ((!SSL_CTX_load_verify_locations(ctx, CAfile, CApath)) ||
-        (!SSL_CTX_set_default_verify_paths(ctx))) {
+    if ((!SSL_CTX_load_verify_locations(ctx, CAfile, CApath)) || (!SSL_CTX_set_default_verify_paths(ctx)))
+	{
         /* BIO_printf(bio_err,"X509_load_verify_locations\n"); */
         ERR_print_errors(bio_err);
         /* goto end; */
@@ -1758,7 +1776,8 @@ int MAIN(int argc, char *argv[])
     if (ctx2 && !set_cert_key_stuff(ctx2, s_cert2, s_key2))
         goto end;
 #endif
-    if (s_dcert != NULL) {
+    if (s_dcert != NULL) 
+	{
         if (!set_cert_key_stuff(ctx, s_dcert, s_dkey))
             goto end;
     }
@@ -2966,8 +2985,7 @@ static RSA MS_CALLBACK *tmp_rsa_cb(SSL *s, int is_export, int keylength)
 #endif
 
 #define MAX_SESSION_ID_ATTEMPTS 10
-static int generate_session_id(const SSL *ssl, unsigned char *id,
-                               unsigned int *id_len)
+static int generate_session_id(const SSL *ssl, unsigned char *id, unsigned int *id_len)
 {
     unsigned int count = 0;
     do {

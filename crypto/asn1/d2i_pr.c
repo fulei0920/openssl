@@ -68,56 +68,70 @@
 #include <openssl/asn1.h>
 #include "asn1_locl.h"
 
-EVP_PKEY *d2i_PrivateKey(int type, EVP_PKEY **a, const unsigned char **pp,
-                         long length)
+EVP_PKEY *d2i_PrivateKey(int type, EVP_PKEY **a, const unsigned char **pp, long length)
 {
     EVP_PKEY *ret;
     const unsigned char *p = *pp;
 
-    if ((a == NULL) || (*a == NULL)) {
-        if ((ret = EVP_PKEY_new()) == NULL) {
+    if ((a == NULL) || (*a == NULL))
+	{
+        if ((ret = EVP_PKEY_new()) == NULL) 
+		{
             ASN1err(ASN1_F_D2I_PRIVATEKEY, ERR_R_EVP_LIB);
             return (NULL);
         }
-    } else {
+    } 
+	else
+	{
         ret = *a;
 #ifndef OPENSSL_NO_ENGINE
-        if (ret->engine) {
+        if (ret->engine)
+		{
             ENGINE_finish(ret->engine);
             ret->engine = NULL;
         }
 #endif
     }
 
-    if (!EVP_PKEY_set_type(ret, type)) {
+    if (!EVP_PKEY_set_type(ret, type))
+	{
         ASN1err(ASN1_F_D2I_PRIVATEKEY, ASN1_R_UNKNOWN_PUBLIC_KEY_TYPE);
         goto err;
     }
 
-    if (!ret->ameth->old_priv_decode ||
-        !ret->ameth->old_priv_decode(ret, &p, length)) {
-        if (ret->ameth->priv_decode) {
+    if (!ret->ameth->old_priv_decode || !ret->ameth->old_priv_decode(ret, &p, length))
+	{
+        if (ret->ameth->priv_decode) 
+		{
             PKCS8_PRIV_KEY_INFO *p8 = NULL;
             p8 = d2i_PKCS8_PRIV_KEY_INFO(NULL, &p, length);
             if (!p8)
                 goto err;
+			
             EVP_PKEY_free(ret);
             ret = EVP_PKCS82PKEY(p8);
             PKCS8_PRIV_KEY_INFO_free(p8);
             if (ret == NULL)
                 goto err;
-        } else {
+        } 
+		else 
+		{
             ASN1err(ASN1_F_D2I_PRIVATEKEY, ERR_R_ASN1_LIB);
             goto err;
         }
     }
+	
     *pp = p;
+	
     if (a != NULL)
         (*a) = ret;
+	
     return (ret);
+	
  err:
     if ((ret != NULL) && ((a == NULL) || (*a != ret)))
         EVP_PKEY_free(ret);
+	
     return (NULL);
 }
 
@@ -126,8 +140,7 @@ EVP_PKEY *d2i_PrivateKey(int type, EVP_PKEY **a, const unsigned char **pp,
  * type
  */
 
-EVP_PKEY *d2i_AutoPrivateKey(EVP_PKEY **a, const unsigned char **pp,
-                             long length)
+EVP_PKEY *d2i_AutoPrivateKey(EVP_PKEY **a, const unsigned char **pp, long length)
 {
     STACK_OF(ASN1_TYPE) *inkey;
     const unsigned char *p;
