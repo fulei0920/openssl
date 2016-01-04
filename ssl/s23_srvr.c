@@ -176,6 +176,7 @@ int ssl23_accept(SSL *s)
         case SSL_ST_OK | SSL_ST_ACCEPT:
 
             s->server = 1;
+			
             if (cb != NULL)
                 cb(s, SSL_CB_HANDSHAKE_START, 1);
 
@@ -190,6 +191,7 @@ int ssl23_accept(SSL *s)
                     ret = -1;
                     goto end;
                 }
+				
                 if (!BUF_MEM_grow(buf, SSL3_RT_MAX_PLAIN_LENGTH))
 				{
                     BUF_MEM_free(buf);
@@ -223,7 +225,8 @@ int ssl23_accept(SSL *s)
             /* break; */
         }
 
-        if ((cb != NULL) && (s->state != state)) {
+        if ((cb != NULL) && (s->state != state)) 
+		{
             new_state = s->state;
             s->state = state;
             cb(s, SSL_CB_ACCEPT_LOOP, 1);
@@ -232,8 +235,10 @@ int ssl23_accept(SSL *s)
     }
  end:
     s->in_handshake--;
+	
     if (cb != NULL)
         cb(s, SSL_CB_ACCEPT_EXIT, ret);
+	
     return (ret);
 }
 
@@ -322,18 +327,25 @@ int ssl23_get_client_hello(SSL *s)
                          * done later to survive restarts
                          */
                         s->state = SSL23_ST_SR_CLNT_HELLO_B;
-                    } else if (!(s->options & SSL_OP_NO_SSLv3)) {
+                    } 
+					else if (!(s->options & SSL_OP_NO_SSLv3)) 
+					{
                         s->version = SSL3_VERSION;
                         /* type=2; */
                         s->state = SSL23_ST_SR_CLNT_HELLO_B;
-                    } else if (!(s->options & SSL_OP_NO_SSLv2)) {
+                    } 
+					else if (!(s->options & SSL_OP_NO_SSLv2)) 
+					{
                         type = 1;
                     }
-                } else if (!(s->options & SSL_OP_NO_SSLv3)) {
+                } 
+				else if (!(s->options & SSL_OP_NO_SSLv3)) 
+				{
                     s->version = SSL3_VERSION;
                     /* type=2; */
                     s->state = SSL23_ST_SR_CLNT_HELLO_B;
-                } else if (!(s->options & SSL_OP_NO_SSLv2))
+                } 
+				else if (!(s->options & SSL_OP_NO_SSLv2))
                     type = 1;
 
             }

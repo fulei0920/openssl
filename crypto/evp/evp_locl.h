@@ -273,8 +273,7 @@ struct evp_pkey_method_st {
     int (*keygen_init) (EVP_PKEY_CTX *ctx);
     int (*keygen) (EVP_PKEY_CTX *ctx, EVP_PKEY *pkey);
     int (*sign_init) (EVP_PKEY_CTX *ctx);
-    int (*sign) (EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                 const unsigned char *tbs, size_t tbslen);
+    int (*sign) (EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, const unsigned char *tbs, size_t tbslen);
     int (*verify_init) (EVP_PKEY_CTX *ctx);
     int (*verify) (EVP_PKEY_CTX *ctx,
                    const unsigned char *sig, size_t siglen,

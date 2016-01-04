@@ -368,22 +368,26 @@ typedef struct ssl3_record_st
 {
     /*
      * r
-     */ int type;		/* type of record */
+     */ 
+    int type;		//记录类型
     
     /*
      * rw
-     */ unsigned int length;		/* How many bytes available */
+     */ 
+    unsigned int length;		/* How many bytes available */  //剩余数据的字节数
     /* read/write offset into 'buf' */
     /*
      * r
-     */ unsigned int off;
+     */ 
+    unsigned int off;		//读/写的剩余数据起始位置的偏移量
     
     unsigned char *data;	/* rw   pointer to the record data */
-   	unsigned char *input; /* rw    where the decode bytes are */
+   	unsigned char *input; 	/* rw    where the decode bytes are */
     /* only used with decompression - malloc()ed */
     /*
      * r
-     */ unsigned char *comp;
+     */ 
+    	unsigned char *comp;
     /* epoch number, needed by DTLS1 */
     /*
      * r
@@ -459,9 +463,9 @@ typedef struct ssl3_state_st
     int empty_fragment_done;
     /* The value of 'extra' when the buffers were initialized */
     int init_extra;
-    SSL3_BUFFER rbuf;           /* read IO goes into here */
+    SSL3_BUFFER rbuf;           /* read IO goes into here */  /*存储读取到的原始数据包*/
     SSL3_BUFFER wbuf;           /* write IO goes into here */
-    SSL3_RECORD rrec;           /* each decoded record goes in here */
+    SSL3_RECORD rrec;           /* each decoded record goes in here */  //记录读到的解码后的数据
     SSL3_RECORD wrec;           /* goes out from here */
     /*
      * storage for Alert/Handshake protocol data received but not yet
@@ -524,9 +528,11 @@ typedef struct ssl3_state_st
         int finish_md_len;
         unsigned char peer_finish_md[EVP_MAX_MD_SIZE * 2];
         int peer_finish_md_len;
+		//handshake message body length
         unsigned long message_size;
-        int message_type;
-        
+		//handshake message type: Client Hello(1)
+        int message_type;		
+        //存储协商后确定的加密套件
         const SSL_CIPHER *new_cipher;		/* used to hold the new cipher we are going to use */
 #  ifndef OPENSSL_NO_DH
         DH *dh;

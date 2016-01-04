@@ -1903,11 +1903,10 @@ int MAIN(int argc, char *argv[])
     SSL_CTX_set_cookie_verify_cb(ctx, verify_cookie_callback);
 
 #ifndef OPENSSL_NO_TLSEXT
-    if (ctx2) {
+    if (ctx2) 
+	{
         SSL_CTX_set_verify(ctx2, s_server_verify, verify_callback);
-        SSL_CTX_set_session_id_context(ctx2,
-                                       (void *)&s_server_session_id_context,
-                                       sizeof s_server_session_id_context);
+        SSL_CTX_set_session_id_context(ctx2, (void *)&s_server_session_id_context, sizeof s_server_session_id_context);
 
         tlsextcbp.biodebug = bio_s_out;
         SSL_CTX_set_tlsext_servername_callback(ctx2, ssl_servername_cb);
@@ -1918,7 +1917,8 @@ int MAIN(int argc, char *argv[])
 #endif
 
 #ifndef OPENSSL_NO_SRP
-    if (srp_verifier_file != NULL) {
+    if (srp_verifier_file != NULL)
+	{
         srp_callback_parm.vb = SRP_VBASE_new(srpuserseed);
         srp_callback_parm.user = NULL;
         srp_callback_parm.login = NULL;
@@ -1933,9 +1933,11 @@ int MAIN(int argc, char *argv[])
         SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, verify_callback);
         SSL_CTX_set_srp_cb_arg(ctx, &srp_callback_parm);
         SSL_CTX_set_srp_username_callback(ctx, ssl_srp_server_param_cb);
-    } else
+    } 
+	else
 #endif
-    if (CAfile != NULL) {
+    if (CAfile != NULL) 
+	{
         SSL_CTX_set_client_CA_list(ctx, SSL_load_client_CA_file(CAfile));
 #ifndef OPENSSL_NO_TLSEXT
         if (ctx2)
@@ -2037,12 +2039,14 @@ static int sv_body(char *hostname, int s, unsigned char *context)
     struct timeval *timeoutp;
 #endif
 
-    if ((buf = OPENSSL_malloc(bufsize)) == NULL) {
+    if ((buf = OPENSSL_malloc(bufsize)) == NULL)
+	{
         BIO_printf(bio_err, "out of memory\n");
         goto err;
     }
 #ifdef FIONBIO
-    if (s_nbio) {
+    if (s_nbio)
+	{
         unsigned long sl = 1;
 
         if (!s_quiet)
@@ -2052,21 +2056,26 @@ static int sv_body(char *hostname, int s, unsigned char *context)
     }
 #endif
 
-    if (con == NULL) {
+    if (con == NULL)
+	{
         con = SSL_new(ctx);
 #ifndef OPENSSL_NO_TLSEXT
-        if (s_tlsextdebug) {
+        if (s_tlsextdebug)
+		{
             SSL_set_tlsext_debug_callback(con, tlsext_cb);
             SSL_set_tlsext_debug_arg(con, bio_s_out);
         }
-        if (s_tlsextstatus) {
+		
+        if (s_tlsextstatus) 
+		{
             SSL_CTX_set_tlsext_status_cb(ctx, cert_status_cb);
             tlscstatp.err = bio_err;
             SSL_CTX_set_tlsext_status_arg(ctx, &tlscstatp);
         }
 #endif
 #ifndef OPENSSL_NO_KRB5
-        if ((kctx = kssl_ctx_new()) != NULL) {
+        if ((kctx = kssl_ctx_new()) != NULL) 
+		{
             SSL_set0_kssl_ctx(con, kctx);
             kssl_ctx_setstring(kctx, KSSL_SERVICE, KRB5SVC);
             kssl_ctx_setstring(kctx, KSSL_KEYTAB, KRB5KEYTAB);
@@ -2074,15 +2083,18 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 #endif                          /* OPENSSL_NO_KRB5 */
         if (context)
             SSL_set_session_id_context(con, context, strlen((char *)context));
-    }
+	}
+	
     SSL_clear(con);
+	
 #if 0
 # ifdef TLSEXT_TYPE_opaque_prf_input
     SSL_set_tlsext_opaque_prf_input(con, "Test server", 11);
 # endif
 #endif
 
-    if (SSL_version(con) == DTLS1_VERSION) {
+    if (SSL_version(con) == DTLS1_VERSION) 
+	{
 
         sbio = BIO_new_dgram(s, BIO_NOCLOSE);
 
@@ -2117,10 +2129,15 @@ static int sv_body(char *hostname, int s, unsigned char *context)
 
         /* turn on cookie exchange */
         SSL_set_options(con, SSL_OP_COOKIE_EXCHANGE);
-    } else
-        sbio = BIO_new_socket(s, BIO_NOCLOSE);
+    } 
+	else
+	{
+		sbio = BIO_new_socket(s, BIO_NOCLOSE);
+	}
+        
 
-    if (s_nbio_test) {
+    if (s_nbio_test)
+	{
         BIO *test;
 
         test = BIO_new(BIO_f_nbio_test());
@@ -2135,31 +2152,37 @@ static int sv_body(char *hostname, int s, unsigned char *context)
     SSL_set_accept_state(con);
     /* SSL_set_fd(con,s); */
 
-    if (s_debug) {
+    if (s_debug) 
+	{
         SSL_set_debug(con, 1);
         BIO_set_callback(SSL_get_rbio(con), bio_dump_callback);
         BIO_set_callback_arg(SSL_get_rbio(con), (char *)bio_s_out);
     }
-    if (s_msg) {
+	
+    if (s_msg) 
+	{
         SSL_set_msg_callback(con, msg_cb);
         SSL_set_msg_callback_arg(con, bio_s_out);
     }
 #ifndef OPENSSL_NO_TLSEXT
-    if (s_tlsextdebug) {
+    if (s_tlsextdebug) 
+	{
         SSL_set_tlsext_debug_callback(con, tlsext_cb);
         SSL_set_tlsext_debug_arg(con, bio_s_out);
     }
 #endif
 
     width = s + 1;
-    for (;;) {
+    for (;;) 
+	{
         int read_from_terminal;
         int read_from_sslcon;
 
         read_from_terminal = 0;
         read_from_sslcon = SSL_pending(con);
 
-        if (!read_from_sslcon) {
+        if (!read_from_sslcon) 
+		{
             FD_ZERO(&readfds);
 #if !defined(OPENSSL_SYS_WINDOWS) && !defined(OPENSSL_SYS_MSDOS) && !defined(OPENSSL_SYS_NETWARE) && !defined(OPENSSL_SYS_BEOS_R5)
             openssl_fdset(fileno(stdin), &readfds);
@@ -2198,16 +2221,15 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                 read_from_terminal = 1;
             (void)fcntl(fileno(stdin), F_SETFL, 0);
 #else
-            if ((SSL_version(con) == DTLS1_VERSION) &&
-                DTLSv1_get_timeout(con, &timeout))
+            if ((SSL_version(con) == DTLS1_VERSION) && DTLSv1_get_timeout(con, &timeout))
                 timeoutp = &timeout;
             else
                 timeoutp = NULL;
 
             i = select(width, (void *)&readfds, NULL, NULL, timeoutp);
 
-            if ((SSL_version(con) == DTLS1_VERSION)
-                && DTLSv1_handle_timeout(con) > 0) {
+            if ((SSL_version(con) == DTLS1_VERSION) && DTLSv1_handle_timeout(con) > 0) 
+            {
                 BIO_printf(bio_err, "TIMEOUT occured\n");
             }
 
@@ -2219,8 +2241,11 @@ static int sv_body(char *hostname, int s, unsigned char *context)
             if (FD_ISSET(s, &readfds))
                 read_from_sslcon = 1;
         }
-        if (read_from_terminal) {
-            if (s_crlf) {
+		
+        if (read_from_terminal)
+		{
+            if (s_crlf) 
+			{
                 int j, lf_num;
 
                 i = raw_read_stdin(buf, bufsize / 2);
@@ -2238,9 +2263,14 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                     }
                 }
                 assert(lf_num == 0);
-            } else
-                i = raw_read_stdin(buf, bufsize);
-            if (!s_quiet) {
+            }
+			else
+			{
+				i = raw_read_stdin(buf, bufsize);
+			}
+                
+            if (!s_quiet)
+			{
                 if ((i <= 0) || (buf[0] == 'Q')) {
                     BIO_printf(bio_s_out, "DONE\n");
                     SHUTDOWN(s);
@@ -2355,24 +2385,32 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                     break;
             }
         }
+
+		
         if (read_from_sslcon) 
 		{
             if (!SSL_is_init_finished(con))
 			{
                 i = init_ssl_connection(con);
 
-                if (i < 0) {
+                if (i < 0) 
+				{
                     ret = 0;
                     goto err;
-                } else if (i == 0) {
+                } 
+				else if (i == 0) 
+				{
                     ret = 1;
                     goto err;
                 }
-            } else {
+            } 
+			else 
+			{
  again:
                 i = SSL_read(con, (char *)buf, bufsize);
 #ifndef OPENSSL_NO_SRP
-                while (SSL_get_error(con, i) == SSL_ERROR_WANT_X509_LOOKUP) {
+                while (SSL_get_error(con, i) == SSL_ERROR_WANT_X509_LOOKUP) 
+				{
                     BIO_printf(bio_s_out, "LOOKUP renego during read\n");
                     srp_callback_parm.user =
                         SRP_VBASE_get_by_user(srp_callback_parm.vb,
@@ -2385,7 +2423,8 @@ static int sv_body(char *hostname, int s, unsigned char *context)
                     i = SSL_read(con, (char *)buf, bufsize);
                 }
 #endif
-                switch (SSL_get_error(con, i)) {
+                switch (SSL_get_error(con, i)) 
+				{
                 case SSL_ERROR_NONE:
 #ifdef CHARSET_EBCDIC
                     ascii2ebcdic(buf, buf, i);
@@ -2413,7 +2452,8 @@ static int sv_body(char *hostname, int s, unsigned char *context)
         }
     }
  err:
-    if (con != NULL) {
+    if (con != NULL)
+	{
         BIO_printf(bio_s_out, "shutting down SSL\n");
 #if 1
         SSL_set_shutdown(con, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOWN);
@@ -2423,7 +2463,8 @@ static int sv_body(char *hostname, int s, unsigned char *context)
         SSL_free(con);
     }
     BIO_printf(bio_s_out, "CONNECTION CLOSED\n");
-    if (buf != NULL) {
+    if (buf != NULL) 
+	{
         OPENSSL_cleanse(buf, bufsize);
         OPENSSL_free(buf);
     }
@@ -2458,12 +2499,12 @@ static int init_ssl_connection(SSL *con)
 
     i = SSL_accept(con);
 #ifndef OPENSSL_NO_SRP
-    while (i <= 0 && SSL_get_error(con, i) == SSL_ERROR_WANT_X509_LOOKUP) {
+    while (i <= 0 && SSL_get_error(con, i) == SSL_ERROR_WANT_X509_LOOKUP)
+	{
         BIO_printf(bio_s_out, "LOOKUP during accept %s\n",
                    srp_callback_parm.login);
         srp_callback_parm.user =
-            SRP_VBASE_get_by_user(srp_callback_parm.vb,
-                                  srp_callback_parm.login);
+            SRP_VBASE_get_by_user(srp_callback_parm.vb, srp_callback_parm.login);
         if (srp_callback_parm.user)
             BIO_printf(bio_s_out, "LOOKUP done %s\n",
                        srp_callback_parm.user->info);
@@ -2472,8 +2513,10 @@ static int init_ssl_connection(SSL *con)
         i = SSL_accept(con);
     }
 #endif
-    if (i <= 0) {
-        if (BIO_sock_should_retry(i)) {
+    if (i <= 0) 
+	{
+        if (BIO_sock_should_retry(i)) 
+		{
             BIO_printf(bio_s_out, "DELAY\n");
             return (1);
         }
@@ -2531,14 +2574,16 @@ static int init_ssl_connection(SSL *con)
         BIO_printf(bio_s_out, "Peer has incorrect TLSv1 block padding\n");
 #ifndef OPENSSL_NO_KRB5
     client_princ = kssl_ctx_get0_client_princ(SSL_get0_kssl_ctx(con));
-    if (client_princ != NULL) {
-        BIO_printf(bio_s_out, "Kerberos peer principal is %s\n",
-                   client_princ);
+    if (client_princ != NULL)
+	{
+        BIO_printf(bio_s_out, "Kerberos peer principal is %s\n", client_princ);
     }
 #endif                          /* OPENSSL_NO_KRB5 */
-    BIO_printf(bio_s_out, "Secure Renegotiation IS%s supported\n",
-               SSL_get_secure_renegotiation_support(con) ? "" : " NOT");
-    if (keymatexportlabel != NULL) {
+
+	BIO_printf(bio_s_out, "Secure Renegotiation IS%s supported\n", SSL_get_secure_renegotiation_support(con) ? "" : " NOT");
+
+	if (keymatexportlabel != NULL) 
+	{
         BIO_printf(bio_s_out, "Keying material exporter:\n");
         BIO_printf(bio_s_out, "    Label: '%s'\n", keymatexportlabel);
         BIO_printf(bio_s_out, "    Length: %i bytes\n", keymatexportlen);

@@ -143,12 +143,17 @@ static EVP_PKEY_CTX *int_ctx_new(EVP_PKEY *pkey, ENGINE *e, int id)
     /* Try to find an ENGINE which implements this method */
     if (e) 
 	{
-        if (!ENGINE_init(e)) {
+        if (!ENGINE_init(e)) 
+		{
             EVPerr(EVP_F_INT_CTX_NEW, ERR_R_ENGINE_LIB);
             return NULL;
         }
-    } else
-        e = ENGINE_get_pkey_meth_engine(id);
+    } 
+	else
+    {
+		e = ENGINE_get_pkey_meth_engine(id);
+	}
+        
 
     /*
      * If an ENGINE handled this method look it up. Othewise use internal

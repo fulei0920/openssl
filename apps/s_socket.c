@@ -185,7 +185,8 @@ static int ssl_sock_init(void)
     if (sock_init())
         return (0);
 # elif defined(OPENSSL_SYS_WINDOWS)
-    if (!wsa_init_done) {
+    if (!wsa_init_done) 
+	{
         int err;
 
 #  ifdef SIGINT
@@ -221,7 +222,8 @@ static int ssl_sock_init(void)
         wsa_init_done = 1;
         wVerReq = MAKEWORD(2, 0);
         err = WSAStartup(wVerReq, &wsaData);
-        if (err != 0) {
+        if (err != 0) 
+		{
             BIO_printf(bio_err, "unable to start WINSOCK2, error code=%d\n",
                        err);
             return (0);
@@ -289,9 +291,7 @@ static int init_client_ip(int *sock, unsigned char ip[4], int port, int type)
     return (1);
 }
 
-int do_server(int port, int type, int *ret,
-              int (*cb) (char *hostname, int s, unsigned char *context),
-              unsigned char *context)
+int do_server(int port, int type, int *ret, int (*cb) (char *hostname, int s, unsigned char *context), unsigned char *context)
 {
     int sock;
     char *name = NULL;
@@ -301,24 +301,37 @@ int do_server(int port, int type, int *ret,
     if (!init_server(&accept_socket, port, type))
         return (0);
 
-    if (ret != NULL) {
+    if (ret != NULL)
+	{
         *ret = accept_socket;
         /* return(1); */
     }
-    for (;;) {
-        if (type == SOCK_STREAM) {
-            if (do_accept(accept_socket, &sock, &name) == 0) {
+    for (;;) 
+	{
+        if (type == SOCK_STREAM)
+		{
+            if (do_accept(accept_socket, &sock, &name) == 0)
+			{
                 SHUTDOWN(accept_socket);
                 return (0);
             }
-        } else
-            sock = accept_socket;
+        } 
+		else
+		{
+			sock = accept_socket;
+		}
+            
+		
         i = (*cb) (name, sock, context);
+		
         if (name != NULL)
             OPENSSL_free(name);
+		
         if (type == SOCK_STREAM)
             SHUTDOWN2(sock);
-        if (i < 0) {
+		
+        if (i < 0) 
+		{
             SHUTDOWN2(accept_socket);
             return (i);
         }
@@ -337,6 +350,7 @@ static int init_server_long(int *sock, int port, char *ip, int type)
     memset((char *)&server, 0, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_port = htons((unsigned short)port);
+	
     if (ip == NULL)
         server.sin_addr.s_addr = INADDR_ANY;
     else
@@ -354,22 +368,28 @@ static int init_server_long(int *sock, int port, char *ip, int type)
 
     if (s == INVALID_SOCKET)
         goto err;
+	
 # if defined SOL_SOCKET && defined SO_REUSEADDR
     {
         int j = 1;
         setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&j, sizeof j);
     }
 # endif
-    if (bind(s, (struct sockaddr *)&server, sizeof(server)) == -1) {
+
+    if (bind(s, (struct sockaddr *)&server, sizeof(server)) == -1)
+	{
 # ifndef OPENSSL_SYS_WINDOWS
         perror("bind");
 # endif
         goto err;
     }
+	
     /* Make it 128 for linux */
     if (type == SOCK_STREAM && listen(s, 128) == -1)
         goto err;
+	
     *sock = s;
+	
     ret = 1;
  err:
     if ((ret == 0) && (s != -1)) {
@@ -407,13 +427,15 @@ static int do_accept(int acc_sock, int *sock, char **host)
      * can either go for (int *) or (void *).
      */
     ret = accept(acc_sock, (struct sockaddr *)&from, (void *)&len);
-    if (ret == INVALID_SOCKET) {
+    if (ret == INVALID_SOCKET) 
+	{
 # if defined(OPENSSL_SYS_WINDOWS) || (defined(OPENSSL_SYS_NETWARE) && !defined(NETWARE_BSDSOCK))
         int i;
         i = WSAGetLastError();
         BIO_printf(bio_err, "accept error %d\n", i);
 # else
-        if (errno == EINTR) {
+        if (errno == EINTR) 
+		{
             /*
              * check_timeout();
              */
@@ -439,13 +461,12 @@ static int do_accept(int acc_sock, int *sock, char **host)
         goto end;
 # ifndef BIT_FIELD_LIMITS
     /* I should use WSAAsyncGetHostByName() under windows */
-    h1 = gethostbyaddr((char *)&from.sin_addr.s_addr,
-                       sizeof(from.sin_addr.s_addr), AF_INET);
+    h1 = gethostbyaddr((char *)&from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
 # else
-    h1 = gethostbyaddr((char *)&from.sin_addr,
-                       sizeof(struct in_addr), AF_INET);
+    h1 = gethostbyaddr((char *)&from.sin_addr, sizeof(struct in_addr), AF_INET);
 # endif
-    if (h1 == NULL) {
+    if (h1 == NULL) 
+	{
         BIO_printf(bio_err, "bad gethostbyaddr\n");
         *host = NULL;
         /* return(0); */
@@ -463,7 +484,8 @@ static int do_accept(int acc_sock, int *sock, char **host)
             closesocket(ret);
             return (0);
         }
-        if (h2->h_addrtype != AF_INET) {
+        if (h2->h_addrtype != AF_INET) 
+		{
             BIO_printf(bio_err, "gethostbyname addr is not AF_INET\n");
             closesocket(ret);
             return (0);

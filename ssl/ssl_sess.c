@@ -648,7 +648,8 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
 #ifndef OPENSSL_NO_TLSEXT
     /* sets s->tlsext_ticket_expected */
     r = tls1_process_ticket(s, session_id, len, limit, &ret);
-    switch (r) {
+    switch (r) 
+	{
     case -1:                   /* Error during processing */
         fatal = 1;
         goto err;
@@ -1343,17 +1344,12 @@ int SSL_CTX_set_client_cert_engine(SSL_CTX *ctx, ENGINE *e)
 }
 #endif
 
-void SSL_CTX_set_cookie_generate_cb(SSL_CTX *ctx,
-                                    int (*cb) (SSL *ssl,
-                                               unsigned char *cookie,
-                                               unsigned int *cookie_len))
+void SSL_CTX_set_cookie_generate_cb(SSL_CTX *ctx, int (*cb) (SSL *ssl, unsigned char *cookie, unsigned int *cookie_len))
 {
     ctx->app_gen_cookie_cb = cb;
 }
 
-void SSL_CTX_set_cookie_verify_cb(SSL_CTX *ctx,
-                                  int (*cb) (SSL *ssl, unsigned char *cookie,
-                                             unsigned int cookie_len))
+void SSL_CTX_set_cookie_verify_cb(SSL_CTX *ctx, int (*cb) (SSL *ssl, unsigned char *cookie, unsigned int cookie_len))
 {
     ctx->app_verify_cookie_cb = cb;
 }

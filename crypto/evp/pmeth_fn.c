@@ -85,8 +85,7 @@ int EVP_PKEY_sign_init(EVP_PKEY_CTX *ctx)
     int ret;
     if (!ctx || !ctx->pmeth || !ctx->pmeth->sign) 
 	{
-        EVPerr(EVP_F_EVP_PKEY_SIGN_INIT,
-               EVP_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE);
+        EVPerr(EVP_F_EVP_PKEY_SIGN_INIT, EVP_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE);
         return -2;
     }
     ctx->operation = EVP_PKEY_OP_SIGN;

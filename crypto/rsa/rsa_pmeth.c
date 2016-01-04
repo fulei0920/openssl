@@ -262,10 +262,13 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, 
                                                 rctx->md, rctx->mgf1md,
                                                 rctx->saltlen))
                 return -1;
-            ret = RSA_private_encrypt(RSA_size(rsa), rctx->tbuf,
-                                      sig, rsa, RSA_NO_PADDING);
-        } else
-            return -1;
+            ret = RSA_private_encrypt(RSA_size(rsa), rctx->tbuf, sig, rsa, RSA_NO_PADDING);
+        }
+		else
+        {
+			return -1;
+		}
+           
     } 
 	else
         ret = RSA_private_encrypt(tbslen, tbs, sig, ctx->pkey->pkey.rsa, rctx->pad_mode);

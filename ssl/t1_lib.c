@@ -153,7 +153,9 @@ int tls1_new(SSL *s)
 {
     if (!ssl3_new(s))
         return (0);
+	
     s->method->ssl_clear(s);
+	
     return (1);
 }
 
@@ -1262,7 +1264,9 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p,
             if (!ssl_parse_clienthello_renegotiate_ext(s, data, size, al))
                 return 0;
             renegotiate_seen = 1;
-        } else if (type == TLSEXT_TYPE_signature_algorithms) {
+        } 
+		else if (type == TLSEXT_TYPE_signature_algorithms)
+		{
             int dsize;
             if (sigalg_seen || size < 2)
                 goto err;
@@ -2166,8 +2170,7 @@ int ssl_check_serverhello_tlsext(SSL *s)
  *   s->ctx->tlsext_ticket_key_cb asked to renew the client's ticket.
  *   Otherwise, s->tlsext_ticket_expected is set to 0.
  */
-int tls1_process_ticket(SSL *s, unsigned char *session_id, int len,
-                        const unsigned char *limit, SSL_SESSION **ret)
+int tls1_process_ticket(SSL *s, unsigned char *session_id, int len, const unsigned char *limit, SSL_SESSION **ret)
 {
     /* Point after session ID in client hello */
     const unsigned char *p = session_id + len;
@@ -2495,10 +2498,12 @@ int tls1_process_sigalgs(SSL *s, const unsigned char *data, int dsize)
     c->pkeys[SSL_PKEY_RSA_ENC].digest = NULL;
     c->pkeys[SSL_PKEY_ECC].digest = NULL;
 
-    for (i = 0; i < dsize; i += 2) {
+    for (i = 0; i < dsize; i += 2) 
+	{
         unsigned char hash_alg = data[i], sig_alg = data[i + 1];
 
-        switch (sig_alg) {
+        switch (sig_alg) 
+		{
 # ifndef OPENSSL_NO_RSA
         case TLSEXT_signature_rsa:
             idx = SSL_PKEY_RSA_SIGN;
@@ -2518,7 +2523,8 @@ int tls1_process_sigalgs(SSL *s, const unsigned char *data, int dsize)
             continue;
         }
 
-        if (c->pkeys[idx].digest == NULL) {
+        if (c->pkeys[idx].digest == NULL) 
+		{
             md = tls12_get_hash(hash_alg);
             if (md) {
                 c->pkeys[idx].digest = md;

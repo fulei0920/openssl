@@ -956,8 +956,7 @@ int ssl3_get_server_hello(SSL *s)
        {
             /* actually a client application bug */
             al = SSL_AD_ILLEGAL_PARAMETER;
-            SSLerr(SSL_F_SSL3_GET_SERVER_HELLO,
-                   SSL_R_ATTEMPT_TO_REUSE_SESSION_IN_DIFFERENT_CONTEXT);
+            SSLerr(SSL_F_SSL3_GET_SERVER_HELLO, SSL_R_ATTEMPT_TO_REUSE_SESSION_IN_DIFFERENT_CONTEXT);
             goto f_err;
         }
         s->hit = 1;

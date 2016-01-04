@@ -3854,7 +3854,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
         alg_a = c->algorithm_auth;
 
 #ifndef OPENSSL_NO_KRB5
-        if (alg_k & SSL_kKRB5) {
+        if (alg_k & SSL_kKRB5) 
+		{
             if (!kssl_keytab_is_available(s->kssl_ctx))
                 continue;
         }
@@ -3906,13 +3907,9 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
                        key->public_key->data != NULL)
                    &&
                    ((*
-                     (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->
-                      key->public_key->data) == POINT_CONVERSION_COMPRESSED)
+                     (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED)
                     ||
-                    (*
-                     (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->
-                      key->public_key->data) ==
-                     POINT_CONVERSION_COMPRESSED + 1)
+                    (*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED + 1)
                    )
                )
             ) 
@@ -3957,10 +3954,7 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
             ok = ok && ec_ok;
         }
         if (
-               /*
-                * if we are considering an ECC cipher suite that uses our
-                * certificate
-                */
+               /*if we are considering an ECC cipher suite that uses our certificate */
                (alg_a & SSL_aECDSA || alg_a & SSL_aECDH)
                /* and we have an ECC certificate */
                && (s->cert->pkeys[SSL_PKEY_ECC].x509 != NULL)
@@ -3969,7 +3963,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
                 */
                && ((s->session->tlsext_ellipticcurvelist_length > 0)
                    && (s->session->tlsext_ellipticcurvelist != NULL))
-            ) {
+            ) 
+           {
             ec_ok = 0;
             if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
                 && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group !=
@@ -4031,7 +4026,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
                 */
                && ((s->session->tlsext_ellipticcurvelist_length > 0)
                    && (s->session->tlsext_ellipticcurvelist != NULL))
-            ) {
+            )
+           {
             ec_ok = 0;
             if (s->cert->ecdh_tmp->group != NULL) {
                 ec_nid = EC_GROUP_get_curve_name(s->cert->ecdh_tmp->group);
@@ -4077,12 +4073,13 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
 
         if (!ok)
             continue;
+		
         ii = sk_SSL_CIPHER_find(allow, c);
         if (ii >= 0) 
 		{
 #if !defined(OPENSSL_NO_EC) && !defined(OPENSSL_NO_TLSEXT)
-            if ((alg_k & SSL_kEECDH) && (alg_a & SSL_aECDSA)
-                && s->s3->is_probably_safari) {
+            if ((alg_k & SSL_kEECDH) && (alg_a & SSL_aECDSA) && s->s3->is_probably_safari) 
+            {
                 if (!ret)
                     ret = sk_SSL_CIPHER_value(allow, ii);
                 continue;

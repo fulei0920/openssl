@@ -412,7 +412,7 @@ struct ssl_cipher_st
     unsigned long algorithm_enc; 	
 	//symmetric authentication 
     unsigned long algorithm_mac; 	
-	//(major) protocol version 
+	//加密套件支持的ssl协议的主版本号
     unsigned long algorithm_ssl; 	
     unsigned long algo_strength; 	/* strength and export flags */
     unsigned long algorithm2;   	/* Extra flags */
@@ -455,7 +455,7 @@ struct ssl_method_st
 	*/
     int (*put_cipher_by_char) (const SSL_CIPHER *cipher, unsigned char *ptr);
     int (*ssl_pending) (const SSL *s);
-	//协议支持的加密套件个数
+	//协议支持的加密套件总个数
     int (*num_ciphers) (void);
 	//根据索引获取对应的加密套件
     const SSL_CIPHER *(*get_cipher) (unsigned ncipher);
@@ -544,7 +544,8 @@ struct ssl_session_st
     unsigned int compress_meth; 	/* Need to lookup the method */
     const SSL_CIPHER *cipher;		/*通过协商确定使用的加密套件方法*/
     unsigned long cipher_id;    	/* when ASN.1 loaded, this needs to be used to load the 'cipher' structure */
-    STACK_OF(SSL_CIPHER) *ciphers; 	/* shared ciphers? */
+	//存储客户端的加密套件
+	STACK_OF(SSL_CIPHER) *ciphers; 	/* shared ciphers? */
     CRYPTO_EX_DATA ex_data;     	/* application specific data */
     /*
      * These are used to make removal of session-ids more efficient and to
@@ -1308,12 +1309,13 @@ struct ssl_st
     int shutdown;				 /* we have shut things down, 0x01 sent, 0x02 for received */
     int state;					/* where we are */
     int rstate;					/* where we are when reading */
+	//用来存储读/写handshake message body
     BUF_MEM *init_buf;          /* buffer used during init */ /*存储接收到的上层数据，或存储待发送的上层数据*/
     void *init_msg;             /* pointer to handshake message body, set by ssl3_get_message() */
     int init_num;               /* init_buf中数据的字节数 */
     int init_off;               /* init_buf中数据的起始偏移位置 */
     
-    unsigned char *packet;		/* used internally to point at a raw packet */  /*指向接收的原始数据包起始位置*/
+    unsigned char *packet;		/*指向接收的原始数据包起始位置*/
     unsigned int packet_length;	/*接收的原始数据包的大小*/
     struct ssl2_state_st *s2;   /* SSLv2 variables */
     struct ssl3_state_st *s3;   /* SSLv3 variables */

@@ -122,7 +122,10 @@ static int do_ssl3_write(SSL *s, int type, const unsigned char *buf, unsigned in
 static int ssl3_get_record(SSL *s);
 
 
-/*读取raw packet，存储到rbuf中，通过packet，和packet进行返回*/
+/*读取raw packet，存储到s->s3->rbuf中，通过packet，和packet进行返回*/
+//n -- 至少读取的字节数
+//max -- 最对读取的字节数
+//extend -- 追加读取
 int ssl3_read_n(SSL *s, int n, int max, int extend)
 {
     /*
@@ -393,12 +396,14 @@ static int ssl3_get_record(SSL *s)
             }
         }
 
+		//检查版本号
         if ((version >> 8) != SSL3_VERSION_MAJOR)
 		{
             SSLerr(SSL_F_SSL3_GET_RECORD, SSL_R_WRONG_VERSION_NUMBER);
             goto err;
         }
 
+		//检查负载大小
         if (rr->length > s->s3->rbuf.len - SSL3_RT_HEADER_LENGTH)
 		{
             al = SSL_AD_RECORD_OVERFLOW;
@@ -479,6 +484,7 @@ static int ssl3_get_record(SSL *s)
 #endif
 
     /* r->length is now the compressed data plus mac */
+	//MAC校验......
     if ((sess != NULL) && (s->enc_read_ctx != NULL) && (EVP_MD_CTX_md(s->read_hash) != NULL))
 	{
         /* s->read_hash != NULL => mac_size != -1 */
@@ -551,6 +557,8 @@ static int ssl3_get_record(SSL *s)
     }
 
     /* r->length is now just compressed */
+
+	//解压缩....
     if (s->expand != NULL) 
 	{
         if (rr->length > SSL3_RT_MAX_COMPRESSED_LENGTH + extra)
@@ -1046,10 +1054,13 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
     SSL3_RECORD *rr;
     void (*cb) (const SSL *ssl, int type2, int val) = NULL;
 
-    if (s->s3->rbuf.buf == NULL) /* Not initialized yet */
-        if (!ssl3_setup_read_buffer(s))
+    if (s->s3->rbuf.buf == NULL)
+    {	 /* Not initialized yet */
+		if (!ssl3_setup_read_buffer(s))
             return (-1);
+	}
 
+	//检查类型的合法性
     if ((type && (type != SSL3_RT_APPLICATION_DATA) && (type != SSL3_RT_HANDSHAKE)) || (peek && (type != SSL3_RT_APPLICATION_DATA))) 
    	{
         SSLerr(SSL_F_SSL3_READ_BYTES, ERR_R_INTERNAL_ERROR);

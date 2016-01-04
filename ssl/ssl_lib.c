@@ -641,10 +641,13 @@ void SSL_set_bio(SSL *s, BIO *rbio, BIO *wbio)
             s->bbio->next_bio = NULL;
         }
     }
+	
     if ((s->rbio != NULL) && (s->rbio != rbio))
         BIO_free_all(s->rbio);
+	
     if ((s->wbio != NULL) && (s->wbio != wbio) && (s->rbio != s->wbio))
         BIO_free_all(s->wbio);
+	
     s->rbio = rbio;
     s->wbio = wbio;
 }
@@ -1331,7 +1334,9 @@ int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
      * ctx->cipher_list and ctx->cipher_list_by_id has been updated.
      */
     if (sk == NULL)
-        return 0;
+    {	
+		 return 0;
+	}
     else if (sk_SSL_CIPHER_num(sk) == 0)
 	{
         SSLerr(SSL_F_SSL_CTX_SET_CIPHER_LIST, SSL_R_NO_CIPHER_MATCH);
@@ -2121,6 +2126,7 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 #else
     rsa_tmp = rsa_tmp_export = 0;
 #endif
+
 #ifndef OPENSSL_NO_DH
     dh_tmp = (c->dh_tmp != NULL || c->dh_tmp_cb != NULL);
     dh_tmp_export = (c->dh_tmp_cb != NULL || (dh_tmp && DH_size(c->dh_tmp) * 8 <= kl));
@@ -2131,6 +2137,7 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 #ifndef OPENSSL_NO_ECDH
     have_ecdh_tmp = (c->ecdh_tmp != NULL || c->ecdh_tmp_cb != NULL);
 #endif
+
     cpk = &(c->pkeys[SSL_PKEY_RSA_ENC]);
     rsa_enc = (cpk->x509 != NULL && cpk->privatekey != NULL);
     rsa_enc_export = (rsa_enc && EVP_PKEY_size(cpk->privatekey) * 8 <= kl);
@@ -2144,9 +2151,9 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     cpk = &(c->pkeys[SSL_PKEY_DH_RSA]);
     dh_rsa = (cpk->x509 != NULL && cpk->privatekey != NULL);
     dh_rsa_export = (dh_rsa && EVP_PKEY_size(cpk->privatekey) * 8 <= kl);
-	
+
+	/* FIX THIS EAY EAY EAY */
     cpk = &(c->pkeys[SSL_PKEY_DH_DSA]);
-/* FIX THIS EAY EAY EAY */
     dh_dsa = (cpk->x509 != NULL && cpk->privatekey != NULL);
     dh_dsa_export = (dh_dsa && EVP_PKEY_size(cpk->privatekey) * 8 <= kl);
 	
@@ -2194,12 +2201,12 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
 
     if (dh_tmp_export)
         emask_k |= SSL_kEDH;
-
     if (dh_tmp)
         mask_k |= SSL_kEDH;
 
     if (dh_rsa)
         mask_k |= SSL_kDHr;
+	
     if (dh_rsa_export)
         emask_k |= SSL_kDHr;
 
@@ -2208,12 +2215,14 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     if (dh_dsa_export)
         emask_k |= SSL_kDHd;
 
-    if (rsa_enc || rsa_sign) {
+    if (rsa_enc || rsa_sign) 
+	{
         mask_a |= SSL_aRSA;
         emask_a |= SSL_aRSA;
     }
 
-    if (dsa_sign) {
+    if (dsa_sign) 
+	{
         mask_a |= SSL_aDSS;
         emask_a |= SSL_aDSS;
     }
@@ -2280,7 +2289,8 @@ void ssl_set_cert_masks(CERT *c, const SSL_CIPHER *cipher)
     }
 #endif
 #ifndef OPENSSL_NO_ECDH
-    if (have_ecdh_tmp) {
+    if (have_ecdh_tmp) 
+	{
         mask_k |= SSL_kEECDH;
         emask_k |= SSL_kEECDH;
     }
@@ -2851,22 +2861,29 @@ SSL *SSL_dup(SSL *s)
 
 void ssl_clear_cipher_ctx(SSL *s)
 {
-    if (s->enc_read_ctx != NULL) {
+    if (s->enc_read_ctx != NULL) 
+	{
         EVP_CIPHER_CTX_cleanup(s->enc_read_ctx);
         OPENSSL_free(s->enc_read_ctx);
         s->enc_read_ctx = NULL;
     }
-    if (s->enc_write_ctx != NULL) {
+	
+    if (s->enc_write_ctx != NULL)
+	{
         EVP_CIPHER_CTX_cleanup(s->enc_write_ctx);
         OPENSSL_free(s->enc_write_ctx);
         s->enc_write_ctx = NULL;
     }
+	
 #ifndef OPENSSL_NO_COMP
-    if (s->expand != NULL) {
+    if (s->expand != NULL)
+	{
         COMP_CTX_free(s->expand);
         s->expand = NULL;
     }
-    if (s->compress != NULL) {
+	
+    if (s->compress != NULL)
+	{
         COMP_CTX_free(s->compress);
         s->compress = NULL;
     }
@@ -3370,10 +3387,8 @@ void SSL_CTX_set_msg_callback(SSL_CTX *ctx,
     SSL_CTX_callback_ctrl(ctx, SSL_CTRL_SET_MSG_CALLBACK, (void (*)(void))cb);
 }
 
-void SSL_set_msg_callback(SSL *ssl,
-                          void (*cb) (int write_p, int version,
-                                      int content_type, const void *buf,
-                                      size_t len, SSL *ssl, void *arg))
+void SSL_set_msg_callback(SSL *ssl, 
+	void (*cb) (int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg))
 {
     SSL_callback_ctrl(ssl, SSL_CTRL_SET_MSG_CALLBACK, (void (*)(void))cb);
 }

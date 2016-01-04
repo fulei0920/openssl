@@ -229,19 +229,16 @@ typedef struct cipher_order_st
     struct cipher_order_st *next, *prev;
 } CIPHER_ORDER;
 
-static const SSL_CIPHER cipher_aliases[] = {
+static const SSL_CIPHER cipher_aliases[] = 
+{
 
     /* "ALL" doesn't include eNULL (must be specifically enabled) */
     {0, SSL_TXT_ALL, 0, 0, 0, ~SSL_eNULL, 0, 0, 0, 0, 0, 0},
     /* "COMPLEMENTOFALL" */
     {0, SSL_TXT_CMPALL, 0, 0, 0, SSL_eNULL, 0, 0, 0, 0, 0, 0},
 
-    /*
-     * "COMPLEMENTOFDEFAULT" (does *not* include ciphersuites not found in
-     * ALL!)
-     */
-    {0, SSL_TXT_CMPDEF, 0, 0, SSL_aNULL, ~SSL_eNULL, 0, ~SSL_SSLV2,
-     SSL_EXP_MASK, 0, 0, 0},
+    /* "COMPLEMENTOFDEFAULT" (does *not* include ciphersuites not found in ALL!) */
+    {0, SSL_TXT_CMPDEF, 0, 0, SSL_aNULL, ~SSL_eNULL, 0, ~SSL_SSLV2, SSL_EXP_MASK, 0, 0, 0},
 
     /*
      * key exchange aliases (some of those using only a single bit here
@@ -883,12 +880,11 @@ static void ssl_cipher_collect_aliases(const SSL_CIPHER **ca_list,
     unsigned long mask_mac = ~disabled_mac;
     unsigned long mask_ssl = ~disabled_ssl;
 
-    /*
-     * First, add the real ciphers as already collected
-     */
+    /* First, add the real ciphers as already collected */
     ciph_curr = head;
     ca_curr = ca_list;
-    while (ciph_curr != NULL) {
+    while (ciph_curr != NULL) 
+	{
         *ca_curr = ciph_curr->cipher;
         ca_curr++;
         ciph_curr = ciph_curr->next;
@@ -900,7 +896,8 @@ static void ssl_cipher_collect_aliases(const SSL_CIPHER **ca_list,
      * in any affected category must be supported (set in enabled_mask),
      * or represent a cipher strength value (will be added in any case because algorithms=0).
      */
-    for (i = 0; i < num_of_group_aliases; i++) {
+    for (i = 0; i < num_of_group_aliases; i++) 
+	{
         unsigned long algorithm_mkey = cipher_aliases[i].algorithm_mkey;
         unsigned long algorithm_auth = cipher_aliases[i].algorithm_auth;
         unsigned long algorithm_enc = cipher_aliases[i].algorithm_enc;
@@ -1103,32 +1100,24 @@ static int ssl_cipher_strength_sort(CIPHER_ORDER **head_p, CIPHER_ORDER **tail_p
     }
     memset(number_uses, 0, (max_strength_bits + 1) * sizeof(int));
 
-    /*
-     * Now find the strength_bits values actually used
-     */
+    /* Now find the strength_bits values actually used */
     curr = *head_p;
-    while (curr != NULL) {
+    while (curr != NULL) 
+	{
         if (curr->active)
             number_uses[curr->cipher->strength_bits]++;
         curr = curr->next;
     }
-    /*
-     * Go through the list of used strength_bits values in descending
-     * order.
-     */
+    /* Go through the list of used strength_bits values in descending order. */
     for (i = max_strength_bits; i >= 0; i--)
         if (number_uses[i] > 0)
-            ssl_cipher_apply_rule(0, 0, 0, 0, 0, 0, 0, CIPHER_ORD, i, head_p,
-                                  tail_p);
+            ssl_cipher_apply_rule(0, 0, 0, 0, 0, 0, 0, CIPHER_ORD, i, head_p, tail_p);
 
     OPENSSL_free(number_uses);
     return (1);
 }
 
-static int ssl_cipher_process_rulestr(const char *rule_str,
-                                      CIPHER_ORDER **head_p,
-                                      CIPHER_ORDER **tail_p,
-                                      const SSL_CIPHER **ca_list)
+static int ssl_cipher_process_rulestr(const char *rule_str, CIPHER_ORDER **head_p, CIPHER_ORDER **tail_p, const SSL_CIPHER **ca_list)
 {
     unsigned long alg_mkey, alg_auth, alg_enc, alg_mac, alg_ssl,
         algo_strength;
@@ -1411,9 +1400,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
 
     /* Now arrange all ciphers by preference: */
 
-    /*
-     * Everything else being equal, prefer ephemeral ECDH over other key exchange mechanisms
-     */
+    /* Everything else being equal, prefer ephemeral ECDH over other key exchange mechanisms */
     ssl_cipher_apply_rule(0, SSL_kEECDH, 0, 0, 0, 0, 0, CIPHER_ADD, -1, &head, &tail);
     ssl_cipher_apply_rule(0, SSL_kEECDH, 0, 0, 0, 0, 0, CIPHER_DEL, -1, &head, &tail);
 
@@ -1445,10 +1432,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
     /* RC4 is sort-of broken -- move the the end */
     ssl_cipher_apply_rule(0, 0, 0, SSL_RC4, 0, 0, 0, CIPHER_ORD, -1, &head, &tail);
 
-    /*
-     * Now sort by symmetric encryption strength.  The above ordering remains
-     * in force within each class
-     */
+    /* Now sort by symmetric encryption strength.  The above ordering remains in force within each class */
     if (!ssl_cipher_strength_sort(&head, &tail)) 
 	{
         OPENSSL_free(co_list);
@@ -1483,9 +1467,9 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
      */
     ok = 1;
     rule_p = rule_str;
-    if (strncmp(rule_str, "DEFAULT", 7) == 0) {
-        ok = ssl_cipher_process_rulestr(SSL_DEFAULT_CIPHER_LIST,
-                                        &head, &tail, ca_list);
+    if (strncmp(rule_str, "DEFAULT", 7) == 0)
+	{
+        ok = ssl_cipher_process_rulestr(SSL_DEFAULT_CIPHER_LIST, &head, &tail, ca_list);
         rule_p += 7;
         if (*rule_p == ':')
             rule_p++;
@@ -1496,7 +1480,8 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
 
     OPENSSL_free((void *)ca_list); /* Not needed anymore */
 
-    if (!ok) {                  /* Rule processing failure */
+    if (!ok) 
+	{                  /* Rule processing failure */
         OPENSSL_free(co_list);
         return (NULL);
     }
@@ -1505,7 +1490,8 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
      * Allocate new "cipherstack" for the result, return with error
      * if we cannot get one.
      */
-    if ((cipherstack = sk_SSL_CIPHER_new_null()) == NULL) {
+    if ((cipherstack = sk_SSL_CIPHER_new_null()) == NULL) 
+	{
         OPENSSL_free(co_list);
         return (NULL);
     }
@@ -1514,7 +1500,8 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
      * The cipher selection for the list is done. The ciphers are added
      * to the resulting precedence to the STACK_OF(SSL_CIPHER).
      */
-    for (curr = head; curr != NULL; curr = curr->next) {
+    for (curr = head; curr != NULL; curr = curr->next) 
+	{
 #ifdef OPENSSL_FIPS
         if (curr->active
             && (!FIPS_mode() || curr->cipher->algo_strength & SSL_FIPS))
@@ -1531,7 +1518,8 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
     OPENSSL_free(co_list);      /* Not needed any longer */
 
     tmp_cipher_list = sk_SSL_CIPHER_dup(cipherstack);
-    if (tmp_cipher_list == NULL) {
+    if (tmp_cipher_list == NULL)
+	{
         sk_SSL_CIPHER_free(cipherstack);
         return NULL;
     }
@@ -1541,8 +1529,7 @@ STACK_OF(SSL_CIPHER) *ssl_create_cipher_list(const SSL_METHOD *ssl_method, STACK
     if (*cipher_list_by_id != NULL)
         sk_SSL_CIPHER_free(*cipher_list_by_id);
     *cipher_list_by_id = tmp_cipher_list;
-    (void)sk_SSL_CIPHER_set_cmp_func(*cipher_list_by_id,
-                                     ssl_cipher_ptr_id_cmp);
+    (void)sk_SSL_CIPHER_set_cmp_func(*cipher_list_by_id, ssl_cipher_ptr_id_cmp);
 
     sk_SSL_CIPHER_sort(*cipher_list_by_id);
     return (cipherstack);

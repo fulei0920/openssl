@@ -387,6 +387,7 @@ int ssl3_accept(SSL *s)
                     s->rwstate = SSL_X509_LOOKUP;
                     goto end;
                 }
+				
                 if (ret != SSL_ERROR_NONE)
 				{
                     ssl3_send_alert(s, SSL3_AL_FATAL, al);
@@ -890,13 +891,16 @@ int ssl3_accept(SSL *s)
             /* break; */
         }
 
-        if (!s->s3->tmp.reuse_message && !skip) {
-            if (s->debug) {
+        if (!s->s3->tmp.reuse_message && !skip)
+		{
+            if (s->debug)
+			{
                 if ((ret = BIO_flush(s->wbio)) <= 0)
                     goto end;
             }
 
-            if ((cb != NULL) && (s->state != state)) {
+            if ((cb != NULL) && (s->state != state)) 
+			{
                 new_state = s->state;
                 s->state = state;
                 cb(s, SSL_CB_ACCEPT_LOOP, 1);
@@ -1025,22 +1029,19 @@ int ssl3_get_client_hello(SSL *s)
     }
 
     /*
-     * use version from inside client hello, not from record header (may
-     * differ: see RFC 2246, Appendix E, second paragraph)
+     * use version from inside client hello, not from record header (may differ: see RFC 2246, Appendix E, second paragraph)
      */
+    //获取版本号
     s->client_version = (((int)p[0]) << 8) | (int)p[1];
     p += 2;
 
-    if ((s->version == DTLS1_VERSION && s->client_version > s->version) ||
-        (s->version != DTLS1_VERSION && s->client_version < s->version)) 
+    if ((s->version == DTLS1_VERSION && s->client_version > s->version) || (s->version != DTLS1_VERSION && s->client_version < s->version)) 
     {
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_WRONG_VERSION_NUMBER);
-        if ((s->client_version >> 8) == SSL3_VERSION_MAJOR &&
-            !s->enc_write_ctx && !s->write_hash) 
+        if ((s->client_version >> 8) == SSL3_VERSION_MAJOR && !s->enc_write_ctx && !s->write_hash) 
         {
             /*
-             * similar to ssl3_get_record, send alert using remote version
-             * number
+             * similar to ssl3_get_record, send alert using remote version number
              */
             s->version = s->client_version;
         }
@@ -1071,11 +1072,11 @@ int ssl3_get_client_hello(SSL *s)
             return 1;
     }
 
-    /* load the client random */
+	//获取随机数
     memcpy(s->s3->client_random, p, SSL3_RANDOM_SIZE);
     p += SSL3_RANDOM_SIZE;
 
-    /* get the session-id */
+	//获取session-id
     j = *(p++);
 
     if (p + j > d + n)
@@ -1188,12 +1189,15 @@ int ssl3_get_client_hello(SSL *s)
         p += cookie_len;
     }
 
+	//检查是否越界
     if (p + 2 > d + n)
 	{
         al = SSL_AD_DECODE_ERROR;
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_TOO_SHORT);
         goto f_err;
     }
+	
+	//获取cipher suites length
     n2s(p, i);
 
     if (i == 0) 
@@ -1203,6 +1207,7 @@ int ssl3_get_client_hello(SSL *s)
         goto f_err;
     }
 
+	//检查是否越界
     /* i bytes of cipher data + 1 byte for compression length later */
     if ((p + i + 1) > (d + n))
 	{
@@ -1211,6 +1216,7 @@ int ssl3_get_client_hello(SSL *s)
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_MISMATCH);
         goto f_err;
     }
+	
     if (ssl_bytes_to_cipher_list(s, p, i, &(ciphers)) == NULL) 
 	{
         goto err;
@@ -1271,8 +1277,10 @@ int ssl3_get_client_hello(SSL *s)
         }
     }
 
-    /* compression */
+    //获取compression method length
     i = *(p++);
+
+	//检查是否越界
     if ((p + i) > (d + n))
 	{
         /* not enough data */
@@ -1280,6 +1288,7 @@ int ssl3_get_client_hello(SSL *s)
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_LENGTH_MISMATCH);
         goto f_err;
     }
+	
     q = p;
     for (j = 0; j < i; j++) 
 	{
@@ -1295,6 +1304,7 @@ int ssl3_get_client_hello(SSL *s)
         SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_NO_COMPRESSION_SPECIFIED);
         goto f_err;
     }
+	
 #ifndef OPENSSL_NO_TLSEXT
     /* TLS extensions */
     if (s->version >= SSL3_VERSION) 
@@ -1349,7 +1359,8 @@ int ssl3_get_client_hello(SSL *s)
                                                                session->ciphers,
                                                                SSL_get_ciphers
                                                                (s));
-            if (pref_cipher == NULL) {
+            if (pref_cipher == NULL) 
+			{
                 al = SSL_AD_HANDSHAKE_FAILURE;
                 SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_NO_SHARED_CIPHER);
                 goto f_err;
@@ -1385,15 +1396,15 @@ int ssl3_get_client_hello(SSL *s)
         if (s->options & SSL_OP_NO_COMPRESSION) 
 		{
             al = SSL_AD_INTERNAL_ERROR;
-            SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO,
-                   SSL_R_INCONSISTENT_COMPRESSION);
+            SSLerr(SSL_F_SSL3_GET_CLIENT_HELLO, SSL_R_INCONSISTENT_COMPRESSION);
             goto f_err;
         }
         /* Look for resumed compression method */
         for (m = 0; m < sk_SSL_COMP_num(s->ctx->comp_methods); m++) 
 		{
             comp = sk_SSL_COMP_value(s->ctx->comp_methods, m);
-            if (comp_id == comp->id) {
+            if (comp_id == comp->id) 
+			{
                 s->s3->tmp.new_compression = comp;
                 break;
             }
@@ -1417,7 +1428,9 @@ int ssl3_get_client_hello(SSL *s)
         }
     }
 	else if (s->hit)
-        comp = NULL;
+	{
+		comp = NULL;
+	}
     else if (!(s->options & SSL_OP_NO_COMPRESSION) && s->ctx->comp_methods) 
 	{
         /* See if we have a match */
@@ -1466,6 +1479,7 @@ int ssl3_get_client_hello(SSL *s)
 #endif
         if (s->session->ciphers != NULL)
             sk_SSL_CIPHER_free(s->session->ciphers);
+		
         s->session->ciphers = ciphers;
         if (ciphers == NULL)
 		{
@@ -1817,10 +1831,12 @@ int ssl3_send_server_key_exchange(SSL *s)
             const EC_GROUP *group;
 
             ecdhp = cert->ecdh_tmp;
+			
             if ((ecdhp == NULL) && (s->cert->ecdh_tmp_cb != NULL)) 
 			{
                 ecdhp = s->cert->ecdh_tmp_cb(s, SSL_C_IS_EXPORT(s->s3->tmp.new_cipher), SSL_C_EXPORT_PKEYLENGTH(s->s3->tmp.new_cipher));
             }
+			
             if (ecdhp == NULL)
 			{
                 al = SSL_AD_HANDSHAKE_FAILURE;

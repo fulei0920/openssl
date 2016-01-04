@@ -329,8 +329,7 @@ void MS_CALLBACK apps_ssl_info_callback(const SSL *s, int where, int ret)
     }
 }
 
-void MS_CALLBACK msg_cb(int write_p, int version, int content_type,
-                        const void *buf, size_t len, SSL *ssl, void *arg)
+void MS_CALLBACK msg_cb(int write_p, int version, int content_type, const void *buf, size_t len, SSL *ssl, void *arg)
 {
     BIO *bio = arg;
     const char *str_write_p, *str_version, *str_content_type =

@@ -517,6 +517,7 @@ long ssl3_get_message(SSL *s, int st1, int stn, int mt, long max, int *ok)
             SSLerr(SSL_F_SSL3_GET_MESSAGE, SSL_R_EXCESSIVE_MESSAGE_SIZE);
             goto f_err;
         }
+		
         if (l > (INT_MAX - 4))  /* BUF_MEM_grow takes an 'int' parameter */
 		{ 
             al = SSL_AD_ILLEGAL_PARAMETER;
@@ -778,6 +779,7 @@ int ssl3_setup_read_buffer(SSL *s)
 		/*ÉêÇëbuffer*/
         if ((p = freelist_extract(s->ctx, 1, len)) == NULL)
             goto err;
+		
         s->s3->rbuf.buf = p;
         s->s3->rbuf.len = len;
     }
@@ -831,8 +833,10 @@ int ssl3_setup_buffers(SSL *s)
 {
     if (!ssl3_setup_read_buffer(s))
         return 0;
+	
     if (!ssl3_setup_write_buffer(s))
         return 0;
+	
     return 1;
 }
 
