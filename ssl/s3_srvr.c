@@ -324,9 +324,8 @@ int ssl3_accept(SSL *s)
                 s->state = SSL3_ST_SR_CLNT_HELLO_A;
                 s->ctx->stats.sess_accept++;
             }
-			else if (!s->s3->send_connection_binding &&
-                       !(s->options &
-                         SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)) {
+			else if (!s->s3->send_connection_binding && !(s->options & SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)) 
+            {
                 /*
                  * Server attempting to renegotiate with client that doesn't
                  * support secure renegotiation.
@@ -337,7 +336,9 @@ int ssl3_accept(SSL *s)
                 ret = -1;
                 s->state = SSL_ST_ERR;
                 goto end;
-            } else {
+            } 
+			else 
+			{
                 /*
                  * s->state == SSL_ST_RENEGOTIATE, we will just send a
                  * HelloRequest
@@ -647,7 +648,9 @@ int ssl3_accept(SSL *s)
                     s->state = SSL3_ST_SR_FINISHED_A;
 #endif
                 s->init_num = 0;
-            } else if (TLS1_get_version(s) >= TLS1_2_VERSION) {
+            } 
+			else if (TLS1_get_version(s) >= TLS1_2_VERSION)
+			{
                 s->state = SSL3_ST_SR_CERT_VRFY_A;
                 s->init_num = 0;
                 if (!s->session->peer)
@@ -666,7 +669,9 @@ int ssl3_accept(SSL *s)
                     s->state = SSL_ST_ERR;
                     return -1;
                 }
-            } else {
+            } 
+			else 
+			{
                 int offset = 0;
                 int dgst_num;
 
