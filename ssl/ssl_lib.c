@@ -854,6 +854,8 @@ int SSL_pending(const SSL *s)
     return (s->method->ssl_pending(s));
 }
 
+
+//获取对端的证书
 X509 *SSL_get_peer_certificate(const SSL *s)
 {
     X509 *r;
@@ -995,7 +997,8 @@ long SSL_get_default_timeout(const SSL *s)
 
 int SSL_read(SSL *s, void *buf, int num)
 {
-    if (s->handshake_func == 0) {
+    if (s->handshake_func == 0) 
+	{
         SSLerr(SSL_F_SSL_READ, SSL_R_UNINITIALIZED);
         return -1;
     }
@@ -2480,9 +2483,14 @@ EVP_PKEY *ssl_get_sign_pkey(SSL *s, const SSL_CIPHER *cipher, const EVP_MD **pmd
     else if (alg_a & SSL_aRSA) 
 	{
         if (c->pkeys[SSL_PKEY_RSA_SIGN].privatekey != NULL)
-            idx = SSL_PKEY_RSA_SIGN;
+        {
+			idx = SSL_PKEY_RSA_SIGN;
+		}
+            
         else if (c->pkeys[SSL_PKEY_RSA_ENC].privatekey != NULL)
-            idx = SSL_PKEY_RSA_ENC;
+        {
+			idx = SSL_PKEY_RSA_ENC;
+		}   
     } 
 	else if ((alg_a & SSL_aECDSA) && (c->pkeys[SSL_PKEY_ECC].privatekey != NULL))
     {
@@ -2524,9 +2532,8 @@ void ssl_update_cache(SSL *s, int mode)
     /* auto flush every 255 connections */
     if ((!(i & SSL_SESS_CACHE_NO_AUTO_CLEAR)) && ((i & mode) == mode))
 	{
-        if ((((mode & SSL_SESS_CACHE_CLIENT)
-              ? s->session_ctx->stats.sess_connect_good
-              : s->session_ctx->stats.sess_accept_good) & 0xff) == 0xff) {
+        if ((((mode & SSL_SESS_CACHE_CLIENT) ? s->session_ctx->stats.sess_connect_good : s->session_ctx->stats.sess_accept_good) & 0xff) == 0xff)
+        {
             SSL_CTX_flush_sessions(s->session_ctx, (unsigned long)time(NULL));
         }
     }
@@ -2579,15 +2586,18 @@ int SSL_get_error(const SSL *s, int i)
      * Make things return SSL_ERROR_SYSCALL when doing SSL_do_handshake etc,
      * where we do encode the error
      */
-    if ((l = ERR_peek_error()) != 0) {
+    if ((l = ERR_peek_error()) != 0) 
+	{
         if (ERR_GET_LIB(l) == ERR_LIB_SYS)
             return (SSL_ERROR_SYSCALL);
         else
             return (SSL_ERROR_SSL);
     }
 
-    if ((i < 0) && SSL_want_read(s)) {
+    if ((i < 0) && SSL_want_read(s))
+	{
         bio = SSL_get_rbio(s);
+		
         if (BIO_should_read(bio))
             return (SSL_ERROR_WANT_READ);
         else if (BIO_should_write(bio))
@@ -2601,7 +2611,8 @@ int SSL_get_error(const SSL *s, int i)
              * might be safer to keep it.
              */
             return (SSL_ERROR_WANT_WRITE);
-        else if (BIO_should_io_special(bio)) {
+        else if (BIO_should_io_special(bio))
+		{
             reason = BIO_get_retry_reason(bio);
             if (reason == BIO_RR_CONNECT)
                 return (SSL_ERROR_WANT_CONNECT);
@@ -2612,7 +2623,8 @@ int SSL_get_error(const SSL *s, int i)
         }
     }
 
-    if ((i < 0) && SSL_want_write(s)) {
+    if ((i < 0) && SSL_want_write(s))
+	{
         bio = SSL_get_wbio(s);
         if (BIO_should_write(bio))
             return (SSL_ERROR_WANT_WRITE);
@@ -2621,7 +2633,8 @@ int SSL_get_error(const SSL *s, int i)
              * See above (SSL_want_read(s) with BIO_should_write(bio))
              */
             return (SSL_ERROR_WANT_READ);
-        else if (BIO_should_io_special(bio)) {
+        else if (BIO_should_io_special(bio)) 
+		{
             reason = BIO_get_retry_reason(bio);
             if (reason == BIO_RR_CONNECT)
                 return (SSL_ERROR_WANT_CONNECT);
@@ -2631,11 +2644,13 @@ int SSL_get_error(const SSL *s, int i)
                 return (SSL_ERROR_SYSCALL);
         }
     }
-    if ((i < 0) && SSL_want_x509_lookup(s)) {
+    if ((i < 0) && SSL_want_x509_lookup(s)) 
+	{
         return (SSL_ERROR_WANT_X509_LOOKUP);
     }
 
-    if (i == 0) {
+    if (i == 0)
+	{
         if (s->version == SSL2_VERSION) {
             /* assume it is the socket being closed */
             return (SSL_ERROR_ZERO_RETURN);
@@ -3146,6 +3161,8 @@ void SSL_set_verify_result(SSL *ssl, long arg)
     ssl->verify_result = arg;
 }
 
+//获取对端证书验证结果
+//X509_V_OK表示验证成功
 long SSL_get_verify_result(const SSL *ssl)
 {
     return (ssl->verify_result);

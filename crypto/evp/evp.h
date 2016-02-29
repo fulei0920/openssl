@@ -1113,8 +1113,7 @@ void EVP_PKEY_asn1_set_ctrl(EVP_PKEY_ASN1_METHOD *ameth,
 # define EVP_PKEY_OP_DERIVE              (1<<10)
 
 # define EVP_PKEY_OP_TYPE_SIG    \
-        (EVP_PKEY_OP_SIGN | EVP_PKEY_OP_VERIFY | EVP_PKEY_OP_VERIFYRECOVER \
-                | EVP_PKEY_OP_SIGNCTX | EVP_PKEY_OP_VERIFYCTX)
+        (EVP_PKEY_OP_SIGN | EVP_PKEY_OP_VERIFY | EVP_PKEY_OP_VERIFYRECOVER | EVP_PKEY_OP_SIGNCTX | EVP_PKEY_OP_VERIFYCTX)
 
 # define EVP_PKEY_OP_TYPE_CRYPT \
         (EVP_PKEY_OP_ENCRYPT | EVP_PKEY_OP_DECRYPT)
@@ -1126,8 +1125,7 @@ void EVP_PKEY_asn1_set_ctrl(EVP_PKEY_ASN1_METHOD *ameth,
                 (EVP_PKEY_OP_PARAMGEN | EVP_PKEY_OP_KEYGEN)
 
 # define  EVP_PKEY_CTX_set_signature_md(ctx, md) \
-                EVP_PKEY_CTX_ctrl(ctx, -1, EVP_PKEY_OP_TYPE_SIG,  \
-                                        EVP_PKEY_CTRL_MD, 0, (void *)md)
+                EVP_PKEY_CTX_ctrl(ctx, -1, EVP_PKEY_OP_TYPE_SIG,  EVP_PKEY_CTRL_MD, 0, (void *)md)
 
 # define EVP_PKEY_CTRL_MD                1
 # define EVP_PKEY_CTRL_PEER_KEY          2

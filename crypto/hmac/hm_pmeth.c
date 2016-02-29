@@ -154,8 +154,7 @@ static int hmac_signctx_init(EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx)
     return 1;
 }
 
-static int hmac_signctx(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                        EVP_MD_CTX *mctx)
+static int hmac_signctx(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, EVP_MD_CTX *mctx)
 {
     unsigned int hlen;
     HMAC_PKEY_CTX *hctx = ctx->data;

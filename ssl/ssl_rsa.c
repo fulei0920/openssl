@@ -723,7 +723,8 @@ int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx, const char *file)
     if (ERR_peek_error() != 0)
         ret = 0;                /* Key/certificate mismatch doesn't imply
                                  * ret==0 ... */
-    if (ret) {
+    if (ret)
+	{
         /*
          * If we could set up our certificate, now proceed to the CA
          * certificates.
@@ -732,7 +733,8 @@ int SSL_CTX_use_certificate_chain_file(SSL_CTX *ctx, const char *file)
         int r;
         unsigned long err;
 
-        if (ctx->extra_certs != NULL) {
+        if (ctx->extra_certs != NULL) 
+		{
             sk_X509_pop_free(ctx->extra_certs, X509_free);
             ctx->extra_certs = NULL;
         }

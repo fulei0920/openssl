@@ -132,9 +132,8 @@ int EC_POINT_set_compressed_coordinates_GF2m(const EC_GROUP *group,
 }
 #endif
 
-size_t EC_POINT_point2oct(const EC_GROUP *group, const EC_POINT *point,
-                          point_conversion_form_t form, unsigned char *buf,
-                          size_t len, BN_CTX *ctx)
+size_t EC_POINT_point2oct(const EC_GROUP *group, const EC_POINT *point, 
+		point_conversion_form_t form, unsigned char *buf, size_t len, BN_CTX *ctx)
 {
     if (group->meth->point2oct == 0
         && !(group->meth->flags & EC_FLAGS_DEFAULT_OCT)) {

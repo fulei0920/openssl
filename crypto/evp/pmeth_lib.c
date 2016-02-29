@@ -391,23 +391,25 @@ void EVP_PKEY_CTX_free(EVP_PKEY_CTX *ctx)
     OPENSSL_free(ctx);
 }
 
-int EVP_PKEY_CTX_ctrl(EVP_PKEY_CTX *ctx, int keytype, int optype,
-                      int cmd, int p1, void *p2)
+int EVP_PKEY_CTX_ctrl(EVP_PKEY_CTX *ctx, int keytype, int optype, int cmd, int p1, void *p2)
 {
     int ret;
-    if (!ctx || !ctx->pmeth || !ctx->pmeth->ctrl) {
+    if (!ctx || !ctx->pmeth || !ctx->pmeth->ctrl) 
+	{
         EVPerr(EVP_F_EVP_PKEY_CTX_CTRL, EVP_R_COMMAND_NOT_SUPPORTED);
         return -2;
     }
     if ((keytype != -1) && (ctx->pmeth->pkey_id != keytype))
         return -1;
 
-    if (ctx->operation == EVP_PKEY_OP_UNDEFINED) {
+    if (ctx->operation == EVP_PKEY_OP_UNDEFINED) 
+	{
         EVPerr(EVP_F_EVP_PKEY_CTX_CTRL, EVP_R_NO_OPERATION_SET);
         return -1;
     }
 
-    if ((optype != -1) && !(ctx->operation & optype)) {
+    if ((optype != -1) && !(ctx->operation & optype)) 
+	{
         EVPerr(EVP_F_EVP_PKEY_CTX_CTRL, EVP_R_INVALID_OPERATION);
         return -1;
     }

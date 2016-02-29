@@ -86,6 +86,7 @@ int EVP_PKEY_bits(EVP_PKEY *pkey)
 {
     if (pkey && pkey->ameth && pkey->ameth->pkey_bits)
         return pkey->ameth->pkey_bits(pkey);
+	
     return 0;
 }
 
@@ -93,6 +94,7 @@ int EVP_PKEY_size(EVP_PKEY *pkey)
 {
     if (pkey && pkey->ameth && pkey->ameth->pkey_size)
         return pkey->ameth->pkey_size(pkey);
+	
     return 0;
 }
 

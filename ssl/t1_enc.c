@@ -1123,7 +1123,8 @@ int tls1_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p,
         && s->s3->server_opaque_prf_input != NULL
         && s->s3->client_opaque_prf_input_len > 0
         && s->s3->client_opaque_prf_input_len ==
-        s->s3->server_opaque_prf_input_len) {
+        s->s3->server_opaque_prf_input_len)
+   {
         co = s->s3->client_opaque_prf_input;
         col = s->s3->server_opaque_prf_input_len;
         so = s->s3->server_opaque_prf_input;

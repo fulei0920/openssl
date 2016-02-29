@@ -523,20 +523,24 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
 	{
         int ticklen;
         if (!s->new_session && s->session && s->session->tlsext_tick)
-            ticklen = s->session->tlsext_ticklen;
-        else if (s->session && s->tlsext_session_ticket &&
-                 s->tlsext_session_ticket->data) {
+        {
+			ticklen = s->session->tlsext_ticklen;
+		}
+        else if (s->session && s->tlsext_session_ticket && s->tlsext_session_ticket->data) 
+		{
             ticklen = s->tlsext_session_ticket->length;
             s->session->tlsext_tick = OPENSSL_malloc(ticklen);
             if (!s->session->tlsext_tick)
                 return NULL;
-            memcpy(s->session->tlsext_tick,
-                   s->tlsext_session_ticket->data, ticklen);
+            memcpy(s->session->tlsext_tick, s->tlsext_session_ticket->data, ticklen);
             s->session->tlsext_ticklen = ticklen;
-        } else
-            ticklen = 0;
-        if (ticklen == 0 && s->tlsext_session_ticket &&
-            s->tlsext_session_ticket->data == NULL)
+        }
+		else
+		{
+			ticklen = 0;
+		}
+            
+        if (ticklen == 0 && s->tlsext_session_ticket && s->tlsext_session_ticket->data == NULL)  //ÕâÔÚÊ²Ã´Çé¿ö»á³öÏÖå
             goto skip_ext;
         /*
          * Check for enough room 2 for extension type, 2 for len rest for
@@ -546,14 +550,16 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
             return NULL;
         s2n(TLSEXT_TYPE_session_ticket, ret);
         s2n(ticklen, ret);
-        if (ticklen) {
+        if (ticklen)
+		{
             memcpy(ret, s->session->tlsext_tick, ticklen);
             ret += ticklen;
         }
     }
  skip_ext:
 
-    if (TLS1_get_client_version(s) >= TLS1_2_VERSION) {
+    if (TLS1_get_client_version(s) >= TLS1_2_VERSION) 
+	{
         if ((size_t)(limit - ret) < sizeof(tls12_sigalgs) + 6)
             return NULL;
         s2n(TLSEXT_TYPE_signature_algorithms, ret);
@@ -579,8 +585,8 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *buf, unsigned c
     }
 # endif
 
-    if (s->tlsext_status_type == TLSEXT_STATUSTYPE_ocsp &&
-        s->version != DTLS1_VERSION) {
+    if (s->tlsext_status_type == TLSEXT_STATUSTYPE_ocsp && s->version != DTLS1_VERSION) 
+	{
         int i;
         long extlen, idlen, itmp;
         OCSP_RESPID *id;
@@ -988,8 +994,7 @@ static void ssl_check_for_safari(SSL *s, const unsigned char *data,
 }
 # endif                         /* !OPENSSL_NO_EC */
 
-int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p,
-                                 unsigned char *limit, int *al)
+int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *limit, int *al)
 {
     unsigned short type;
     unsigned short size;
@@ -1530,24 +1535,24 @@ int ssl_parse_serverhello_tlsext(SSL *s, unsigned char **p, unsigned char *d,
         }
 # endif                         /* OPENSSL_NO_EC */
 
-        else if (type == TLSEXT_TYPE_session_ticket) {
+        else if (type == TLSEXT_TYPE_session_ticket) 
+		{
             if (s->tls_session_ticket_ext_cb &&
-                !s->tls_session_ticket_ext_cb(s, data, size,
-                                              s->tls_session_ticket_ext_cb_arg))
+                !s->tls_session_ticket_ext_cb(s, data, size, s->tls_session_ticket_ext_cb_arg))
             {
                 *al = TLS1_AD_INTERNAL_ERROR;
                 return 0;
             }
-            if ((SSL_get_options(s) & SSL_OP_NO_TICKET)
-                || (size > 0)) {
+            if ((SSL_get_options(s) & SSL_OP_NO_TICKET) || (size > 0))
+			{
                 *al = TLS1_AD_UNSUPPORTED_EXTENSION;
                 return 0;
             }
             s->tlsext_ticket_expected = 1;
         }
 # ifdef TLSEXT_TYPE_opaque_prf_input
-        else if (type == TLSEXT_TYPE_opaque_prf_input &&
-                 s->version != DTLS1_VERSION) {
+        else if (type == TLSEXT_TYPE_opaque_prf_input && s->version != DTLS1_VERSION)
+		{
             unsigned char *sdata = data;
 
             if (size < 2) {
@@ -1862,15 +1867,9 @@ int ssl_check_clienthello_tlsext_early(SSL *s)
 # endif
 
     if (s->ctx != NULL && s->ctx->tlsext_servername_callback != 0)
-        ret =
-            s->ctx->tlsext_servername_callback(s, &al,
-                                               s->ctx->tlsext_servername_arg);
-    else if (s->initial_ctx != NULL
-             && s->initial_ctx->tlsext_servername_callback != 0)
-        ret =
-            s->initial_ctx->tlsext_servername_callback(s, &al,
-                                                       s->
-                                                       initial_ctx->tlsext_servername_arg);
+        ret = s->ctx->tlsext_servername_callback(s, &al, s->ctx->tlsext_servername_arg);
+    else if (s->initial_ctx != NULL && s->initial_ctx->tlsext_servername_callback != 0)
+        ret = s->initial_ctx->tlsext_servername_callback(s, &al, s->initial_ctx->tlsext_servername_arg);
 
 # ifdef TLSEXT_TYPE_opaque_prf_input
     {
@@ -1981,7 +1980,8 @@ int ssl_check_clienthello_tlsext_late(SSL *s)
          */
         s->cert->key = certpkey;
         r = s->ctx->tlsext_status_cb(s, s->ctx->tlsext_status_arg);
-        switch (r) {
+        switch (r)
+		{
             /* We don't want to send a status request response */
         case SSL_TLSEXT_ERR_NOACK:
             s->tlsext_status_expected = 0;
@@ -2185,48 +2185,60 @@ int tls1_process_ticket(SSL *s, unsigned char *session_id, int len, const unsign
      */
     if (SSL_get_options(s) & SSL_OP_NO_TICKET)
         return 0;
+	
     if ((s->version <= SSL3_VERSION) || !limit)
         return 0;
+	
     if (p >= limit)
         return -1;
+	
     /* Skip past DTLS cookie */
-    if (s->version == DTLS1_VERSION || s->version == DTLS1_BAD_VER) {
+    if (s->version == DTLS1_VERSION || s->version == DTLS1_BAD_VER)
+	{
         i = *(p++);
         p += i;
         if (p >= limit)
             return -1;
     }
+	
     /* Skip past cipher list */
     n2s(p, i);
     p += i;
     if (p >= limit)
         return -1;
+	
     /* Skip past compression algorithm list */
     i = *(p++);
     p += i;
     if (p > limit)
         return -1;
+	
     /* Now at start of extensions */
     if ((p + 2) >= limit)
         return 0;
     n2s(p, i);
-    while ((p + 4) <= limit) {
+	
+    while ((p + 4) <= limit) 
+	{
         unsigned short type, size;
         n2s(p, type);
         n2s(p, size);
         if (p + size > limit)
             return 0;
-        if (type == TLSEXT_TYPE_session_ticket) {
+		
+        if (type == TLSEXT_TYPE_session_ticket)
+		{
             int r;
-            if (size == 0) {
+            if (size == 0) 
+			{
                 /*
-                 * The client will accept a ticket but doesn't currently have
-                 * one.
+                 * The client will accept a ticket but doesn't currently have one.
                  */
                 s->tlsext_ticket_expected = 1;
                 return 1;
             }
-            if (s->tls_session_secret_cb) {
+            if (s->tls_session_secret_cb)
+			{
                 /*
                  * Indicate that the ticket couldn't be decrypted rather than
                  * generating the session from ticket now, trigger
@@ -2236,7 +2248,8 @@ int tls1_process_ticket(SSL *s, unsigned char *session_id, int len, const unsign
                 return 2;
             }
             r = tls_decrypt_ticket(s, p, size, session_id, len, ret);
-            switch (r) {
+            switch (r) 
+			{
             case 2:            /* ticket couldn't be decrypted */
                 s->tlsext_ticket_expected = 1;
                 return 2;
@@ -2285,10 +2298,12 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
     /* Need at least keyname + iv + some encrypted data */
     if (eticklen < 48)
         return 2;
+	
     /* Initialize session ticket encryption and HMAC contexts */
     HMAC_CTX_init(&hctx);
     EVP_CIPHER_CTX_init(&ctx);
-    if (tctx->tlsext_ticket_key_cb) {
+    if (tctx->tlsext_ticket_key_cb) 
+	{
         unsigned char *nctick = (unsigned char *)etick;
         int rv = tctx->tlsext_ticket_key_cb(s, nctick, nctick + 16,
                                             &ctx, &hctx, 0);
@@ -2298,21 +2313,22 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
             return 2;
         if (rv == 2)
             renew_ticket = 1;
-    } else {
+    } 
+	else 
+	{
         /* Check key name matches */
         if (memcmp(etick, tctx->tlsext_tick_key_name, 16))
             return 2;
-        HMAC_Init_ex(&hctx, tctx->tlsext_tick_hmac_key, 16,
-                     tlsext_tick_md(), NULL);
-        EVP_DecryptInit_ex(&ctx, EVP_aes_128_cbc(), NULL,
-                           tctx->tlsext_tick_aes_key, etick + 16);
+        HMAC_Init_ex(&hctx, tctx->tlsext_tick_hmac_key, 16, tlsext_tick_md(), NULL);
+        EVP_DecryptInit_ex(&ctx, EVP_aes_128_cbc(), NULL, tctx->tlsext_tick_aes_key, etick + 16);
     }
     /*
      * Attempt to process session ticket, first conduct sanity and integrity
      * checks on ticket.
      */
     mlen = HMAC_size(&hctx);
-    if (mlen < 0) {
+    if (mlen < 0)
+	{
         EVP_CIPHER_CTX_cleanup(&ctx);
         return -1;
     }
@@ -2321,7 +2337,8 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
     HMAC_Update(&hctx, etick, eticklen);
     HMAC_Final(&hctx, tick_hmac, NULL);
     HMAC_CTX_cleanup(&hctx);
-    if (CRYPTO_memcmp(tick_hmac, etick + eticklen, mlen)) {
+    if (CRYPTO_memcmp(tick_hmac, etick + eticklen, mlen)) 
+	{
         EVP_CIPHER_CTX_cleanup(&ctx);
         return 2;
     }
@@ -2330,12 +2347,14 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
     p = etick + 16 + EVP_CIPHER_CTX_iv_length(&ctx);
     eticklen -= 16 + EVP_CIPHER_CTX_iv_length(&ctx);
     sdec = OPENSSL_malloc(eticklen);
-    if (!sdec) {
+    if (!sdec)
+	{
         EVP_CIPHER_CTX_cleanup(&ctx);
         return -1;
     }
     EVP_DecryptUpdate(&ctx, sdec, &slen, p, eticklen);
-    if (EVP_DecryptFinal(&ctx, sdec + slen, &mlen) <= 0) {
+    if (EVP_DecryptFinal(&ctx, sdec + slen, &mlen) <= 0) 
+	{
         EVP_CIPHER_CTX_cleanup(&ctx);
         OPENSSL_free(sdec);
         return 2;
@@ -2346,7 +2365,8 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
 
     sess = d2i_SSL_SESSION(NULL, &p, slen);
     OPENSSL_free(sdec);
-    if (sess) {
+    if (sess) 
+	{
         /*
          * The session ID, if non-empty, is used by some clients to detect
          * that the ticket has been accepted. So we copy it to the session
@@ -2371,7 +2391,8 @@ static int tls_decrypt_ticket(SSL *s, const unsigned char *etick,
 
 /* Tables to translate from NIDs to TLS v1.2 ids */
 
-typedef struct {
+typedef struct 
+{
     int nid;
     int id;
 } tls12_lookup;
@@ -2410,7 +2431,8 @@ static tls12_lookup tls12_sig[] =
 static int tls12_find_id(int nid, tls12_lookup *table, size_t tlen)
 {
     size_t i;
-    for (i = 0; i < tlen; i++) {
+    for (i = 0; i < tlen; i++) 
+	{
         if (table[i].nid == nid)
             return table[i].id;
     }

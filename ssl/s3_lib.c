@@ -3209,7 +3209,8 @@ long ssl3_ctrl(SSL *s, int cmd, long larg, void *parg)
             ecdh = (EC_KEY *)parg;
             if (!(s->options & SSL_OP_SINGLE_ECDH_USE))
 			{
-                if (!EC_KEY_generate_key(ecdh)) {
+                if (!EC_KEY_generate_key(ecdh))
+				{
                     EC_KEY_free(ecdh);
                     SSLerr(SSL_F_SSL3_CTRL, ERR_R_ECDH_LIB);
                     return (ret);
@@ -3566,15 +3567,19 @@ long ssl3_ctx_ctrl(SSL_CTX *ctx, int cmd, long larg, void *parg)
             unsigned char *keys = parg;
             if (!keys)
                 return 48;
-            if (larg != 48) {
+            if (larg != 48) 
+			{
                 SSLerr(SSL_F_SSL3_CTX_CTRL, SSL_R_INVALID_TICKET_KEYS_LENGTH);
                 return 0;
             }
-            if (cmd == SSL_CTRL_SET_TLSEXT_TICKET_KEYS) {
+            if (cmd == SSL_CTRL_SET_TLSEXT_TICKET_KEYS) 
+			{
                 memcpy(ctx->tlsext_tick_key_name, keys, 16);
                 memcpy(ctx->tlsext_tick_hmac_key, keys + 16, 16);
                 memcpy(ctx->tlsext_tick_aes_key, keys + 32, 16);
-            } else {
+            } 
+			else
+			{
                 memcpy(keys, ctx->tlsext_tick_key_name, 16);
                 memcpy(keys + 16, ctx->tlsext_tick_hmac_key, 16);
                 memcpy(keys + 32, ctx->tlsext_tick_aes_key, 16);
@@ -3895,23 +3900,16 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
                 * and the client specified a Supported Point Formats
                 * extension
                 */
-               && ((s->session->tlsext_ecpointformatlist_length > 0)
-                   && (s->session->tlsext_ecpointformatlist != NULL))
+               && ((s->session->tlsext_ecpointformatlist_length > 0) 
+               		&& (s->session->tlsext_ecpointformatlist != NULL))
                /* and our certificate's point is compressed */
                && ((s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info != NULL)
-                   && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key !=
-                       NULL)
-                   && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->
-                       key->public_key != NULL)
-                   && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->
-                       key->public_key->data != NULL)
-                   &&
-                   ((*
-                     (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED)
-                    ||
-                    (*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED + 1)
-                   )
-               )
+                   && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key != NULL)
+                   && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key != NULL)
+                   && (s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data != NULL)
+                   && ((*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED)
+                    	||(*(s->cert->pkeys[SSL_PKEY_ECC].x509->cert_info->key->public_key->data) == POINT_CONVERSION_COMPRESSED + 1))
+				 )
             ) 
        {
             ec_ok = 0;
@@ -3921,27 +3919,21 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
              * be negotiated
              */
             if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group !=
-                    NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->
-                    group->meth != NULL)
-                &&
-                (EC_METHOD_get_field_type
-                 (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->
-                  group->meth) == NID_X9_62_prime_field)
-                ) {
-                for (j = 0; j < s->session->tlsext_ecpointformatlist_length;
-                     j++) {
-                    if (s->session->tlsext_ecpointformatlist[j] ==
-                        TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime) {
+                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)
+                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth != NULL)
+                &&(EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_prime_field)) 
+            {
+                for (j = 0; j < s->session->tlsext_ecpointformatlist_length; j++) 
+				{
+                    if (s->session->tlsext_ecpointformatlist[j] == TLSEXT_ECPOINTFORMAT_ansiX962_compressed_prime) 
+                    {
                         ec_ok = 1;
                         break;
                     }
                 }
-            } else
-                if (EC_METHOD_get_field_type
-                    (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->
-                     group->meth) == NID_X9_62_characteristic_two_field) {
+            } 
+			else if (EC_METHOD_get_field_type(s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group->meth) == NID_X9_62_characteristic_two_field) 
+				{
                 for (j = 0; j < s->session->tlsext_ecpointformatlist_length;
                      j++) {
                     if (s->session->tlsext_ecpointformatlist[j] ==
@@ -3967,9 +3959,8 @@ SSL_CIPHER *ssl3_choose_cipher(SSL *s, STACK_OF(SSL_CIPHER) *clnt, STACK_OF(SSL_
            {
             ec_ok = 0;
             if ((s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec != NULL)
-                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group !=
-                    NULL)
-                ) {
+                && (s->cert->pkeys[SSL_PKEY_ECC].privatekey->pkey.ec->group != NULL)) 
+            {
                 ec_nid =
                     EC_GROUP_get_curve_name(s->cert->
                                             pkeys[SSL_PKEY_ECC].privatekey->
@@ -4266,10 +4257,9 @@ static int ssl3_read_internal(SSL *s, void *buf, int len, int peek)
     if (s->s3->renegotiate)
         ssl3_renegotiate_check(s);
     s->s3->in_read_app_data = 1;
-    ret =
-        s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len,
-                                  peek);
-    if ((ret == -1) && (s->s3->in_read_app_data == 2)) {
+    ret = s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len, peek);
+    if ((ret == -1) && (s->s3->in_read_app_data == 2)) 
+	{
         /*
          * ssl3_read_bytes decided to call s->handshake_func, which called
          * ssl3_read_bytes to read handshake data. However, ssl3_read_bytes
@@ -4279,10 +4269,10 @@ static int ssl3_read_internal(SSL *s, void *buf, int len, int peek)
          */
         s->in_handshake++;
         ret =
-            s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len,
-                                      peek);
+            s->method->ssl_read_bytes(s, SSL3_RT_APPLICATION_DATA, buf, len, peek);
         s->in_handshake--;
-    } else
+    } 
+	else
         s->s3->in_read_app_data = 0;
 
     return (ret);
@@ -4314,9 +4304,10 @@ int ssl3_renegotiate_check(SSL *s)
 {
     int ret = 0;
 
-    if (s->s3->renegotiate) {
-        if ((s->s3->rbuf.left == 0) &&
-            (s->s3->wbuf.left == 0) && !SSL_in_init(s)) {
+    if (s->s3->renegotiate)
+	{
+        if ((s->s3->rbuf.left == 0) && (s->s3->wbuf.left == 0) && !SSL_in_init(s)) 
+       	{
             /*
              * if we are the server, and we have sent a 'RENEGOTIATE'
              * message, we need to go to SSL_ST_ACCEPT.

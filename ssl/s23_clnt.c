@@ -358,7 +358,8 @@ static int ssl23_client_hello(SSL *s)
 #endif
 
 #ifndef OPENSSL_NO_TLSEXT
-    if (version != SSL2_VERSION) {
+    if (version != SSL2_VERSION) 
+	{
         /*
          * have to disable SSL 2.0 compatibility if we need TLS extensions
          */
@@ -368,15 +369,15 @@ static int ssl23_client_hello(SSL *s)
         if (s->tlsext_status_type != -1)
             ssl2_compat = 0;
 # ifdef TLSEXT_TYPE_opaque_prf_input
-        if (s->ctx->tlsext_opaque_prf_input_callback != 0
-            || s->tlsext_opaque_prf_input != NULL)
+        if (s->ctx->tlsext_opaque_prf_input_callback != 0 || s->tlsext_opaque_prf_input != NULL)
             ssl2_compat = 0;
 # endif
     }
 #endif
 
     buf = (unsigned char *)s->init_buf->data;
-    if (s->state == SSL23_ST_CW_CLNT_HELLO_A) {
+    if (s->state == SSL23_ST_CW_CLNT_HELLO_A) 
+	{
         /*
          * Since we're sending s23 client hello, we're not reusing a session, as
          * we'd be using the method from the saved session instead
@@ -389,7 +390,8 @@ static int ssl23_client_hello(SSL *s)
         if (ssl_fill_hello_random(s, 0, p, SSL3_RANDOM_SIZE) <= 0)
             return -1;
 
-        if (version == TLS1_2_VERSION) {
+        if (version == TLS1_2_VERSION)
+		{
             version_major = TLS1_2_VERSION_MAJOR;
             version_minor = TLS1_2_VERSION_MINOR;
         } else if (version == TLS1_1_VERSION) {
@@ -480,7 +482,10 @@ static int ssl23_client_hello(SSL *s)
             s->init_off = 0;
 
             ssl3_finish_mac(s, &(buf[2]), i);
-        } else {
+        }
+		else
+		{
+        
             /* create Client Hello in SSL 3.0/TLS 1.0 format */
 
             /*
@@ -500,9 +505,9 @@ static int ssl23_client_hello(SSL *s)
             *(p++) = 0;
 
             /* Ciphers supported (using SSL 3.0/TLS 1.0 format) */
-            i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &(p[2]),
-                                         ssl3_put_cipher_by_char);
-            if (i == 0) {
+            i = ssl_cipher_list_to_bytes(s, SSL_get_ciphers(s), &(p[2]), ssl3_put_cipher_by_char);
+            if (i == 0) 
+			{
                 SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_NO_CIPHERS_AVAILABLE);
                 return -1;
             }
@@ -538,7 +543,8 @@ static int ssl23_client_hello(SSL *s)
 
 #ifndef OPENSSL_NO_TLSEXT
             /* TLS extensions */
-            if (ssl_prepare_clienthello_tlsext(s) <= 0) {
+            if (ssl_prepare_clienthello_tlsext(s) <= 0) 
+			{
                 SSLerr(SSL_F_SSL23_CLIENT_HELLO, SSL_R_CLIENTHELLO_TLSEXT);
                 return -1;
             }

@@ -291,8 +291,7 @@ X509_LOOKUP *X509_STORE_add_lookup(X509_STORE *v, X509_LOOKUP_METHOD *m)
     }
 }
 
-int X509_STORE_get_by_subject(X509_STORE_CTX *vs, int type, X509_NAME *name,
-                              X509_OBJECT *ret)
+int X509_STORE_get_by_subject(X509_STORE_CTX *vs, int type, X509_NAME *name, X509_OBJECT *ret)
 {
     X509_STORE *ctx = vs->ctx;
     X509_LOOKUP *lu;
@@ -303,7 +302,8 @@ int X509_STORE_get_by_subject(X509_STORE_CTX *vs, int type, X509_NAME *name,
     tmp = X509_OBJECT_retrieve_by_subject(ctx->objs, type, name);
     CRYPTO_w_unlock(CRYPTO_LOCK_X509_STORE);
 
-    if (tmp == NULL || type == X509_LU_CRL) {
+    if (tmp == NULL || type == X509_LU_CRL)
+	{
         for (i = vs->current_method;
              i < sk_X509_LOOKUP_num(ctx->get_cert_methods); i++) {
             lu = sk_X509_LOOKUP_value(ctx->get_cert_methods, i);
@@ -625,12 +625,16 @@ int X509_STORE_CTX_get1_issuer(X509 **issuer, X509_STORE_CTX *ctx, X509 *x)
     int i, ok, idx, ret;
     xn = X509_get_issuer_name(x);
     ok = X509_STORE_get_by_subject(ctx, X509_LU_X509, xn, &obj);
-    if (ok != X509_LU_X509) {
-        if (ok == X509_LU_RETRY) {
+    if (ok != X509_LU_X509)
+	{
+        if (ok == X509_LU_RETRY) 
+		{
             X509_OBJECT_free_contents(&obj);
             X509err(X509_F_X509_STORE_CTX_GET1_ISSUER, X509_R_SHOULD_RETRY);
             return -1;
-        } else if (ok != X509_LU_FAIL) {
+        }
+		else if (ok != X509_LU_FAIL)
+		{
             X509_OBJECT_free_contents(&obj);
             /* not good :-(, break anyway */
             return -1;
@@ -638,7 +642,8 @@ int X509_STORE_CTX_get1_issuer(X509 **issuer, X509_STORE_CTX *ctx, X509 *x)
         return 0;
     }
     /* If certificate matches all OK */
-    if (ctx->check_issued(ctx, x, obj.data.x509)) {
+    if (ctx->check_issued(ctx, x, obj.data.x509))
+	{
         *issuer = obj.data.x509;
         return 1;
     }

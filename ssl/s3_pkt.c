@@ -1085,6 +1085,7 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         /* move any remaining fragment bytes: */
         for (k = 0; k < s->s3->handshake_fragment_len; k++)
             s->s3->handshake_fragment[k] = *src++;
+		
         return n;
     }
 
@@ -1208,7 +1209,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
             dest_len = &s->s3->alert_fragment_len;
         }
 #ifndef OPENSSL_NO_HEARTBEATS
-        else if (rr->type == TLS1_RT_HEARTBEAT) {
+        else if (rr->type == TLS1_RT_HEARTBEAT) 
+		{
             tls1_process_heartbeat(s);
 
             /* Exit and notify application to read again */
@@ -1246,7 +1248,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
     if ((!s->server) &&
         (s->s3->handshake_fragment_len >= 4) &&
         (s->s3->handshake_fragment[0] == SSL3_MT_HELLO_REQUEST) &&
-        (s->session != NULL) && (s->session->cipher != NULL)) {
+        (s->session != NULL) && (s->session->cipher != NULL))
+   {
         s->s3->handshake_fragment_len = 0;
 
         if ((s->s3->handshake_fragment[1] != 0) ||
@@ -1258,13 +1261,10 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         }
 
         if (s->msg_callback)
-            s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE,
-                            s->s3->handshake_fragment, 4, s,
-                            s->msg_callback_arg);
+            s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, s->s3->handshake_fragment, 4, s, s->msg_callback_arg);
 
-        if (SSL_is_init_finished(s) &&
-            !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS) &&
-            !s->s3->renegotiate) {
+        if (SSL_is_init_finished(s) && !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS) && !s->s3->renegotiate) 
+        {
             ssl3_renegotiate(s);
             if (ssl3_renegotiate_check(s)) {
                 i = s->handshake_func(s);
@@ -1312,7 +1312,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         (s->s3->handshake_fragment_len >= 4) &&
         (s->s3->handshake_fragment[0] == SSL3_MT_CLIENT_HELLO) &&
         (s->session != NULL) && (s->session->cipher != NULL) &&
-        !(s->ctx->options & SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)) {
+        !(s->ctx->options & SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION)) 
+    {
         /*
          * s->s3->handshake_fragment_len = 0;
          */
@@ -1390,7 +1391,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         return (0);
     }
 
-    if (rr->type == SSL3_RT_CHANGE_CIPHER_SPEC) {
+    if (rr->type == SSL3_RT_CHANGE_CIPHER_SPEC) 
+	{
         /*
          * 'Change Cipher Spec' is just a single byte, so we know exactly
          * what the record payload has to look like
@@ -1420,8 +1422,7 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
         rr->length = 0;
 
         if (s->msg_callback)
-            s->msg_callback(0, s->version, SSL3_RT_CHANGE_CIPHER_SPEC,
-                            rr->data, 1, s, s->msg_callback_arg);
+            s->msg_callback(0, s->version, SSL3_RT_CHANGE_CIPHER_SPEC, rr->data, 1, s, s->msg_callback_arg);
 
         s->s3->change_cipher_spec = 1;
         if (!ssl3_do_change_cipher_spec(s))
@@ -1433,7 +1434,8 @@ int ssl3_read_bytes(SSL *s, int type, unsigned char *buf, int len, int peek)
     /*
      * Unexpected handshake message (Client Hello, or protocol violation)
      */
-    if ((s->s3->handshake_fragment_len >= 4) && !s->in_handshake) {
+    if ((s->s3->handshake_fragment_len >= 4) && !s->in_handshake)
+	{
         if (((s->state & SSL_ST_MASK) == SSL_ST_OK) &&
             !(s->s3->flags & SSL3_FLAGS_NO_RENEGOTIATE_CIPHERS)) {
 #if 0                           /* worked only because C operator preferences
@@ -1566,10 +1568,13 @@ int ssl3_do_change_cipher_spec(SSL *s)
      * we have to record the message digest at this point so we can get it
      * before we read the finished message
      */
-    if (s->state & SSL_ST_CONNECT) {
+    if (s->state & SSL_ST_CONNECT)
+	{
         sender = s->method->ssl3_enc->server_finished_label;
         slen = s->method->ssl3_enc->server_finished_label_len;
-    } else {
+    } 
+	else 
+	{
         sender = s->method->ssl3_enc->client_finished_label;
         slen = s->method->ssl3_enc->client_finished_label_len;
     }

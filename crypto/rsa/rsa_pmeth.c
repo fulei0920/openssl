@@ -257,10 +257,7 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, 
 		{
             if (!setup_tbuf(rctx, ctx))
                 return -1;
-            if (!RSA_padding_add_PKCS1_PSS_mgf1(rsa,
-                                                rctx->tbuf, tbs,
-                                                rctx->md, rctx->mgf1md,
-                                                rctx->saltlen))
+            if (!RSA_padding_add_PKCS1_PSS_mgf1(rsa, rctx->tbuf, tbs, rctx->md, rctx->mgf1md, rctx->saltlen))
                 return -1;
             ret = RSA_private_encrypt(RSA_size(rsa), rctx->tbuf, sig, rsa, RSA_NO_PADDING);
         }
@@ -271,10 +268,15 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, 
            
     } 
 	else
-        ret = RSA_private_encrypt(tbslen, tbs, sig, ctx->pkey->pkey.rsa, rctx->pad_mode);
+	{
+		 ret = RSA_private_encrypt(tbslen, tbs, sig, ctx->pkey->pkey.rsa, rctx->pad_mode);
+	}
+       
     if (ret < 0)
         return ret;
+	
     *siglen = ret;
+	
     return 1;
 }
 
@@ -426,12 +428,14 @@ static int check_padding_md(const EVP_MD *md, int padding)
     if (!md)
         return 1;
 
-    if (padding == RSA_NO_PADDING) {
+    if (padding == RSA_NO_PADDING) 
+	{
         RSAerr(RSA_F_CHECK_PADDING_MD, RSA_R_INVALID_PADDING_MODE);
         return 0;
     }
 
-    if (padding == RSA_X931_PADDING) {
+    if (padding == RSA_X931_PADDING) 
+	{
         if (RSA_X931_hash_id(EVP_MD_type(md)) == -1) {
             RSAerr(RSA_F_CHECK_PADDING_MD, RSA_R_INVALID_X931_DIGEST);
             return 0;
@@ -445,9 +449,11 @@ static int check_padding_md(const EVP_MD *md, int padding)
 static int pkey_rsa_ctrl(EVP_PKEY_CTX *ctx, int type, int p1, void *p2)
 {
     RSA_PKEY_CTX *rctx = ctx->data;
-    switch (type) {
+    switch (type) 
+	{
     case EVP_PKEY_CTRL_RSA_PADDING:
-        if ((p1 >= RSA_PKCS1_PADDING) && (p1 <= RSA_PKCS1_PSS_PADDING)) {
+        if ((p1 >= RSA_PKCS1_PADDING) && (p1 <= RSA_PKCS1_PSS_PADDING)) 
+		{
             if (!check_padding_md(rctx->md, p1))
                 return 0;
             if (p1 == RSA_PKCS1_PSS_PADDING) {

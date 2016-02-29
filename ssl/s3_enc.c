@@ -160,8 +160,7 @@ static unsigned char ssl3_pad_2[48] =
     0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c, 0x5c
 };
 
-static int ssl3_handshake_mac(SSL *s, int md_nid,
-                              const char *sender, int len, unsigned char *p);
+static int ssl3_handshake_mac(SSL *s, int md_nid, const char *sender, int len, unsigned char *p);
 static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
 {
     EVP_MD_CTX m5;
@@ -177,9 +176,11 @@ static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
     EVP_MD_CTX_init(&m5);
     EVP_MD_CTX_set_flags(&m5, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
     EVP_MD_CTX_init(&s1);
-    for (i = 0; (int)i < num; i += MD5_DIGEST_LENGTH) {
+    for (i = 0; (int)i < num; i += MD5_DIGEST_LENGTH)
+	{
         k++;
-        if (k > sizeof buf) {
+        if (k > sizeof buf) 
+		{
             /* bug: 'buf' is too small for this ciphersuite */
             SSLerr(SSL_F_SSL3_GENERATE_KEY_BLOCK, ERR_R_INTERNAL_ERROR);
             return 0;
@@ -190,21 +191,24 @@ static int ssl3_generate_key_block(SSL *s, unsigned char *km, int num)
         c++;
         EVP_DigestInit_ex(&s1, EVP_sha1(), NULL);
         EVP_DigestUpdate(&s1, buf, k);
-        EVP_DigestUpdate(&s1, s->session->master_key,
-                         s->session->master_key_length);
+        EVP_DigestUpdate(&s1, s->session->master_key, s->session->master_key_length);
         EVP_DigestUpdate(&s1, s->s3->server_random, SSL3_RANDOM_SIZE);
         EVP_DigestUpdate(&s1, s->s3->client_random, SSL3_RANDOM_SIZE);
         EVP_DigestFinal_ex(&s1, smd, NULL);
 
         EVP_DigestInit_ex(&m5, EVP_md5(), NULL);
-        EVP_DigestUpdate(&m5, s->session->master_key,
-                         s->session->master_key_length);
+        EVP_DigestUpdate(&m5, s->session->master_key, s->session->master_key_length);
         EVP_DigestUpdate(&m5, smd, SHA_DIGEST_LENGTH);
-        if ((int)(i + MD5_DIGEST_LENGTH) > num) {
+        if ((int)(i + MD5_DIGEST_LENGTH) > num)
+		{
             EVP_DigestFinal_ex(&m5, smd, NULL);
             memcpy(km, smd, (num - i));
-        } else
-            EVP_DigestFinal_ex(&m5, km, NULL);
+        } 
+		else
+        {
+        	EVP_DigestFinal_ex(&m5, km, NULL);
+        }
+            
 
         km += MD5_DIGEST_LENGTH;
     }
@@ -397,7 +401,8 @@ int ssl3_setup_key_block(SSL *s)
     if (s->s3->tmp.key_block_length != 0)
         return (1);
 
-    if (!ssl_cipher_get_evp(s->session, &c, &hash, NULL, NULL, &comp)) {
+    if (!ssl_cipher_get_evp(s->session, &c, &hash, NULL, NULL, &comp)) 
+	{
         SSLerr(SSL_F_SSL3_SETUP_KEY_BLOCK, SSL_R_CIPHER_OR_HASH_UNAVAILABLE);
         return (0);
     }
@@ -662,8 +667,7 @@ int ssl3_final_finish_mac(SSL *s,
     return (ret);
 }
 
-static int ssl3_handshake_mac(SSL *s, int md_nid,
-                              const char *sender, int len, unsigned char *p)
+static int ssl3_handshake_mac(SSL *s, int md_nid, const char *sender, int len, unsigned char *p)
 {
     unsigned int ret;
     int npad, n;
@@ -672,15 +676,19 @@ static int ssl3_handshake_mac(SSL *s, int md_nid,
     EVP_MD_CTX ctx, *d = NULL;
 
     if (s->s3->handshake_buffer)
+    {
         if (!ssl3_digest_cached_records(s))
             return 0;
+	}
+
 
     /*
      * Search for digest of specified type in the handshake_dgst array
      */
-    for (i = 0; i < SSL_MAX_DIGEST; i++) {
-        if (s->s3->handshake_dgst[i]
-            && EVP_MD_CTX_type(s->s3->handshake_dgst[i]) == md_nid) {
+    for (i = 0; i < SSL_MAX_DIGEST; i++) 
+	{
+        if (s->s3->handshake_dgst[i] && EVP_MD_CTX_type(s->s3->handshake_dgst[i]) == md_nid)
+        {
             d = s->s3->handshake_dgst[i];
             break;
         }
@@ -699,14 +707,12 @@ static int ssl3_handshake_mac(SSL *s, int md_nid,
     npad = (48 / n) * n;
     if (sender != NULL)
         EVP_DigestUpdate(&ctx, sender, len);
-    EVP_DigestUpdate(&ctx, s->session->master_key,
-                     s->session->master_key_length);
+    EVP_DigestUpdate(&ctx, s->session->master_key, s->session->master_key_length);
     EVP_DigestUpdate(&ctx, ssl3_pad_1, npad);
     EVP_DigestFinal_ex(&ctx, md_buf, &i);
 
     EVP_DigestInit_ex(&ctx, EVP_MD_CTX_md(&ctx), NULL);
-    EVP_DigestUpdate(&ctx, s->session->master_key,
-                     s->session->master_key_length);
+    EVP_DigestUpdate(&ctx, s->session->master_key, s->session->master_key_length);
     EVP_DigestUpdate(&ctx, ssl3_pad_2, npad);
     EVP_DigestUpdate(&ctx, md_buf, i);
     EVP_DigestFinal_ex(&ctx, p, &ret);
@@ -841,7 +847,8 @@ void ssl3_record_sequence_update(unsigned char *seq)
 
 int ssl3_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p, int len)
 {
-    static const unsigned char *salt[3] = {
+    static const unsigned char *salt[3] = 
+	{
 #ifndef CHARSET_EBCDIC
         (const unsigned char *)"A",
         (const unsigned char *)"BB",
@@ -858,7 +865,8 @@ int ssl3_generate_master_secret(SSL *s, unsigned char *out, unsigned char *p, in
     unsigned int n;
 
     EVP_MD_CTX_init(&ctx);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++) 
+	{
         EVP_DigestInit_ex(&ctx, s->ctx->sha1, NULL);
         EVP_DigestUpdate(&ctx, salt[i], strlen((const char *)salt[i]));
         EVP_DigestUpdate(&ctx, p, len);

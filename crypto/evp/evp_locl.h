@@ -279,15 +279,11 @@ struct evp_pkey_method_st {
                    const unsigned char *sig, size_t siglen,
                    const unsigned char *tbs, size_t tbslen);
     int (*verify_recover_init) (EVP_PKEY_CTX *ctx);
-    int (*verify_recover) (EVP_PKEY_CTX *ctx,
-                           unsigned char *rout, size_t *routlen,
-                           const unsigned char *sig, size_t siglen);
+    int (*verify_recover) (EVP_PKEY_CTX *ctx, unsigned char *rout, size_t *routlen, const unsigned char *sig, size_t siglen);
     int (*signctx_init) (EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx);
-    int (*signctx) (EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen,
-                    EVP_MD_CTX *mctx);
+    int (*signctx) (EVP_PKEY_CTX *ctx, unsigned char *sig, size_t *siglen, EVP_MD_CTX *mctx);
     int (*verifyctx_init) (EVP_PKEY_CTX *ctx, EVP_MD_CTX *mctx);
-    int (*verifyctx) (EVP_PKEY_CTX *ctx, const unsigned char *sig, int siglen,
-                      EVP_MD_CTX *mctx);
+    int (*verifyctx) (EVP_PKEY_CTX *ctx, const unsigned char *sig, int siglen, EVP_MD_CTX *mctx);
     int (*encrypt_init) (EVP_PKEY_CTX *ctx);
     int (*encrypt) (EVP_PKEY_CTX *ctx, unsigned char *out, size_t *outlen,
                     const unsigned char *in, size_t inlen);

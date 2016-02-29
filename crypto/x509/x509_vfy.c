@@ -241,22 +241,26 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
      * complain.
      */
 
-    do {
+    do 
+	{
         /*
          * Examine last certificate in chain and see if it is self signed.
          */
         i = sk_X509_num(ctx->chain);
         x = sk_X509_value(ctx->chain, i - 1);
-        if (ctx->check_issued(ctx, x, x)) {
+        if (ctx->check_issued(ctx, x, x)) 
+		{
             /* we have a self signed certificate */
-            if (sk_X509_num(ctx->chain) == 1) {
+            if (sk_X509_num(ctx->chain) == 1) 
+			{
                 /*
                  * We have a single self signed certificate: see if we can
                  * find it in the store. We must have an exact match to avoid
                  * possible impersonation.
                  */
                 ok = ctx->get_issuer(&xtmp, ctx, x);
-                if ((ok <= 0) || X509_cmp(x, xtmp)) {
+                if ((ok <= 0) || X509_cmp(x, xtmp)) 
+				{
                     ctx->error = X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT;
                     ctx->current_cert = x;
                     ctx->error_depth = i - 1;
@@ -266,7 +270,9 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
                     ok = cb(0, ctx);
                     if (!ok)
                         goto end;
-                } else {
+                } 
+				else 
+				{
                     /*
                      * We have a match: replace certificate with store
                      * version so we get any trust settings.
@@ -276,7 +282,9 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
                     (void)sk_X509_set(ctx->chain, i - 1, x);
                     ctx->last_untrusted = 0;
                 }
-            } else {
+            } 
+			else
+			{
                 /*
                  * extract and save self signed certificate for later use
                  */
@@ -288,7 +296,8 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
             }
         }
         /* We now lookup certs from the certificate store */
-        for (;;) {
+        for (;;) 
+		{
             /* If we have enough, we break */
             if (depth < num)
                 break;
@@ -301,7 +310,8 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
             if (ok == 0)
                 break;
             x = xtmp;
-            if (!sk_X509_push(ctx->chain, x)) {
+            if (!sk_X509_push(ctx->chain, x)) 
+			{
                 X509_free(xtmp);
                 X509err(X509_F_X509_VERIFY_CERT, ERR_R_MALLOC_FAILURE);
                 return 0;
@@ -347,14 +357,18 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
     } while (retry);
 
     /* Is last certificate looked up self signed? */
-    if (!ctx->check_issued(ctx, x, x)) {
-        if ((chain_ss == NULL) || !ctx->check_issued(ctx, x, chain_ss)) {
+    if (!ctx->check_issued(ctx, x, x)) 
+	{
+        if ((chain_ss == NULL) || !ctx->check_issued(ctx, x, chain_ss))
+		{
             if (ctx->last_untrusted >= num)
                 ctx->error = X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY;
             else
                 ctx->error = X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT;
             ctx->current_cert = x;
-        } else {
+        } 
+		else 
+		{
 
             sk_X509_push(ctx->chain, chain_ss);
             num++;
@@ -409,6 +423,7 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
         ok = ctx->verify(ctx);
     else
         ok = internal_verify(ctx);
+	
     if (!ok)
         goto end;
 
@@ -446,7 +461,8 @@ static X509 *find_issuer(X509_STORE_CTX *ctx, STACK_OF(X509) *sk, X509 *x)
 {
     int i;
     X509 *issuer;
-    for (i = 0; i < sk_X509_num(sk); i++) {
+    for (i = 0; i < sk_X509_num(sk); i++) 
+	{
         issuer = sk_X509_value(sk, i);
         if (ctx->check_issued(ctx, x, issuer))
             return issuer;

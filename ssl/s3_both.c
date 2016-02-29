@@ -256,7 +256,8 @@ int ssl3_get_finished(SSL *s, int a, int b)
         return ((int)n);
 
     /* If this occurs, we have missed a message */
-    if (!s->s3->change_cipher_spec) {
+    if (!s->s3->change_cipher_spec) 
+	{
         al = SSL_AD_UNEXPECTED_MESSAGE;
         SSLerr(SSL_F_SSL3_GET_FINISHED, SSL_R_GOT_A_FIN_BEFORE_A_CCS);
         goto f_err;
@@ -310,7 +311,8 @@ int ssl3_send_change_cipher_spec(SSL *s, int a, int b)
 {
     unsigned char *p;
 
-    if (s->state == a) {
+    if (s->state == a) 
+	{
         p = (unsigned char *)s->init_buf->data;
         *p = SSL3_MT_CCS;
         s->init_num = 1;
@@ -373,17 +375,20 @@ unsigned long ssl3_output_cert_chain(SSL *s, X509 *x)
 		{
             X509_STORE_CTX xs_ctx;
 
-            if (!X509_STORE_CTX_init(&xs_ctx, s->ctx->cert_store, x, NULL)) {
+            if (!X509_STORE_CTX_init(&xs_ctx, s->ctx->cert_store, x, NULL)) 
+			{
                 SSLerr(SSL_F_SSL3_OUTPUT_CERT_CHAIN, ERR_R_X509_LIB);
                 return (0);
             }
             X509_verify_cert(&xs_ctx);
             /* Don't leave errors in the queue */
             ERR_clear_error();
-            for (i = 0; i < sk_X509_num(xs_ctx.chain); i++) {
+            for (i = 0; i < sk_X509_num(xs_ctx.chain); i++) 
+			{
                 x = sk_X509_value(xs_ctx.chain, i);
 
-                if (ssl3_add_cert_to_buf(buf, &l, x)) {
+                if (ssl3_add_cert_to_buf(buf, &l, x)) 
+				{
                     X509_STORE_CTX_cleanup(&xs_ctx);
                     return 0;
                 }

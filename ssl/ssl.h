@@ -532,7 +532,7 @@ struct ssl_session_st
      * not retained in the external representation of sessions, see
      * ssl_asn1.c).
      */
-    X509 *peer;
+    X509 *peer;			//存储对端的证书
     /*
      * when app_verify_callback accepts a session where the peer's
      * certificate is not ok, we must remember the error for session reuse:
@@ -925,7 +925,7 @@ struct ssl_ctx_st
     const EVP_MD *md5;          /* For SSLv3/TLSv1 'ssl3-md5' */
     const EVP_MD *sha1;         /* For SSLv3/TLSv1 'ssl3->sha1' */
 
-    STACK_OF(X509) *extra_certs;		/*存储多个其它的证书*/
+    STACK_OF(X509) *extra_certs;		/*存储多个其它CA的证书*/
     STACK_OF(SSL_COMP) *comp_methods; 	/* stack of SSL_COMP, SSLv3/TLSv1 */
 
     /* Default values used when no per-SSL value is defined follow */
@@ -1398,7 +1398,6 @@ struct ssl_st
      * SSL_write() calls, good for nbio debuging :-)
      */
     int debug;
-    /* extra application data */
     long verify_result;			/*对端证书认证结果*/
     CRYPTO_EX_DATA ex_data;
     /* for server side, keep the list of CA_dn we can use */

@@ -665,10 +665,7 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
     }
 #endif
 
-    if (try_session_cache &&
-        ret == NULL &&
-        !(s->session_ctx->session_cache_mode &
-          SSL_SESS_CACHE_NO_INTERNAL_LOOKUP))
+    if (try_session_cache && ret == NULL && !(s->session_ctx->session_cache_mode & SSL_SESS_CACHE_NO_INTERNAL_LOOKUP))
     {
         SSL_SESSION data;
         data.ssl_version = s->version;
@@ -678,7 +675,8 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
         memcpy(data.session_id, session_id, len);
         CRYPTO_r_lock(CRYPTO_LOCK_SSL_CTX);
         ret = lh_SSL_SESSION_retrieve(s->session_ctx->sessions, &data);
-        if (ret != NULL) {
+        if (ret != NULL) 
+		{
             /* don't allow other threads to steal it: */
             CRYPTO_add(&ret->references, 1, CRYPTO_LOCK_SSL_SESSION);
         }
@@ -687,8 +685,7 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
             s->session_ctx->stats.sess_miss++;
     }
 
-    if (try_session_cache &&
-        ret == NULL && s->session_ctx->get_session_cb != NULL) 
+    if (try_session_cache && ret == NULL && s->session_ctx->get_session_cb != NULL) 
   	{
         int copy = 1;
 
@@ -726,7 +723,8 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
     /* Now ret is non-NULL and we own one of its reference counts. */
 
     if (ret->sid_ctx_length != s->sid_ctx_length
-        || memcmp(ret->sid_ctx, s->sid_ctx, ret->sid_ctx_length)) {
+        || memcmp(ret->sid_ctx, s->sid_ctx, ret->sid_ctx_length))
+    {
         /*
          * We have the session requested by the client, but we don't want to
          * use it in this context.
@@ -745,13 +743,13 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
          * noticing).
          */
 
-        SSLerr(SSL_F_SSL_GET_PREV_SESSION,
-               SSL_R_SESSION_ID_CONTEXT_UNINITIALIZED);
+        SSLerr(SSL_F_SSL_GET_PREV_SESSION, SSL_R_SESSION_ID_CONTEXT_UNINITIALIZED);
         fatal = 1;
         goto err;
     }
 
-    if (ret->cipher == NULL) {
+    if (ret->cipher == NULL) 
+	{
         unsigned char buf[5], *p;
         unsigned long l;
 
@@ -766,9 +764,11 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
             goto err;
     }
 
-    if (ret->timeout < (long)(time(NULL) - ret->time)) { /* timeout */
+    if (ret->timeout < (long)(time(NULL) - ret->time)) 
+	{ /* timeout */
         s->session_ctx->stats.sess_timeout++;
-        if (try_session_cache) {
+        if (try_session_cache) 
+		{
             /* session was from the cache, so remove it */
             SSL_CTX_remove_session(s->session_ctx, ret);
         }
@@ -784,10 +784,12 @@ int ssl_get_prev_session(SSL *s, unsigned char *session_id, int len, const unsig
     return 1;
 
  err:
-    if (ret != NULL) {
+    if (ret != NULL) 
+	{
         SSL_SESSION_free(ret);
 #ifndef OPENSSL_NO_TLSEXT
-        if (!try_session_cache) {
+        if (!try_session_cache) 
+		{
             /*
              * The session was from a ticket, so we should issue a ticket for
              * the new session
@@ -978,16 +980,19 @@ int SSL_set_session(SSL *s, SSL_SESSION *session)
     int ret = 0;
     const SSL_METHOD *meth;
 
-    if (session != NULL) {
+    if (session != NULL) 
+	{
         meth = s->ctx->method->get_ssl_method(session->ssl_version);
         if (meth == NULL)
             meth = s->method->get_ssl_method(session->ssl_version);
-        if (meth == NULL) {
+        if (meth == NULL)
+		{
             SSLerr(SSL_F_SSL_SET_SESSION, SSL_R_UNABLE_TO_FIND_SSL_METHOD);
             return (0);
         }
 
-        if (meth != s->method) {
+        if (meth != s->method) 
+		{
             if (!SSL_set_ssl_method(s, meth))
                 return (0);
         }
@@ -1010,14 +1015,18 @@ int SSL_set_session(SSL *s, SSL_SESSION *session)
         s->verify_result = s->session->verify_result;
         /* CRYPTO_w_unlock(CRYPTO_LOCK_SSL); */
         ret = 1;
-    } else {
-        if (s->session != NULL) {
+    } 
+	else 
+	{
+        if (s->session != NULL) 
+		{
             SSL_SESSION_free(s->session);
             s->session = NULL;
         }
 
         meth = s->ctx->method;
-        if (meth != s->method) {
+        if (meth != s->method) 
+		{
             if (!SSL_set_ssl_method(s, meth))
                 return (0);
         }
@@ -1078,10 +1087,13 @@ int SSL_SESSION_set1_id_context(SSL_SESSION *s, const unsigned char *sid_ctx,
 long SSL_CTX_set_timeout(SSL_CTX *s, long t)
 {
     long l;
+	
     if (s == NULL)
         return (0);
+	
     l = s->session_timeout;
     s->session_timeout = t;
+	
     return (l);
 }
 

@@ -189,12 +189,12 @@ int X509_cmp(const X509 *a, const X509 *b)
     if (rv)
         return rv;
     /* Check for match against stored encoding too */
-    if (!a->cert_info->enc.modified && !b->cert_info->enc.modified) {
+    if (!a->cert_info->enc.modified && !b->cert_info->enc.modified) 
+	{
         rv = (int)(a->cert_info->enc.len - b->cert_info->enc.len);
         if (rv)
             return rv;
-        return memcmp(a->cert_info->enc.enc, b->cert_info->enc.enc,
-                      a->cert_info->enc.len);
+        return memcmp(a->cert_info->enc.enc, b->cert_info->enc.enc, a->cert_info->enc.len);
     }
     return rv;
 }
@@ -206,13 +206,15 @@ int X509_NAME_cmp(const X509_NAME *a, const X509_NAME *b)
 
     /* Ensure canonical encoding is present and up to date */
 
-    if (!a->canon_enc || a->modified) {
+    if (!a->canon_enc || a->modified)
+	{
         ret = i2d_X509_NAME((X509_NAME *)a, NULL);
         if (ret < 0)
             return -2;
     }
 
-    if (!b->canon_enc || b->modified) {
+    if (!b->canon_enc || b->modified) 
+	{
         ret = i2d_X509_NAME((X509_NAME *)b, NULL);
         if (ret < 0)
             return -2;
